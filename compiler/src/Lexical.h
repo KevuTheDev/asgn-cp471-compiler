@@ -15,9 +15,9 @@ private:
 	uint32_t line;
 	
 
-	bool scan(); // bool: true- continue, false- eof/exit
+	bool nextToken(); // bool: true- continue, false- eof/exit
 
-	void readchar();
-	bool readchar(char c); // this does the peaking for specific grammar
+	void readChar();
+	bool readChar(char c); // this does the peaking for specific grammar
 };
 

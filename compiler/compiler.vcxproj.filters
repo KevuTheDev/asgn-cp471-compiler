@@ -55,5 +55,8 @@
     <None Include="res\Test9.cp">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\Test0.cp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

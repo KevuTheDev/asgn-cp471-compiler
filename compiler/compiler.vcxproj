@@ -26,6 +26,7 @@
     <ClInclude Include="Lexical.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\Test0.cp" />
     <None Include="res\Test1.cp" />
     <None Include="res\Test2.cp" />
     <None Include="res\Test3.cp" />

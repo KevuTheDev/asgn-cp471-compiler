@@ -17,7 +17,7 @@ Lexical::Lexical()
 	bool loop = true;
 
 	while (loop) {
-		loop = this->scan();
+		loop = this->nextToken();
 
 
 	}
@@ -41,18 +41,18 @@ Lexical::Lexical(const std::string& filename)
 	bool loop = true;
 
 	while (loop) {
-		loop = this->scan();
+		loop = this->nextToken();
 	}
 }
 
-void Lexical::readchar()
+void Lexical::readChar()
 {
 	this->is.get(this->peek);
 }
 
-bool Lexical::readchar(char c)
+bool Lexical::readChar(char c)
 {	
-	this->readchar();
+	this->readChar();
 	if (this->peek != c)
 		return false;
 
@@ -60,13 +60,13 @@ bool Lexical::readchar(char c)
 	return true;
 }
 
-bool Lexical::scan()
+bool Lexical::nextToken()
 {
 	// peek into the buffer
 	// if whitespace then ignore
 	// if newline	 then increase linecount
 	// otherwise, move on
-	for (;; this->readchar()) {
+	for (;; this->readChar()) {
 
 		if (this->is.eof()) {
 			// checks for eof, and exits scan
@@ -98,7 +98,7 @@ bool Lexical::scan()
 		this->peek = ' ';
 		return true;
 	case '&':
-		if (readchar('&')) {
+		if (readChar('&')) {
 			std::cout << "&&" << std::endl;
 			this->peek = ' ';
 			return true;
@@ -109,7 +109,7 @@ bool Lexical::scan()
 			return true;
 		}
 	case '|':
-		if (readchar('|')) {
+		if (readChar('|')) {
 			std::cout << "||" << std::endl;
 			this->peek = ' ';
 			return true;
@@ -120,7 +120,7 @@ bool Lexical::scan()
 			return true;
 		}
 	case '=':
-		if (readchar('=')) {
+		if (readChar('=')) {
 			std::cout << "==" << std::endl;
 			this->peek = ' ';
 			return true;
@@ -131,12 +131,12 @@ bool Lexical::scan()
 			return true;
 		}
 	case '<':
-		if (readchar('=')) {
+		if (readChar('=')) {
 			std::cout << "<=" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
-		else if (readchar('>')) {
+		else if (readChar('>')) {
 			std::cout << "<>" << std::endl;
 			this->peek = ' ';
 			return true;
@@ -147,7 +147,7 @@ bool Lexical::scan()
 			return true;
 		}
 	case '>':
-		if (readchar('=')) {
+		if (readChar('=')) {
 			std::cout << ">=" << std::endl;
 			this->peek = ' ';
 			return true;
@@ -200,7 +200,7 @@ bool Lexical::scan()
 		int v = 0;
 		do {
 			v = 10 * v + (int)this->peek;
-			this->readchar();
+			this->readChar();
 		} while (std::isdigit(this->peek));
 
 		if (this->peek != '.') {
@@ -212,7 +212,7 @@ bool Lexical::scan()
 		float d = 10;
 
 		for (;;) {
-			this->readchar();
+			this->readChar();
 			if (!std::isdigit(this->peek)) {
 				break;
 			}
@@ -228,7 +228,7 @@ bool Lexical::scan()
 		std::string b = "";
 		do {
 			b += this->peek;
-			this->readchar();
+			this->readChar();
 		} while (std::isalnum(this->peek));
 
 		std::cout << b << std::endl;
