@@ -18,5 +18,42 @@
     <ClCompile Include="src\compiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Lexical.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Lexical.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Test1.cp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Test2.cp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Test3.cp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Test4.cp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Test5.cp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Test6.cp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Test7.cp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Test8.cp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Test9.cp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

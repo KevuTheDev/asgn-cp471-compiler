@@ -20,6 +20,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\compiler.cpp" />
+    <ClCompile Include="src\Lexical.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Lexical.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Test1.cp" />
+    <None Include="res\Test2.cp" />
+    <None Include="res\Test3.cp" />
+    <None Include="res\Test4.cp" />
+    <None Include="res\Test5.cp" />
+    <None Include="res\Test6.cp" />
+    <None Include="res\Test7.cp" />
+    <None Include="res\Test8.cp" />
+    <None Include="res\Test9.cp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
