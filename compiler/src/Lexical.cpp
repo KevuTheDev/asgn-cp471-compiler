@@ -235,5 +235,7 @@ bool Lexical::nextToken()
 		return true;
 	}
 
-
+	std::cout << this->peek << std::endl;
+	this->peek = ' ';
+	return true;
 }
