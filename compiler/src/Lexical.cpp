@@ -18,8 +18,6 @@ Lexical::Lexical()
 
 	while (loop) {
 		loop = this->nextToken();
-
-
 	}
 
 }

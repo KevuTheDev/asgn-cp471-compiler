@@ -23,7 +23,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Lexical.h">
+    <ClInclude Include="src\Lexical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
