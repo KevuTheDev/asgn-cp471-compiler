@@ -44,8 +44,9 @@ int main(int argc, char* argv[])
     while (true) {
         auto helper1 = std::thread(readFileLine, std::ref(file), std::ref(buffer1));
         helper1.join();
-        std::cout << buffer1;
-        
+        std::cout << buffer1 << " " << strlen(buffer1);
+        memset(buffer1, 0, compiler::COMPILER_BUFFER_SIZE);
+
         if (file.gcount() == 0) {
             break;
         }
@@ -53,9 +54,11 @@ int main(int argc, char* argv[])
 
         auto helper2 = std::thread(readFileLine, std::ref(file), std::ref(buffer2));
         helper2.join();
-        std::cout << buffer2;
+        std::cout << buffer2 << " " << strlen(buffer2);
+        memset(buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
     }
 
+    
 
 
 

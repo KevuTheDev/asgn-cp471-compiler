@@ -3,14 +3,17 @@
 
 Lexical::Lexical()
 {
-	this->is = std::ifstream("res/Test1.cp");
+	std::string filename = "res/Test1.cp";
 
+	if (!this->checkExtension(filename)) {
+		return;
+	}
+
+	this->is = std::ifstream(filename);
 	if (!this->is.is_open()) {
 		std::cout << "Failed to open file" << std::endl;
 		return;
 	}
-
-
 
 	this->peek = ' ';
 	this->line = 0;
@@ -29,21 +32,39 @@ Lexical::Lexical(const std::string& filename)
 		return;
 	}
 
-
 	this->is = std::ifstream(filename);
-
 	if (!this->is.is_open()) {
 		std::cout << "Failed to open file" << std::endl;
 		return;
 	}
 
 
-
 	this->peek = ' ';
 	this->line = 0;
+	this->buffer_switch = true;
+	this->buffer1_count = 0;
+	this->buffer2_count = 0;
+	this->buffer1 = new char[compiler::COMPILER_BUFFER_SIZE];
+	this->buffer2 = new char[compiler::COMPILER_BUFFER_SIZE];
+
+
+	memset(this->buffer1, 0, compiler::COMPILER_BUFFER_SIZE);
+	memset(this->buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
+
+
+	auto helper1 = std::thread(&Lexical::readFileToBuffer, std::ref(is), std::ref(this->buffer1));
+	helper1.join();
+	memset(buffer1, 0, compiler::COMPILER_BUFFER_SIZE);
+
+
+	auto helper2 = std::thread(&Lexical::readFileToBuffer, std::ref(is), std::ref(this->buffer2));
+	helper2.join();
+	memset(buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
+
+
+
 
 	bool loop = true;
-
 	while (loop) {
 		loop = this->nextToken();
 	}
@@ -65,6 +86,12 @@ bool Lexical::checkExtension(const std::string& filepath)
 	}
 
 	return true;
+}
+
+void Lexical::readFileToBuffer(std::ifstream& is, char* buf) {
+	is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
+
+	return;
 }
 
 bool Lexical::nextToken()
@@ -249,6 +276,12 @@ bool Lexical::nextToken()
 
 void Lexical::readChar()
 {
+	if (this->buffer_switch) {
+
+	}
+	else {
+
+	}
 	this->is.get(this->peek);
 }
 
