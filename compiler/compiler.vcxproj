@@ -23,6 +23,7 @@
     <ClCompile Include="src\Lexical.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\Lexical.h" />
   </ItemGroup>
   <ItemGroup>

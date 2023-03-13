@@ -1,64 +1,81 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "globals.h"
 #include "Lexical.h"
 
-std::string COMPILER_FILE_EXTENSION = ".cp";
-uint8_t COMPILER_FILE_EXTENSION_LEN = 3;
+#include <thread>
 
-bool checkExtension(const std::string& filepath)
-{
+using namespace std::chrono_literals;
 
-    if (filepath.length() < COMPILER_FILE_EXTENSION_LEN + 1) {
-        std::cout << "Invalid file string specified: length size" << std::endl;
-        return false;
+void process(int num) {
+
+    for (auto i = 0; i < num; i++) {
+        std::this_thread::sleep_for(1000ms);
     }
-    
-    // check if directory or file
-
-    if (filepath.substr(filepath.length() - 3) != COMPILER_FILE_EXTENSION) {
-        std::cout << "Invalid file string specified: file extension" << std::endl;
-        return false;
-    }
-
-    return true;
 }
+
+void readFileLine(std::ifstream &is, char* buf) {
+    is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
+
+    return;
+}
+
 
 int main(int argc, char* argv[]) 
 {
-
-    checkExtension("cp");
-    //std::cout << "READING FILE" << std::endl;
-    //std::cout << "==========================================" << std::endl;
+    std::cout << "READING FILE" << std::endl;
+    std::cout << "==========================================" << std::endl;
 
 
-    //std::ifstream file("res/Test1.cp");
-    //char c;
+    std::ifstream file("res/Test0.cp", std::ifstream::in);
 
-    //if (!file.is_open()) {
-    //    std::cout << "Failed to open file" << std::endl;
-    //    return 1;
-    //}
+    if (!file.is_open()) {
+        std::cout << "Failed to open file" << std::endl;
+        return 1;
+    }
 
-    //while (file.get(c)) {
-    //    std::cout << c;
-    //}
-    //std::cout << std::endl;
-    //std::cout << "==========================================" << std::endl;
-    //std::cout << c << std::endl;
+    char* buffer1 = new char[compiler::COMPILER_BUFFER_SIZE];
+    char* buffer2 = new char[compiler::COMPILER_BUFFER_SIZE];
 
-    //file.close();
-    //std::cout << argv[0] << std::endl;
-    //Lexical lex0 = Lexical("res/Test0.cp");
+    memset(buffer1, 0, compiler::COMPILER_BUFFER_SIZE);
+    memset(buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
+
+    while (true) {
+        auto helper1 = std::thread(readFileLine, std::ref(file), buffer1);
+        helper1.join();
+        std::cout << buffer1;
+        
+        if (file.gcount() == 0) {
+            break;
+        }
+
+
+        auto helper2 = std::thread(readFileLine, std::ref(file), buffer2);
+
+
+        helper2.join();
+        std::cout << buffer2;
+
+    }
+
+
+
+
+
+
+    std::cout << std::endl;
+    std::cout << "==========================================" << std::endl;
+
+    if (file)
+        std::cout << "all characters read successfully.";
+    else
+        std::cout << "error: only " << file.gcount() << " could be read";
+
+
+    file.close();
+
     //Lexical lex1 = Lexical("res/Test1.cp");
-    //Lexical lex2 = Lexical("res/Test2.cp");
-    //Lexical lex3 = Lexical("res/Test3.cp");
-    //Lexical lex4 = Lexical("res/Test4.cp");
-    //Lexical lex5 = Lexical("res/Test5.cp");
-    //Lexical lex6 = Lexical("res/Test6.cp");
-    //Lexical lex7 = Lexical("res/Test7.cp");
-    //Lexical lex8 = Lexical("res/Test8.cp");
-    //Lexical lex9 = Lexical("res/Test9.cp");
 
 
     return 0;

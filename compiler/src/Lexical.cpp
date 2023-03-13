@@ -1,5 +1,6 @@
 #include "Lexical.h"
 
+
 Lexical::Lexical()
 {
 	this->is = std::ifstream("res/Test1.cp");
@@ -24,6 +25,11 @@ Lexical::Lexical()
 
 Lexical::Lexical(const std::string& filename)
 {
+	if (!this->checkExtension(filename)) {
+		return;
+	}
+
+
 	this->is = std::ifstream(filename);
 
 	if (!this->is.is_open()) {
@@ -43,18 +49,21 @@ Lexical::Lexical(const std::string& filename)
 	}
 }
 
-void Lexical::readChar()
+bool Lexical::checkExtension(const std::string& filepath)
 {
-	this->is.get(this->peek);
-}
 
-bool Lexical::readChar(char c)
-{	
-	this->readChar();
-	if (this->peek != c)
+	if (filepath.length() < compiler::COMPILER_FILE_EXTENSION_LEN + 1) {
+		std::cout << "Invalid file string specified: length size" << std::endl;
 		return false;
+	}
 
-	this->peek = ' ';
+	// check if directory or file
+
+	if (filepath.substr(filepath.length() - 3) != compiler::COMPILER_FILE_EXTENSION) {
+		std::cout << "Invalid file string specified: file extension" << std::endl;
+		return false;
+	}
+
 	return true;
 }
 
@@ -206,7 +215,7 @@ bool Lexical::nextToken()
 			return true;
 		}
 
-		float x = v;
+		float x = static_cast<float>(v);
 		float d = 10;
 
 		for (;;) {
@@ -234,6 +243,21 @@ bool Lexical::nextToken()
 	}
 
 	std::cout << this->peek << std::endl;
+	this->peek = ' ';
+	return true;
+}
+
+void Lexical::readChar()
+{
+	this->is.get(this->peek);
+}
+
+bool Lexical::readChar(char c)
+{
+	this->readChar();
+	if (this->peek != c)
+		return false;
+
 	this->peek = ' ';
 	return true;
 }

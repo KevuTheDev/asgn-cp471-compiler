@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "globals.h"
+
 
 class Lexical
 {
@@ -14,6 +16,10 @@ private:
 	char peek;
 	uint32_t line;
 	
+
+	// Utilities
+	bool checkExtension(const std::string& filepath);
+
 
 	bool nextToken(); // bool: true- continue, false- eof/exit
 
