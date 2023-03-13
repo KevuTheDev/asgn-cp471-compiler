@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     memset(buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
 
     while (true) {
-        auto helper1 = std::thread(readFileLine, std::ref(file), buffer1);
+        auto helper1 = std::thread(readFileLine, std::ref(file), std::ref(buffer1));
         helper1.join();
         std::cout << buffer1;
         
@@ -51,12 +51,9 @@ int main(int argc, char* argv[])
         }
 
 
-        auto helper2 = std::thread(readFileLine, std::ref(file), buffer2);
-
-
+        auto helper2 = std::thread(readFileLine, std::ref(file), std::ref(buffer2));
         helper2.join();
         std::cout << buffer2;
-
     }
 
 
