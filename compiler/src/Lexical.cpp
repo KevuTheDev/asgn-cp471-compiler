@@ -82,7 +82,7 @@ bool Lexical::nextToken()
 	// if whitespace then ignore
 	// if newline	 then increase linecount
 	// otherwise, move on
-	for (;; this->readChar()) {
+	for (;; this->readNextChar()) {
 
 		if (this->peek == NULL) {
 			std::cout << "END OF FILE" << std::endl;
@@ -115,7 +115,7 @@ bool Lexical::nextToken()
 		this->peek = ' ';
 		return true;
 	case '&':
-		if (readChar('&')) {
+		if (readNextChar('&')) {
 			this->sTable.append("EXPRES", "&&", this->line);
 			//std::cout << "&&" << std::endl;
 			this->peek = ' ';
@@ -128,7 +128,7 @@ bool Lexical::nextToken()
 			return true;
 		}
 	case '|':
-		if (readChar('|')) {
+		if (readNextChar('|')) {
 			this->sTable.append("EXPRES", "||", this->line);
 			//std::cout << "||" << std::endl;
 			this->peek = ' ';
@@ -141,7 +141,7 @@ bool Lexical::nextToken()
 			return true;
 		}
 	case '=':
-		if (readChar('=')) {
+		if (readNextChar('=')) {
 			this->sTable.append("EXPRES", "==", this->line);
 			//std::cout << "==" << std::endl;
 			this->peek = ' ';
@@ -154,13 +154,13 @@ bool Lexical::nextToken()
 			return true;
 		}
 	case '<':
-		if (readChar('=')) {
+		if (readNextChar('=')) {
 			this->sTable.append("LETHAN", "<=", this->line);
 			//std::cout << "<=" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
-		else if (readChar('>')) {
+		else if (readNextChar('>')) {
 			this->sTable.append("NEQUAL", "<>", this->line);
 			//std::cout << "<>" << std::endl;
 			this->peek = ' ';
@@ -173,7 +173,7 @@ bool Lexical::nextToken()
 			return true;
 		}
 	case '>':
-		if (readChar('=')) {
+		if (readNextChar('=')) {
 			this->sTable.append("GETHAN", ">=", this->line);
 			//std::cout << ">=" << std::endl;
 			this->peek = ' ';
@@ -238,7 +238,7 @@ bool Lexical::nextToken()
 		//std::cout << "std:::::" << this->peek << " " << static_cast<int>(this->peek) <<std::endl;
 		do {
 			v = 10 * v + int(this->peek - '0');
-			this->readChar();
+			this->readNextChar();
 		} while (std::isdigit(this->peek));
 
 		if (this->peek != '.') {
@@ -251,7 +251,7 @@ bool Lexical::nextToken()
 		float d = 10;
 
 		for (;;) {
-			this->readChar();
+			this->readNextChar();
 			if (!std::isdigit(this->peek)) {
 				break;
 			}
@@ -268,7 +268,7 @@ bool Lexical::nextToken()
 		std::string b = "";
 		do {
 			b += this->peek;
-			this->readChar();
+			this->readNextChar();
 		} while (std::isalnum(this->peek));
 
 		this->sTable.append("IDENTI", b, this->line);
@@ -283,7 +283,7 @@ bool Lexical::nextToken()
 	return true;
 }
 
-void Lexical::readChar()
+void Lexical::readNextChar()
 {
 	//std::cout << "::" <<this->buffer_switch << "::   Char: " << this->peek << "    " << std::endl;
 	if (this->buffer_switch) {
@@ -324,9 +324,9 @@ void Lexical::readChar()
 	}
 }
 
-bool Lexical::readChar(char c)
+bool Lexical::readNextChar(char c)
 {
-	this->readChar();
+	this->readNextChar();
 	if (this->buffer_switch) {
 		this->buffer1_count -= 1;
 	}
