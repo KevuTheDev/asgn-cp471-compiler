@@ -34,7 +34,7 @@ private:
 	void readFileToBuffer(std::ifstream& is, char* buf);
 
 
-	bool nextToken(); // bool: true- continue, false- eof/exit
+	bool getNextToken(); // bool: true- continue, false- eof/exit
 
 	void readNextChar();
 	bool readNextChar(char c); // this does the peaking for specific grammar

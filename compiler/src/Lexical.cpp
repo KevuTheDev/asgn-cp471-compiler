@@ -48,7 +48,7 @@ Lexical::Lexical(const std::string& filename)
 
 	bool loop = true;
 	while (loop) {
-		loop = this->nextToken();
+		loop = this->getNextToken();
 	}
 }
 
@@ -76,7 +76,7 @@ void Lexical::readFileToBuffer(std::ifstream& is, char* buf) {
 	return;
 }
 
-bool Lexical::nextToken()
+bool Lexical::getNextToken()
 {
 	// peek into the buffer
 	// if whitespace then ignore
@@ -243,7 +243,7 @@ bool Lexical::nextToken()
 
 		if (this->peek != '.') {
 			this->sTable.append("INT", std::to_string(v), this->line);
-			std::cout << v << std::endl;
+			//std::cout << v << std::endl;
 			return true;
 		}
 
@@ -260,7 +260,7 @@ bool Lexical::nextToken()
 		}
 		
 		this->sTable.append("FLOAT", std::to_string(x), this->line);
-		std::cout << x << std::endl;
+		//std::cout << x << std::endl;
 		return true;
 	}
 
@@ -272,13 +272,13 @@ bool Lexical::nextToken()
 		} while (std::isalnum(this->peek));
 
 		this->sTable.append("IDENTI", b, this->line);
-		std::cout << b << std::endl;
+		//std::cout << b << std::endl;
 		return true;
 	}
 
 	std::string s(&this->peek);
 	this->sTable.append("OTHER", s, this->line);
-	std::cout << this->peek << std::endl;
+	//std::cout << this->peek << std::endl;
 	this->peek = ' ';
 	return true;
 }
