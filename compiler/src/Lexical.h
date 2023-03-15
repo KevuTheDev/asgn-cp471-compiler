@@ -4,12 +4,12 @@
 #include <string>
 #include <thread>
 #include "globals.h"
+#include "SymbolTable.h"
 
 
 class Lexical
 {
 public:
-	Lexical();
 	Lexical(const std::string &filename);
 
 private:
@@ -24,6 +24,9 @@ private:
 	uint16_t buffer2_count;
 
 	bool buffer_switch; // buffer1 - true, buffer2 - false
+
+
+	SymbolTable sTable;
 	
 
 	// Utilities

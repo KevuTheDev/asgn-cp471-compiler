@@ -1,29 +1,10 @@
 #include "Lexical.h"
 
 
-Lexical::Lexical()
-{
-	std::string filename = "res/Test1.cp";
+void readFileToBuffers(std::ifstream& is, char* buf) {
+	is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
 
-	if (!this->checkExtension(filename)) {
-		return;
-	}
-
-	this->is = std::ifstream(filename);
-	if (!this->is.is_open()) {
-		std::cout << "Failed to open file" << std::endl;
-		return;
-	}
-
-	this->peek = ' ';
-	this->line = 0;
-
-	bool loop = true;
-
-	while (loop) {
-		loop = this->nextToken();
-	}
-
+	return;
 }
 
 Lexical::Lexical(const std::string& filename)
@@ -47,19 +28,20 @@ Lexical::Lexical(const std::string& filename)
 	this->buffer1 = new char[compiler::COMPILER_BUFFER_SIZE];
 	this->buffer2 = new char[compiler::COMPILER_BUFFER_SIZE];
 
+	this->sTable = SymbolTable();
+
+
 
 	memset(this->buffer1, 0, compiler::COMPILER_BUFFER_SIZE);
 	memset(this->buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
 
 
-	auto helper1 = std::thread(&Lexical::readFileToBuffer, std::ref(is), std::ref(this->buffer1));
+	auto helper1 = std::thread(readFileToBuffers, std::ref(is), this->buffer1);
 	helper1.join();
-	memset(buffer1, 0, compiler::COMPILER_BUFFER_SIZE);
 
 
-	auto helper2 = std::thread(&Lexical::readFileToBuffer, std::ref(is), std::ref(this->buffer2));
+	auto helper2 = std::thread(readFileToBuffers, std::ref(is), this->buffer2);
 	helper2.join();
-	memset(buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
 
 
 
@@ -102,9 +84,7 @@ bool Lexical::nextToken()
 	// otherwise, move on
 	for (;; this->readChar()) {
 
-		if (this->is.eof()) {
-			// checks for eof, and exits scan
-			// TODO: 
+		if (this->peek == NULL) {
 			std::cout << "END OF FILE" << std::endl;
 			return false;
 		}
@@ -120,111 +100,134 @@ bool Lexical::nextToken()
 	// special characters involved, go here
 	switch (this->peek) {
 	case ';':
-		std::cout << ";" << std::endl;
+		this->sTable.append("SEMICO", ";", this->line);
+		//std::cout << ";" << std::endl;
 		this->peek = ' ';
 		return true;
 	case '(':
-		std::cout << "(" << std::endl;
+		this->sTable.append("LPAREN", "(", this->line);
+		//std::cout << "(" << std::endl;
 		this->peek = ' ';
 		return true;
 	case ')':
-		std::cout << ")" << std::endl;
+		this->sTable.append("RPAREN", ")", this->line);
+		//std::cout << ")" << std::endl;
 		this->peek = ' ';
 		return true;
 	case '&':
 		if (readChar('&')) {
-			std::cout << "&&" << std::endl;
+			this->sTable.append("EXPRES", "&&", this->line);
+			//std::cout << "&&" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 		else {
-			std::cout << "&" << std::endl;
+			this->sTable.append("OPERAT", "&", this->line);
+			//std::cout << "&" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 	case '|':
 		if (readChar('|')) {
-			std::cout << "||" << std::endl;
+			this->sTable.append("EXPRES", "||", this->line);
+			//std::cout << "||" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 		else {
-			std::cout << "|" << std::endl;
+			this->sTable.append("OPERAT", "|", this->line);
+			//std::cout << "|" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 	case '=':
 		if (readChar('=')) {
-			std::cout << "==" << std::endl;
+			this->sTable.append("EXPRES", "==", this->line);
+			//std::cout << "==" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 		else {
-			std::cout << "=" << std::endl;
+			this->sTable.append("OPERAT", "=", this->line);
+			//std::cout << "=" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 	case '<':
 		if (readChar('=')) {
-			std::cout << "<=" << std::endl;
+			this->sTable.append("LETHAN", "<=", this->line);
+			//std::cout << "<=" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 		else if (readChar('>')) {
-			std::cout << "<>" << std::endl;
+			this->sTable.append("NEQUAL", "<>", this->line);
+			//std::cout << "<>" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 		else {
-			std::cout << "<" << std::endl;
+			this->sTable.append("LLTHAN", "<", this->line);
+			//std::cout << "<" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 	case '>':
 		if (readChar('=')) {
-			std::cout << ">=" << std::endl;
+			this->sTable.append("GETHAN", ">=", this->line);
+			//std::cout << ">=" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 		else {
-			std::cout << ">" << std::endl;
+			this->sTable.append("GGTHAN", ">", this->line);
+			//std::cout << ">" << std::endl;
 			this->peek = ' ';
 			return true;
 		}
 	case ',':
-		std::cout << "," << std::endl;
+		this->sTable.append("GRAMMR", ",", this->line);
+		//std::cout << "," << std::endl;
 		this->peek = ' ';
 		return true;
 	case '+':
-		std::cout << "+" << std::endl;
+		this->sTable.append("ARITHM", "+", this->line);
+		//std::cout << "+" << std::endl;
 		this->peek = ' ';
 		return true;
 	case '*':
-		std::cout << "*" << std::endl;
+		this->sTable.append("ARITHM", "*", this->line);
+		//std::cout << "*" << std::endl;
 		this->peek = ' ';
 		return true;
 	case '-':
-		std::cout << "-" << std::endl;
+		this->sTable.append("ARITHM", "-", this->line);
+		//std::cout << "-" << std::endl;
 		this->peek = ' ';
 		return true;
 	case '%':
-		std::cout << "%" << std::endl;
+		this->sTable.append("ARITHM", "%", this->line);
+		//std::cout << "%" << std::endl;
 		this->peek = ' ';
 		return true;
 	case '/':
-		std::cout << "/" << std::endl;
+		this->sTable.append("ARITHM", "/", this->line);
+		//std::cout << "/" << std::endl;
 		this->peek = ' ';
 		return true;
 	case '[':
-		std::cout << "[" << std::endl;
+		this->sTable.append("GRAMMR", "[", this->line);
+		//std::cout << "[" << std::endl;
 		this->peek = ' ';
 		return true;
 	case ']':
-		std::cout << "]" << std::endl;
+		this->sTable.append("GRAMMR", "]", this->line);
+		//std::cout << "]" << std::endl;
 		this->peek = ' ';
 		return true;
 	case '.':
-		std::cout << "." << std::endl;
+		this->sTable.append("GRAMMR", ".", this->line);
+		//std::cout << "." << std::endl;
 		this->peek = ' ';
 		return true;
 
@@ -232,12 +235,14 @@ bool Lexical::nextToken()
 
 	if (std::isdigit(this->peek)) {
 		int v = 0;
+		//std::cout << "std:::::" << this->peek << " " << static_cast<int>(this->peek) <<std::endl;
 		do {
-			v = 10 * v + (int)this->peek;
+			v = 10 * v + int(this->peek - '0');
 			this->readChar();
 		} while (std::isdigit(this->peek));
 
 		if (this->peek != '.') {
+			this->sTable.append("INT", std::to_string(v), this->line);
 			std::cout << v << std::endl;
 			return true;
 		}
@@ -250,10 +255,11 @@ bool Lexical::nextToken()
 			if (!std::isdigit(this->peek)) {
 				break;
 			}
-			x = x + (int)this->peek / 10;
+			x = x + float(this->peek - '0') / 10;
 			d = d * 10;
 		}
-
+		
+		this->sTable.append("FLOAT", std::to_string(x), this->line);
 		std::cout << x << std::endl;
 		return true;
 	}
@@ -265,10 +271,13 @@ bool Lexical::nextToken()
 			this->readChar();
 		} while (std::isalnum(this->peek));
 
+		this->sTable.append("IDENTI", b, this->line);
 		std::cout << b << std::endl;
 		return true;
 	}
 
+	std::string s(&this->peek);
+	this->sTable.append("OTHER", s, this->line);
 	std::cout << this->peek << std::endl;
 	this->peek = ' ';
 	return true;
@@ -276,18 +285,55 @@ bool Lexical::nextToken()
 
 void Lexical::readChar()
 {
+	//std::cout << "::" <<this->buffer_switch << "::   Char: " << this->peek << "    " << std::endl;
 	if (this->buffer_switch) {
+		this->peek = this->buffer1[this->buffer1_count];
+		this->buffer1_count += 1;
+		
+		if (this->buffer1_count == compiler::COMPILER_BUFFER_SIZE) {
+			// Get the next char from buffer 2
+			this->peek = this->buffer2[this->buffer2_count];
+			this->buffer2_count += 1;
 
+			this->buffer_switch = !this->buffer_switch;
+
+			memset(buffer1, 0, compiler::COMPILER_BUFFER_SIZE);
+			auto helper1 = std::thread(readFileToBuffers, std::ref(is), std::ref(this->buffer1));
+			helper1.join();
+
+			this->buffer1_count = 0;
+		}
 	}
 	else {
+		this->peek = this->buffer2[this->buffer2_count];
+		this->buffer2_count += 1;
 
+		if (this->buffer2_count == compiler::COMPILER_BUFFER_SIZE) {
+			// Get the next char from buffer 1
+			this->peek = this->buffer1[this->buffer1_count];
+			this->buffer1_count += 1;
+
+			this->buffer_switch = !this->buffer_switch;
+
+			memset(buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
+			auto helper1 = std::thread(readFileToBuffers, std::ref(is), std::ref(this->buffer2));
+			helper1.join();
+
+			this->buffer2_count = 0;
+		}
 	}
-	this->is.get(this->peek);
 }
 
 bool Lexical::readChar(char c)
 {
 	this->readChar();
+	if (this->buffer_switch) {
+		this->buffer1_count -= 1;
+	}
+	else {
+		this->buffer2_count -= 1;
+	}
+
 	if (this->peek != c)
 		return false;
 

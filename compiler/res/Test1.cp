@@ -5,4 +5,3 @@ while(i<10) do
 od;
 print(x);.
 
-ss
