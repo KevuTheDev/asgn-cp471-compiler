@@ -8,7 +8,7 @@ class SymbolTable
 public:
 	SymbolTable();
 
-	bool append(std::string token, std::string lexeme, int linenumber);
+	bool append(std::string token, std::string lexeme, int lineNumber);
 
 private:
 	// token, lexeme, line number

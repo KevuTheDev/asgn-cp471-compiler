@@ -4,9 +4,9 @@ SymbolTable::SymbolTable()
 {
 }
 
-bool SymbolTable::append(std::string token, std::string lexeme, int linenumber)
+bool SymbolTable::append(std::string token, std::string lexeme, int lineNumber)
 {
-    std::tuple<std::string, std::string, int> yy = { token, lexeme, linenumber };
+    std::tuple<std::string, std::string, int> yy = { token, lexeme, lineNumber };
 
     _table.push_back(yy);
 
