@@ -58,7 +58,7 @@ Lexical::Lexical(const std::string& filename)
 		loop = this->getNextToken();
 	}
 
-
+	this->_tokenFileBuffer.finish();
 	this->_is.close();
 }
 
@@ -103,6 +103,26 @@ void Lexical::sanitizeFileName(const std::string& filename)
 	}
 }
 
+void Lexical::appendToTokenFileBuffer(const char* token)
+{
+	this->_tokenFileBuffer.append(token);
+}
+
+void Lexical::appendToTokenFileBuffer(const std::string& token)
+{
+	this->_tokenFileBuffer.append(token);
+}
+
+void Lexical::appendToTokenFileBuffer(int token)
+{
+	this->_tokenFileBuffer.append(std::to_string(token));
+}
+
+void Lexical::appendToTokenFileBuffer(double token)
+{
+	this->_tokenFileBuffer.append(std::to_string(token));
+}
+
 void Lexical::appendToSymbolTable(std::string token, std::string lexeme, int lineNumber)
 {
 	this->_symbolTable.append(token, lexeme, lineNumber);
@@ -133,28 +153,33 @@ bool Lexical::getNextToken()
 	switch (this->_peek) {
 	case ';':
 		appendToSymbolTable("SEMICO", ";", this->_lineNumber);
+		appendToTokenFileBuffer(";");
 		//std::cout << ";" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '(':
 		appendToSymbolTable("LPAREN", "(", this->_lineNumber);
+		appendToTokenFileBuffer("(");
 		//std::cout << "(" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case ')':
 		appendToSymbolTable("RPAREN", ")", this->_lineNumber);
+		appendToTokenFileBuffer(")");
 		//std::cout << ")" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '&':
 		if (readNextChar('&')) {
 			appendToSymbolTable("EXPRES", "&&", this->_lineNumber);
+			appendToTokenFileBuffer("&&");
 			//std::cout << "&&" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
 			appendToSymbolTable("OPERAT", "&", this->_lineNumber);
+			appendToTokenFileBuffer("&");
 			//std::cout << "&" << std::endl;
 			this->_peek = ' ';
 			return true;
@@ -162,12 +187,14 @@ bool Lexical::getNextToken()
 	case '|':
 		if (readNextChar('|')) {
 			appendToSymbolTable("EXPRES", "||", this->_lineNumber);
+			appendToTokenFileBuffer("||");
 			//std::cout << "||" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
 			appendToSymbolTable("OPERAT", "|", this->_lineNumber);
+			appendToTokenFileBuffer("|");
 			//std::cout << "|" << std::endl;
 			this->_peek = ' ';
 			return true;
@@ -175,12 +202,14 @@ bool Lexical::getNextToken()
 	case '=':
 		if (readNextChar('=')) {
 			appendToSymbolTable("EXPRES", "==", this->_lineNumber);
+			appendToTokenFileBuffer("==");
 			//std::cout << "==" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
 			appendToSymbolTable("OPERAT", "=", this->_lineNumber);
+			appendToTokenFileBuffer("=");
 			//std::cout << "=" << std::endl;
 			this->_peek = ' ';
 			return true;
@@ -188,18 +217,21 @@ bool Lexical::getNextToken()
 	case '<':
 		if (readNextChar('=')) {
 			appendToSymbolTable("LETHAN", "<=", this->_lineNumber);
+			appendToTokenFileBuffer("<=");
 			//std::cout << "<=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else if (readNextChar('>')) {
 			appendToSymbolTable("NEQUAL", "<>", this->_lineNumber);
+			appendToTokenFileBuffer("<>");
 			//std::cout << "<>" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
 			appendToSymbolTable("LLTHAN", "<", this->_lineNumber);
+			appendToTokenFileBuffer("<");
 			//std::cout << "<" << std::endl;
 			this->_peek = ' ';
 			return true;
@@ -207,58 +239,69 @@ bool Lexical::getNextToken()
 	case '>':
 		if (readNextChar('=')) {
 			appendToSymbolTable("GETHAN", ">=", this->_lineNumber);
+			appendToTokenFileBuffer(">=");
 			//std::cout << ">=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
 			appendToSymbolTable("GGTHAN", ">", this->_lineNumber);
+			appendToTokenFileBuffer(">");
 			//std::cout << ">" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case ',':
 		appendToSymbolTable("GRAMMR", ",", this->_lineNumber);
+		appendToTokenFileBuffer(",");
 		//std::cout << "," << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '+':
 		appendToSymbolTable("ARITHM", "+", this->_lineNumber);
+		appendToTokenFileBuffer("+");
 		//std::cout << "+" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '*':
 		appendToSymbolTable("ARITHM", "*", this->_lineNumber);
+		appendToTokenFileBuffer("*");
 		//std::cout << "*" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '-':
 		appendToSymbolTable("ARITHM", "-", this->_lineNumber);
+		appendToTokenFileBuffer("-");
 		//std::cout << "-" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '%':
 		appendToSymbolTable("ARITHM", "%", this->_lineNumber);
+		appendToTokenFileBuffer("%");
 		//std::cout << "%" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '/':
 		appendToSymbolTable("ARITHM", "/", this->_lineNumber);
+		appendToTokenFileBuffer("/");
 		//std::cout << "/" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '[':
 		appendToSymbolTable("GRAMMR", "[", this->_lineNumber);
+		appendToTokenFileBuffer("[");
 		//std::cout << "[" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case ']':
 		appendToSymbolTable("GRAMMR", "]", this->_lineNumber);
+		appendToTokenFileBuffer("]");
 		//std::cout << "]" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '.':
 		appendToSymbolTable("GRAMMR", ".", this->_lineNumber);
+		appendToTokenFileBuffer(".");
 		//std::cout << "." << std::endl;
 		this->_peek = ' ';
 		return true;
@@ -275,6 +318,7 @@ bool Lexical::getNextToken()
 
 		if (this->_peek != '.') {
 			appendToSymbolTable("INT", std::to_string(v), this->_lineNumber);
+			appendToTokenFileBuffer(v);
 			//std::cout << v << std::endl;
 			return true;
 		}
@@ -292,6 +336,7 @@ bool Lexical::getNextToken()
 		}
 		
 		appendToSymbolTable("FLOAT", std::to_string(x), this->_lineNumber);
+		appendToTokenFileBuffer(x);
 		//std::cout << x << std::endl;
 		return true;
 	}
@@ -304,12 +349,14 @@ bool Lexical::getNextToken()
 		} while (std::isalnum(this->_peek));
 
 		appendToSymbolTable("IDENTI", b, this->_lineNumber);
+		appendToTokenFileBuffer(b);
 		//std::cout << b << std::endl;
 		return true;
 	}
 
 	std::string s(&this->_peek);
 	appendToSymbolTable("OTHER", s, this->_lineNumber);
+	appendToTokenFileBuffer(s);
 	//std::cout << this->_peek << std::endl;
 	this->_peek = ' ';
 	return true;

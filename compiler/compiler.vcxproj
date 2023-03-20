@@ -41,6 +41,7 @@
     <None Include="res\Test7.cp" />
     <None Include="res\Test8.cp" />
     <None Include="res\Test9.cp" />
+    <None Include="Test0.cpt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

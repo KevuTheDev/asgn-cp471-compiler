@@ -41,6 +41,10 @@ private:
 
 	//		-> Token File Buffer Related
 	void sanitizeFileName(const std::string& filepath);
+	void appendToTokenFileBuffer(const char* token);
+	void appendToTokenFileBuffer(const std::string& token);
+	void appendToTokenFileBuffer(int token);
+	void appendToTokenFileBuffer(double token);
 
 	//		-> Symbol Table Related
 	void appendToSymbolTable(std::string token, std::string lexeme, int lineNumber);

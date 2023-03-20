@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Output">
+      <UniqueIdentifier>{0b990755-c5f9-42f6-9772-22936d07f8d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\compiler.cpp">
@@ -72,6 +75,9 @@
     </None>
     <None Include="res\Test0.cp">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Test0.cpt">
+      <Filter>Resource Files\Output</Filter>
     </None>
   </ItemGroup>
 </Project>

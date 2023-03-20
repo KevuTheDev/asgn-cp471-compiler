@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <thread>
 #include "globals.h"
 
 class TokenFileBuffer
@@ -12,6 +13,7 @@ public:
 
 	void append(const std::string& value);
 	void append(const char* value);
+	void finish();
 
 
 private:
@@ -24,5 +26,6 @@ private:
 
 	// Utilities
 	bool checkExtension(const std::string& filepath);
+
 };
 
