@@ -79,5 +79,32 @@
     <None Include="Test0.cpt">
       <Filter>Resource Files\Output</Filter>
     </None>
+    <None Include="Test1.cpt">
+      <Filter>Resource Files\Output</Filter>
+    </None>
+    <None Include="Test2.cpt">
+      <Filter>Resource Files\Output</Filter>
+    </None>
+    <None Include="Test3.cpt">
+      <Filter>Resource Files\Output</Filter>
+    </None>
+    <None Include="Test4.cpt">
+      <Filter>Resource Files\Output</Filter>
+    </None>
+    <None Include="Test5.cpt">
+      <Filter>Resource Files\Output</Filter>
+    </None>
+    <None Include="Test6.cpt">
+      <Filter>Resource Files\Output</Filter>
+    </None>
+    <None Include="Test7.cpt">
+      <Filter>Resource Files\Output</Filter>
+    </None>
+    <None Include="Test8.cpt">
+      <Filter>Resource Files\Output</Filter>
+    </None>
+    <None Include="Test9.cpt">
+      <Filter>Resource Files\Output</Filter>
+    </None>
   </ItemGroup>
 </Project>

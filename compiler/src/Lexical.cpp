@@ -356,7 +356,7 @@ bool Lexical::getNextToken()
 
 	std::string s(&this->_peek);
 	appendToSymbolTable("OTHER", s, this->_lineNumber);
-	appendToTokenFileBuffer(s);
+	appendToTokenFileBuffer("ERROR: " + s);
 	//std::cout << this->_peek << std::endl;
 	this->_peek = ' ';
 	return true;
