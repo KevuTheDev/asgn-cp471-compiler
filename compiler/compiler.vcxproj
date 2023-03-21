@@ -22,11 +22,13 @@
     <ClCompile Include="src\compiler.cpp" />
     <ClCompile Include="src\Lexical.cpp" />
     <ClCompile Include="src\SymbolTable.cpp" />
+    <ClCompile Include="src\TokenFileBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\Lexical.h" />
     <ClInclude Include="src\SymbolTable.h" />
+    <ClInclude Include="src\TokenFileBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Test0.cp" />
@@ -39,6 +41,16 @@
     <None Include="res\Test7.cp" />
     <None Include="res\Test8.cp" />
     <None Include="res\Test9.cp" />
+    <None Include="Test0.cpt" />
+    <None Include="Test1.cpt" />
+    <None Include="Test2.cpt" />
+    <None Include="Test3.cpt" />
+    <None Include="Test4.cpt" />
+    <None Include="Test5.cpt" />
+    <None Include="Test6.cpt" />
+    <None Include="Test7.cpt" />
+    <None Include="Test8.cpt" />
+    <None Include="Test9.cpt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
