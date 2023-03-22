@@ -5,11 +5,11 @@
 #include <thread>
 #include "globals.h"
 
-class TokenFileBuffer
+class FileBuffer
 {
 public:
-	TokenFileBuffer();
-	TokenFileBuffer(const std::string &filename);
+	FileBuffer();
+	FileBuffer(const std::string &filename);
 
 	void append(const std::string& value);
 	void append(const char* value);

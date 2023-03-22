@@ -1,15 +1,15 @@
-#include "TokenFileBuffer.h"
+#include "FileBuffer.h"
 
 void writeToFile(std::ofstream& os, std::string buffer)
 {
 	os << buffer;
 }
 
-TokenFileBuffer::TokenFileBuffer()
+FileBuffer::FileBuffer()
 {
 }
 
-TokenFileBuffer::TokenFileBuffer(const std::string& filename)
+FileBuffer::FileBuffer(const std::string& filename)
 {
 	if (!this->checkExtension(filename)) {
 		return;
@@ -25,7 +25,7 @@ TokenFileBuffer::TokenFileBuffer(const std::string& filename)
 
 }
 
-void TokenFileBuffer::append(const std::string& value)
+void FileBuffer::append(const std::string& value)
 {
 	this->_buffer += value + "\n";
 
@@ -42,13 +42,13 @@ void TokenFileBuffer::append(const std::string& value)
 	//}
 }
 
-void TokenFileBuffer::append(const char* value)
+void FileBuffer::append(const char* value)
 {
 	std::string s(value);
 	this->append(s);
 }
 
-bool TokenFileBuffer::checkExtension(const std::string& filepath)
+bool FileBuffer::checkExtension(const std::string& filepath)
 {
 
 	if (filepath.length() < compiler::COMPILER_FILE_EXTENSION_TOKEN_LEN + 1) {
@@ -67,7 +67,7 @@ bool TokenFileBuffer::checkExtension(const std::string& filepath)
 	return true;
 }
 
-void TokenFileBuffer::finish()
+void FileBuffer::finish()
 {
 	this->_os << this->_buffer;
 	this->_os.close();
