@@ -33,7 +33,7 @@ Lexical::Lexical(const std::string& filename)
 
 	std::cout << this->_fileName + compiler::COMPILER_FILE_EXTENSION_TOKEN << std::endl;
 
-	this->_tokenFileBuffer = TokenFileBuffer(this->_fileName + compiler::COMPILER_FILE_EXTENSION_TOKEN);
+	this->_tokenFileBuffer = FileBuffer(this->_fileName + compiler::COMPILER_FILE_EXTENSION_TOKEN);
 
 	this->_symbolTable = SymbolTable();
 

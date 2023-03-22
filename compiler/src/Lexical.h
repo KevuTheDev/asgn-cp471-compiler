@@ -5,7 +5,7 @@
 #include <thread>
 #include "globals.h"
 #include "SymbolTable.h"
-#include "TokenFileBuffer.h"
+#include "FileBuffer.h"
 
 
 class Lexical
@@ -17,7 +17,7 @@ private:
 	std::ifstream _is;
 	std::string _fileName;
 
-	TokenFileBuffer _tokenFileBuffer;
+	FileBuffer _tokenFileBuffer;
 	SymbolTable _symbolTable;
 
 
