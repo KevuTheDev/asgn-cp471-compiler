@@ -3,9 +3,11 @@
 #include <fstream>
 #include <string>
 #include <thread>
+
 #include "globals.h"
 #include "SymbolTable.h"
-#include "FileBuffer.h"
+#include "LogFileBuffer.h"
+#include "TokenFileBuffer.h"
 
 
 class Lexical
@@ -17,13 +19,15 @@ private:
 	std::ifstream _is;
 	std::string _fileName;
 
-	FileBuffer _tokenFileBuffer;
+	LogFileBuffer _logFileBuffer;
+	TokenFileBuffer _tokenFileBuffer;
 	SymbolTable _symbolTable;
 
 
 
 	char _peek;
 	uint32_t _lineNumber;
+	uint32_t _charNumber;
 
 	char* _doubleBuffer1;
 	char* _doubleBuffer2;
@@ -45,6 +49,9 @@ private:
 	void appendToTokenFileBuffer(const std::string& token);
 	void appendToTokenFileBuffer(int token);
 	void appendToTokenFileBuffer(double token);
+
+	//		-> Log File Buffer Related
+	void appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar);
 
 	//		-> Symbol Table Related
 	void appendToSymbolTable(std::string token, std::string lexeme, int lineNumber);

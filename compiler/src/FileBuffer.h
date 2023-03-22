@@ -22,10 +22,10 @@ private:
 
 
 	std::string _buffer = ""; // buffer size 2048
-	uint16_t _bufferSize = 2048;
+	uint16_t _bufferSizeLimit = 2048;
 
 	// Utilities
-	bool checkExtension(const std::string& filepath);
+	virtual bool checkExtension(const std::string& filepath);
 
 };
 

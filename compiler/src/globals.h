@@ -15,4 +15,19 @@ namespace compiler
 
     const uint16_t COMPILER_BUFFER_SIZE = 2048;
     const uint16_t COMPILER_BUFFER_SIZE_NULL = COMPILER_BUFFER_SIZE - 1;
+
+
+
+    inline void readFileToBuffers(std::ifstream& is, char* buf)
+    {
+        is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
+
+        return;
+    }
+
+
+    inline void writeToFile(std::ofstream& os, std::string buffer)
+    {
+        os << buffer;
+    }
 }
