@@ -24,7 +24,7 @@ private:
 	SymbolTable _symbolTable;
 
 
-
+		
 	char _peek;
 	uint32_t _lineNumber;
 	uint32_t _charNumber;

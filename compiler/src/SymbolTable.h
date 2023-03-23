@@ -3,6 +3,12 @@
 #include <tuple>
 #include <vector>
 
+struct SymbolRow {
+	std::string token;
+	std::string lexeme;
+	int lineNumber;
+};
+
 class SymbolTable
 {
 public:
@@ -12,6 +18,6 @@ public:
 
 private:
 	// token, lexeme, line number
-	std::vector < std::tuple<std::string, std::string, int>> _table;
+	std::vector < SymbolRow> _table;
 };
 
