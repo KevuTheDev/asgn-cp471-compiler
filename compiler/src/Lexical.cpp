@@ -57,6 +57,9 @@ Lexical::Lexical(const std::string& filename)
 	this->_tokenFileBuffer.finish();
 	this->_logFileBuffer.finish();
 	this->_is.close();
+
+
+	this->_symbolTable.printTable();
 }
 
 bool Lexical::checkExtension(const std::string& filepath)

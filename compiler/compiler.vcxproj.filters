@@ -30,6 +30,15 @@
     <ClCompile Include="src\TokenFileBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LogFileBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FileBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Lexical.h">
@@ -42,6 +51,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\TokenFileBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LogFileBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FileBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -79,9 +94,6 @@
     <None Include="Test0.cpt">
       <Filter>Resource Files\Output</Filter>
     </None>
-    <None Include="Test1.cpt">
-      <Filter>Resource Files\Output</Filter>
-    </None>
     <None Include="Test2.cpt">
       <Filter>Resource Files\Output</Filter>
     </None>
@@ -106,5 +118,8 @@
     <None Include="Test9.cpt">
       <Filter>Resource Files\Output</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Test0.log" />
   </ItemGroup>
 </Project>

@@ -47,7 +47,6 @@
     <None Include="res\Test8.cp" />
     <None Include="res\Test9.cp" />
     <None Include="Test0.cpt" />
-    <None Include="Test1.cpt" />
     <None Include="Test2.cpt" />
     <None Include="Test3.cpt" />
     <None Include="Test4.cpt" />
@@ -56,6 +55,9 @@
     <None Include="Test7.cpt" />
     <None Include="Test8.cpt" />
     <None Include="Test9.cpt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Test0.log" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -1,6 +1,7 @@
 #pragma once
+#include <iostream>
+#include <cstdio>
 #include <string>
-#include <tuple>
 #include <vector>
 
 struct SymbolRow {
@@ -9,15 +10,25 @@ struct SymbolRow {
 	int lineNumber;
 };
 
+struct RowSize {
+	int limit;
+	int length;
+};
+
 class SymbolTable
 {
 public:
 	SymbolTable();
 
 	bool append(std::string token, std::string lexeme, int lineNumber);
+	void printTable();
 
 private:
 	// token, lexeme, line number
+	RowSize _tableToken;
+	RowSize _tableLexeme;
+	RowSize _tableLineNum;
+
 	std::vector < SymbolRow> _table;
 };
 
