@@ -1,5 +1,14 @@
 #include "SymbolTable.h"
 
+std::string repeatChar(char ch, int num) {
+    if (num == 0) { // base case: when num is 0, return an empty string
+        return "";
+    }
+    else { // recursive case: add the character to the output string and call the function recursively with num-1
+        return ch + repeatChar(ch, num - 1);
+    }
+}
+
 SymbolTable::SymbolTable()
 {
     this->_tableToken = { 16, 5 };
@@ -20,38 +29,53 @@ void SymbolTable::printTable()
     int attributeNumber = 3; // Number of attribute placment
     int attributePadding = 1; // size of padding between word and vertical line
     int tableVerticalLines = attributeNumber + 1; // number of vertical lines 
-
-    int tableHead = attributeNumber * attributePadding * 2 + tableVerticalLines;
-    tableHead += this->_tableToken.limit + this->_tableLexeme.limit +
+    int tableHeadSize = attributeNumber * attributePadding * 2 + tableVerticalLines;
+    tableHeadSize += this->_tableToken.limit + this->_tableLexeme.limit +
         this->_tableLineNum.limit;
 
-    char symbol = '=';
-
-    std::string output = "";
-
-
-    // Print Table Head
-    for (auto i = 0; i < tableHead; i++) {
-        output += symbol;
-    }
+    char headSymbol = '=';
+    std::string tableHead = repeatChar(headSymbol, tableHeadSize);
+    std::string padding = repeatChar(' ', attributePadding);
+    
     
 
 
-    std::cout << output << std::endl;
+    // print table head
+    std::cout << tableHead << std::endl;
 
     printf("|%sTOKEN%s|%sLEXEME%s|%sLINE%s|\n", 
-        std::string(attributePadding, ' ').c_str(),
+        padding.c_str(),
         std::string(this->_tableToken.limit - this->_tableToken.length
             + attributePadding, ' ').c_str(),
-        std::string(attributePadding, ' ').c_str(),
+        padding.c_str(),
         std::string(this->_tableLexeme.limit - this->_tableLexeme.length
             + attributePadding, ' ').c_str(),
-        std::string(attributePadding, ' ').c_str(),
+        padding.c_str(),
         std::string(this->_tableLineNum.limit - this->_tableLineNum.length 
             + attributePadding, ' ').c_str());
 
-    std::cout << output << std::endl;
+    std::cout << tableHead << std::endl;
 
+
+    for (auto i : this->_table) {
+        printf("|%s%s%s|%s%s%s|%s%d%s|\n",
+            padding.c_str(),
+            i.token.c_str(),
+            std::string(this->_tableToken.limit - i.token.length() 
+                + attributePadding, ' ').c_str(),
+            padding.c_str(),
+            i.lexeme.c_str(),
+            std::string(this->_tableLexeme.limit - i.lexeme.length() 
+                + attributePadding, ' ').c_str(),
+            padding.c_str(),
+            i.lineNumber,
+            std::string(this->_tableLineNum.length - std::to_string(i.lineNumber).length() 
+                + attributePadding, ' ').c_str()
+            );
+    }
+
+
+    std::cout << tableHead << std::endl;
 
 
 

@@ -22,6 +22,20 @@ namespace compiler
         LEXEME,
         LINE
     };
+
+    enum TOKEN {
+        SEMICOLON = ';',
+        LPAREN = '(',
+        RPAREN = ')',
+        AMPERS = '&',
+
+
+
+        COMPARISON,
+        IDENTIFIER,
+        NUMBER,
+
+    };
     
 
 

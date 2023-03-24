@@ -17,6 +17,8 @@ int main(int argc, char* argv[])
     //Lexical lex08 = Lexical("res/Test8.cp");
     //Lexical lex09 = Lexical("res/Test9.cp");
 
+    // std::cout << compiler::TOKEN::SEMICOLON << std::endl;
+
 
     return 0;
 }
