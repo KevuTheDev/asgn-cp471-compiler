@@ -11,8 +11,8 @@ std::string repeatChar(char ch, int num) {
 
 SymbolTable::SymbolTable()
 {
-    this->_tableToken = { 16, 5 };
-    this->_tableLexeme = { 16, 6 };
+    this->_tableToken = { 12, 5 };
+    this->_tableLexeme = { 20, 6 };
     this->_tableLineNum = { 4, 4 };
 }
 
@@ -26,6 +26,7 @@ bool SymbolTable::append(std::string token, std::string lexeme, int lineNumber)
 
 void SymbolTable::printTable()
 {
+
     int attributeNumber = 3; // Number of attribute placment
     int attributePadding = 1; // size of padding between word and vertical line
     int tableVerticalLines = attributeNumber + 1; // number of vertical lines 
@@ -59,19 +60,53 @@ void SymbolTable::printTable()
 
     for (auto i : this->_table) {
         printf("|%s%s%s|%s%s%s|%s%d%s|\n",
-            padding.c_str(),
-            i.token.c_str(),
-            std::string(this->_tableToken.limit - i.token.length() 
-                + attributePadding, ' ').c_str(),
-            padding.c_str(),
-            i.lexeme.c_str(),
-            std::string(this->_tableLexeme.limit - i.lexeme.length() 
-                + attributePadding, ' ').c_str(),
-            padding.c_str(),
-            i.lineNumber,
-            std::string(this->_tableLineNum.length - std::to_string(i.lineNumber).length() 
-                + attributePadding, ' ').c_str()
-            );
+        padding.c_str(),
+        i.token.substr(0, this->_tableToken.limit).c_str(),
+        std::string(this->_tableToken.limit - i.token.length()
+            + attributePadding, ' ').c_str(),
+        padding.c_str(),
+        i.lexeme.substr(0, this->_tableLexeme.limit).c_str(),
+        std::string(this->_tableLexeme.limit - i.lexeme.length()
+            + attributePadding, ' ').c_str(),
+        padding.c_str(),
+        i.lineNumber,
+        std::string(this->_tableLineNum.length - std::to_string(i.lineNumber).length()
+            + attributePadding, ' ').c_str()
+    );
+
+
+        //while (iToken.length() > 0 || iLexeme.length() > 0) {
+
+        //    printf("|%s%s%s|%s%s%s|%s%d%s|\n",
+        //        padding.c_str(),
+        //        iToken.substr(0, this->_tableToken.limit).c_str(),
+        //        std::string(this->_tableToken.limit - iToken.length()
+        //            + attributePadding, ' ').c_str(),
+        //        padding.c_str(),
+        //        iLexeme.substr(0, this->_tableLexeme.limit).c_str(),
+        //        std::string(this->_tableLexeme.limit - iLexeme.length()
+        //            + attributePadding, ' ').c_str(),
+        //        padding.c_str(),
+        //        i.lineNumber,
+        //        std::string(this->_tableLineNum.length - std::to_string(i.lineNumber).length()
+        //            + attributePadding, ' ').c_str()
+        //    );
+
+        //    if (iToken.length() > this->_tableToken.limit) {
+        //        iToken = iToken.substr(this->_tableToken.limit);
+        //    }
+        //    else {
+        //        iToken = "";
+        //    }
+
+        //    if (iLexeme.length() > this->_tableLexeme.limit) {
+        //        iLexeme = iLexeme.substr(this->_tableLexeme.limit);
+        //    }
+        //    else {
+
+        //        iLexeme= "";
+        //    }
+        //}
     }
 
 

@@ -1,8 +1,11 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <cstdio>
 #include <string>
 #include <vector>
+
+#include "FileBuffer.h"
 
 struct SymbolRow {
 	std::string token;
