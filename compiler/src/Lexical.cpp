@@ -23,30 +23,30 @@ Lexical::Lexical(const std::string& filename)
 	this->_doubleBuffer1 = new char[compiler::COMPILER_BUFFER_SIZE];
 	this->_doubleBuffer2 = new char[compiler::COMPILER_BUFFER_SIZE];
 
-	// std::cout << this->_fileName + compiler::COMPILER_FILE_EXTENSION_TOKEN << std::endl;
-	// std::cout << this->_fileName + compiler::COMPILER_FILE_EXTENSION_LOG << std::endl;
 
 	this->_tokenFileBuffer = TokenFileBuffer(this->_fileName + 
 		compiler::COMPILER_FILE_EXTENSION_TOKEN);
 	this->_logFileBuffer = LogFileBuffer(this->_fileName + 
 		compiler::COMPILER_FILE_EXTENSION_LOG);
-	this->_symbolTable = SymbolTable();
-
 
 	memset(this->_doubleBuffer1, 0, compiler::COMPILER_BUFFER_SIZE);
 	memset(this->_doubleBuffer2, 0, compiler::COMPILER_BUFFER_SIZE);
+}
 
+void Lexical::linkSymbolTable(const SymbolTable& st)
+{
+	this->_symbolTable = st;
+}
 
-	auto helper1 = std::thread(compiler::readFileToBuffers, 
+void Lexical::run()
+{
+	auto helper1 = std::thread(compiler::readFileToBuffers,
 		std::ref(this->_is), this->_doubleBuffer1);
 	helper1.join();
 
-
-	auto helper2 = std::thread(compiler::readFileToBuffers, 
+	auto helper2 = std::thread(compiler::readFileToBuffers,
 		std::ref(this->_is), this->_doubleBuffer2);
 	helper2.join();
-
-
 
 
 	bool loop = true;

@@ -15,6 +15,10 @@ class Lexical
 public:
 	Lexical(const std::string &filename);
 
+	void linkSymbolTable(const SymbolTable& st);
+
+	void run();
+
 private:
 	std::ifstream _is;
 	std::string _fileName;

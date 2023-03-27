@@ -3,6 +3,7 @@
 #include <string>
 #include "globals.h"
 #include "Lexical.h"
+#include "SymbolTable.h"
 
 int main(int argc, char* argv[]) 
 {
@@ -16,6 +17,15 @@ int main(int argc, char* argv[])
     //Lexical lex07 = Lexical("res/Test7.cp");
     //Lexical lex08 = Lexical("res/Test8.cp");
     //Lexical lex09 = Lexical("res/Test9.cp");
+
+    SymbolTable st = SymbolTable();
+
+    lex03.linkSymbolTable(st);
+    lex03.run();
+
+
+
+
 
     // std::cout << compiler::TOKEN::SEMICOLON << std::endl;
 
