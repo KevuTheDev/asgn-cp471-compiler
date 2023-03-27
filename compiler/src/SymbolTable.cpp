@@ -73,8 +73,6 @@ void SymbolTable::printTable()
         std::string(this->_tableLineNum.length - std::to_string(i.lineNumber).length()
             + attributePadding, ' ').c_str()
     );
-
-
         //while (iToken.length() > 0 || iLexeme.length() > 0) {
 
         //    printf("|%s%s%s|%s%s%s|%s%d%s|\n",
@@ -109,9 +107,7 @@ void SymbolTable::printTable()
         //}
     }
 
-
     std::cout << tableHead << std::endl;
-
 
 
     /*
@@ -123,5 +119,68 @@ void SymbolTable::printTable()
     | ...              | ...              | ...  |
     ==============================================
     
+    */
+}
+
+void SymbolTable::printTable(TokenFileBuffer &tfb)
+{
+    int attributeNumber = 3; // Number of attribute placment
+    int attributePadding = 1; // size of padding between word and vertical line
+    int tableVerticalLines = attributeNumber + 1; // number of vertical lines 
+    int tableHeadSize = attributeNumber * attributePadding * 2 + tableVerticalLines;
+    tableHeadSize += this->_tableToken.limit + this->_tableLexeme.limit +
+        this->_tableLineNum.limit;
+
+    char headSymbol = '=';
+    std::string tableHead = repeatChar(headSymbol, tableHeadSize);
+    std::string padding = repeatChar(' ', attributePadding);
+
+
+    // print table head
+    std::cout << tableHead << std::endl;
+
+    printf("|%sTOKEN%s|%sLEXEME%s|%sLINE%s|\n",
+        padding.c_str(),
+        std::string(this->_tableToken.limit - this->_tableToken.length
+            + attributePadding, ' ').c_str(),
+        padding.c_str(),
+        std::string(this->_tableLexeme.limit - this->_tableLexeme.length
+            + attributePadding, ' ').c_str(),
+        padding.c_str(),
+        std::string(this->_tableLineNum.limit - this->_tableLineNum.length
+            + attributePadding, ' ').c_str());
+
+    std::cout << tableHead << std::endl;
+
+
+    for (auto i : this->_table) {
+        printf("|%s%s%s|%s%s%s|%s%d%s|\n",
+            padding.c_str(),
+            i.token.substr(0, this->_tableToken.limit).c_str(),
+            std::string(this->_tableToken.limit - i.token.length()
+                + attributePadding, ' ').c_str(),
+            padding.c_str(),
+            i.lexeme.substr(0, this->_tableLexeme.limit).c_str(),
+            std::string(this->_tableLexeme.limit - i.lexeme.length()
+                + attributePadding, ' ').c_str(),
+            padding.c_str(),
+            i.lineNumber,
+            std::string(this->_tableLineNum.length - std::to_string(i.lineNumber).length()
+                + attributePadding, ' ').c_str()
+        );
+    }
+
+    std::cout << tableHead << std::endl;
+
+
+    /*
+    ==============================================
+    | TOKEN            | LEXEME           | LINE |
+    |------------------|------------------|------|
+    | IDENTIFIER       | i                | 10   |
+    | OPERATOR         | &&               | 13   |
+    | ...              | ...              | ...  |
+    ==============================================
+
     */
 }

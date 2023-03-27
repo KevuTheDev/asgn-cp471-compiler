@@ -60,11 +60,11 @@ void Lexical::run()
 
 
 	this->_symbolTable.printTable();
+	this->_symbolTable.printTable(this->_tokenFileBuffer);
 }
 
 bool Lexical::checkExtension(const std::string& filepath)
 {
-
 	if (filepath.length() < compiler::COMPILER_FILE_EXTENSION_MAIN_LEN + 1) {
 		std::cout << "Invalid file string specified: length size" << std::endl;
 		return false;
