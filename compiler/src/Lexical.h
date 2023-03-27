@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <string>
 #include <thread>
 
@@ -15,19 +16,12 @@ class Lexical
 public:
 	Lexical(const std::string &filename);
 
-	void linkSymbolTable(const SymbolTable& st);
 
 	void run();
 
 private:
 	std::ifstream _is;
 	std::string _fileName;
-
-	LogFileBuffer _logFileBuffer;
-	TokenFileBuffer _tokenFileBuffer;
-	SymbolTable _symbolTable;
-
-
 		
 	char _peek;
 	uint32_t _lineNumber;

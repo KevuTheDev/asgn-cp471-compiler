@@ -1,5 +1,9 @@
 #include "Lexical.h"
 
+extern std::unique_ptr<SymbolTable> SYMBOL_TABLE;
+extern std::unique_ptr<LogFileBuffer> LOG_FILE_BUFFER;
+extern std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
+
 Lexical::Lexical(const std::string& filename) 
 {
 	if (!this->checkExtension(filename)) {
@@ -23,19 +27,8 @@ Lexical::Lexical(const std::string& filename)
 	this->_doubleBuffer1 = new char[compiler::COMPILER_BUFFER_SIZE];
 	this->_doubleBuffer2 = new char[compiler::COMPILER_BUFFER_SIZE];
 
-
-	this->_tokenFileBuffer = TokenFileBuffer(this->_fileName + 
-		compiler::COMPILER_FILE_EXTENSION_TOKEN);
-	this->_logFileBuffer = LogFileBuffer(this->_fileName + 
-		compiler::COMPILER_FILE_EXTENSION_LOG);
-
 	memset(this->_doubleBuffer1, 0, compiler::COMPILER_BUFFER_SIZE);
 	memset(this->_doubleBuffer2, 0, compiler::COMPILER_BUFFER_SIZE);
-}
-
-void Lexical::linkSymbolTable(const SymbolTable& st)
-{
-	this->_symbolTable = st;
 }
 
 void Lexical::run()
@@ -54,13 +47,12 @@ void Lexical::run()
 		loop = this->getNextToken();
 	}
 
-	this->_tokenFileBuffer.finish();
-	this->_logFileBuffer.finish();
+	::TOKEN_FILE_BUFFER->finish();
+	::LOG_FILE_BUFFER->finish();
 	this->_is.close();
 
 
-	this->_symbolTable.printTable();
-	this->_symbolTable.printTable(this->_tokenFileBuffer);
+	::SYMBOL_TABLE->printTable();
 }
 
 bool Lexical::checkExtension(const std::string& filepath)
@@ -104,32 +96,32 @@ void Lexical::sanitizeFileName(const std::string& filename)
 
 void Lexical::appendToTokenFileBuffer(const char* token)
 {
-	this->_tokenFileBuffer.append(token);
+	::TOKEN_FILE_BUFFER->append(token);
 }
 
 void Lexical::appendToTokenFileBuffer(const std::string& token)
 {
-	this->_tokenFileBuffer.append(token);
+	::TOKEN_FILE_BUFFER->append(token);
 }
 
 void Lexical::appendToTokenFileBuffer(int token)
 {
-	this->_tokenFileBuffer.append(std::to_string(token));
+	::TOKEN_FILE_BUFFER->append(std::to_string(token));
 }
 
 void Lexical::appendToTokenFileBuffer(double token)
 {
-	this->_tokenFileBuffer.append(std::to_string(token));
+	::TOKEN_FILE_BUFFER->append(std::to_string(token));
 }
 
 void Lexical::appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar)
 {
-	this->_logFileBuffer.errorChar(linenumber, rownumber, errorchar);
+	::LOG_FILE_BUFFER->errorChar(linenumber, rownumber, errorchar);
 }
 
 void Lexical::appendToSymbolTable(std::string token, std::string lexeme, int lineNumber)
 {
-	this->_symbolTable.append(token, lexeme, lineNumber);
+	::SYMBOL_TABLE->append(token, lexeme, lineNumber);
 }
 
 bool Lexical::getNextToken()

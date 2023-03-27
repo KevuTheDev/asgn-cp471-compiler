@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,6 @@ public:
 
 	bool append(std::string token, std::string lexeme, int lineNumber);
 	void printTable();
-	void printTable(TokenFileBuffer &tfb);
 
 private:
 	// token, lexeme, line number

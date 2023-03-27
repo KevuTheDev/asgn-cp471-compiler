@@ -1,5 +1,7 @@
 #include "SymbolTable.h"
 
+extern std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
+
 std::string repeatChar(char ch, int num) {
     if (num == 0) { // base case: when num is 0, return an empty string
         return "";
@@ -23,7 +25,7 @@ bool SymbolTable::append(std::string token, std::string lexeme, int lineNumber)
 
     return true;
 }
-
+/*
 void SymbolTable::printTable()
 {
 
@@ -110,19 +112,18 @@ void SymbolTable::printTable()
     std::cout << tableHead << std::endl;
 
 
-    /*
-    ==============================================
-    | TOKEN            | LEXEME           | LINE |
-    |------------------|------------------|------|
-    | IDENTIFIER       | i                | 10   |
-    | OPERATOR         | &&               | 13   |
-    | ...              | ...              | ...  |
-    ==============================================
     
-    */
+    //==============================================
+    //| TOKEN            | LEXEME           | LINE |
+    //|------------------|------------------|------|
+    //| IDENTIFIER       | i                | 10   |
+    //| OPERATOR         | &&               | 13   |
+    //| ...              | ...              | ...  |
+    //==============================================
 }
+*/
 
-void SymbolTable::printTable(TokenFileBuffer &tfb)
+void SymbolTable::printTable()
 {
     int attributeNumber = 3; // Number of attribute placment
     int attributePadding = 1; // size of padding between word and vertical line
