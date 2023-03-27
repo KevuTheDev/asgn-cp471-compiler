@@ -138,40 +138,46 @@ void SymbolTable::printTable()
 
 
     // print table head
-    std::cout << tableHead << std::endl;
-
-    printf("|%sTOKEN%s|%sLEXEME%s|%sLINE%s|\n",
-        padding.c_str(),
+    std::cout << "PRINT" << std::endl;
+    ::TOKEN_FILE_BUFFER->append(tableHead);
+    ::TOKEN_FILE_BUFFER->append("|" +
+        padding +
+        "TOKEN" +
         std::string(this->_tableToken.limit - this->_tableToken.length
-            + attributePadding, ' ').c_str(),
-        padding.c_str(),
+            + attributePadding, ' ') +
+        "|" +
+        padding +
+        "LEXEME" +
         std::string(this->_tableLexeme.limit - this->_tableLexeme.length
-            + attributePadding, ' ').c_str(),
-        padding.c_str(),
+            + attributePadding, ' ') +
+        "|" +
+        padding +
+        "LINE" +
         std::string(this->_tableLineNum.limit - this->_tableLineNum.length
-            + attributePadding, ' ').c_str());
+            + attributePadding, ' ')
+    );
 
-    std::cout << tableHead << std::endl;
+    ::TOKEN_FILE_BUFFER->append(tableHead);
+
 
 
     for (auto i : this->_table) {
-        printf("|%s%s%s|%s%s%s|%s%d%s|\n",
-            padding.c_str(),
-            i.token.substr(0, this->_tableToken.limit).c_str(),
+        ::TOKEN_FILE_BUFFER->append("|" + 
+            padding + 
+            i.token.substr(0, this->_tableToken.limit) + 
             std::string(this->_tableToken.limit - i.token.length()
-                + attributePadding, ' ').c_str(),
-            padding.c_str(),
-            i.lexeme.substr(0, this->_tableLexeme.limit).c_str(),
+                + attributePadding, ' ') +
+            padding + i.lexeme.substr(0, this->_tableLexeme.limit) +
             std::string(this->_tableLexeme.limit - i.lexeme.length()
-                + attributePadding, ' ').c_str(),
-            padding.c_str(),
-            i.lineNumber,
+                + attributePadding, ' ') +
+            padding + 
+            std::to_string(i.lineNumber) + 
             std::string(this->_tableLineNum.length - std::to_string(i.lineNumber).length()
-                + attributePadding, ' ').c_str()
+                + attributePadding, ' ')
         );
     }
 
-    std::cout << tableHead << std::endl;
+    ::TOKEN_FILE_BUFFER->append(tableHead);
 
 
     /*
