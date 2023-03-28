@@ -1,20 +1,43 @@
-// playground.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+﻿#include <iostream>
+#include <fstream>
+#include <locale>
+#include <string>
 
-#include <iostream>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+int main() {
+    std::locale::global(std::locale("en_US.UTF-8"));
+    std::ios_base::sync_with_stdio(false);
+    std::wcin.imbue(std::locale("en_US.UTF-8"));
+    std::wcout.imbue(std::locale("en_US.UTF-8"));
+
+    std::ifstream input_file("input_file.txt");
+    std::string line;
+    if (input_file.is_open()) {
+        while (std::getline(input_file, line)) {
+            std::cout << line << std::endl;
+        }
+        input_file.close();
+    }
+    else {
+        std::cout << "Unable to open input file." << std::endl;
+        return 1;
+    }
+
+    std::string substring = "ϵ";
+    std::size_t position = line.find(substring);
+    std::cout << position << std::endl;
+    std::cout << substring << std::endl;
+
+    std::ofstream output_file("output_file.txt");
+    if (output_file.is_open()) {
+        std::string utf8_string = line;
+        output_file << utf8_string << std::endl;
+        output_file.close();
+    }
+    else {
+        std::cout << "Unable to open output file." << std::endl;
+        return 1;
+    }
+
+    return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
