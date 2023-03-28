@@ -103,3 +103,14 @@ void SymbolTable::printTable()
 
     */
 }
+
+int SymbolTable::length()
+{
+    return this->_table.size();
+}
+
+std::string SymbolTable::getTokenAtIndex(int index)
+{
+    SymbolRow sr = this->_table.at(index);
+    return sr.token;
+}

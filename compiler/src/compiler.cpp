@@ -5,12 +5,15 @@
 
 #include "globals.h"
 #include "Lexical.h"
+#include "Syntax.h"
+
 #include "ReservedWords.h"
 #include "SymbolTable.h"
 #include "LogFileBuffer.h"
 #include "TokenFileBuffer.h"
 
 std::unique_ptr<Lexical> LEXICAL;
+std::unique_ptr<Syntax> SYNTAX;
 std::unique_ptr<ReservedWords> RESERVED_WORDS;
 std::unique_ptr<SymbolTable> SYMBOL_TABLE;
 std::unique_ptr<LogFileBuffer> LOG_FILE_BUFFER;
@@ -18,15 +21,15 @@ std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
 
 int main(int argc, char* argv[]) 
 {
-    std::string filename = "Test3";
+    std::string filename = "e1";
 
-
-
-    ::LEXICAL = std::make_unique<Lexical>("res/" + filename + compiler::COMPILER_FILE_EXTENSION_MAIN);
-    ::RESERVED_WORDS = std::make_unique<ReservedWords>();
-    ::SYMBOL_TABLE = std::make_unique<SymbolTable>();
     ::LOG_FILE_BUFFER = std::make_unique<LogFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
     ::TOKEN_FILE_BUFFER = std::make_unique<TokenFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
+
+    ::RESERVED_WORDS = std::make_unique<ReservedWords>();
+    ::SYMBOL_TABLE = std::make_unique<SymbolTable>();
+
+    ::LEXICAL = std::make_unique<Lexical>("res/" + filename + compiler::COMPILER_FILE_EXTENSION_MAIN);
 
 
     ::RESERVED_WORDS->addReservedWord("def");
@@ -46,13 +49,12 @@ int main(int argc, char* argv[])
     ::RESERVED_WORDS->addReservedWord("and");
     ::RESERVED_WORDS->addReservedWord("not");
 
-    //SymbolTable st = SymbolTable();
 
-    //lex03->linkSymbolTable(st);
     ::LEXICAL->run();
 
-    // std::cout << compiler::TOKEN::SEMICOLON << std::endl;
 
+    ::SYNTAX = std::make_unique<Syntax>();
+    ::SYNTAX->start();
 
 
 

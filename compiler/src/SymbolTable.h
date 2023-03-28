@@ -29,6 +29,9 @@ public:
 	bool append(std::string token, std::string lexeme, int lineNumber);
 	void printTable();
 
+	int length();
+	std::string getTokenAtIndex(int index);
+
 private:
 	// token, lexeme, line number
 	RowSize _tableToken;

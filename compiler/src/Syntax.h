@@ -1,6 +1,7 @@
 #pragma once
+#include <iostream>
 #include <memory>
-
+#include <string>
 
 #include "globals.h"
 #include "SymbolTable.h"
@@ -15,8 +16,17 @@ public:
 	void start();
 
 private:
+	std::string _peek;
+	int _position;
+	int _limit;
 
 
+	void matchToken(const std::string& token);
+	void getNextToken();
+
+	
+
+	// states
 
 	void E();
 	void E1();
@@ -25,5 +35,6 @@ private:
 	void T1();
 
 	void F();
+
 };
 

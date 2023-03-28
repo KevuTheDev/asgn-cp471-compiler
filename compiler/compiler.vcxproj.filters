@@ -130,6 +130,12 @@
     <None Include="Test9.cpt">
       <Filter>Resource Files\Output</Filter>
     </None>
+    <None Include="res\e1.cp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\grammar.cpg">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Test0.log" />

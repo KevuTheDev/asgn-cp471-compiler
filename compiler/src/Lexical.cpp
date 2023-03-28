@@ -273,7 +273,7 @@ bool Lexical::getNextToken()
 		} while (std::isdigit(this->_peek));
 
 		if (this->_peek != '.') {
-			appendToSymbolTable("INT", std::to_string(v), this->_lineNumber);
+			appendToSymbolTable("int", std::to_string(v), this->_lineNumber);
 			//std::cout << v << std::endl;
 			return true;
 		}
@@ -290,7 +290,7 @@ bool Lexical::getNextToken()
 			d = d * 10;
 		}
 		
-		appendToSymbolTable("DOUBLE", std::to_string(x), this->_lineNumber);
+		appendToSymbolTable("double", std::to_string(x), this->_lineNumber);
 		//std::cout << x << std::endl;
 		return true;
 	}
@@ -306,7 +306,7 @@ bool Lexical::getNextToken()
 			appendToSymbolTable(b, b, this->_lineNumber);
 		}
 		else {
-			appendToSymbolTable("ID", b, this->_lineNumber);
+			appendToSymbolTable("id", b, this->_lineNumber);
 		}
 
 		//std::cout << b << std::endl;
