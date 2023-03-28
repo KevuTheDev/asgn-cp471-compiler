@@ -24,6 +24,7 @@ class SymbolTable
 {
 public:
 	SymbolTable();
+	~SymbolTable();
 
 	bool append(std::string token, std::string lexeme, int lineNumber);
 	void printTable();
@@ -34,6 +35,6 @@ private:
 	RowSize _tableLexeme;
 	RowSize _tableLineNum;
 
-	std::vector < SymbolRow> _table;
+	std::vector <SymbolRow> _table;
 };
 

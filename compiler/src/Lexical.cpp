@@ -47,12 +47,11 @@ void Lexical::run()
 		loop = this->getNextToken();
 	}
 
-	::TOKEN_FILE_BUFFER->finish();
-	::LOG_FILE_BUFFER->finish();
-	this->_is.close();
-
-
 	::SYMBOL_TABLE->printTable();
+
+
+	::LOG_FILE_BUFFER->clearBuffer();
+	this->_is.close();
 }
 
 bool Lexical::checkExtension(const std::string& filepath)

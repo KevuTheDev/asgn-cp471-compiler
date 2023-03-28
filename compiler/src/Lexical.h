@@ -16,7 +16,6 @@ class Lexical
 public:
 	Lexical(const std::string &filename);
 
-
 	void run();
 
 private:
@@ -43,10 +42,6 @@ private:
 
 	//		-> Token File Buffer Related
 	void sanitizeFileName(const std::string& filepath);
-	void appendToTokenFileBuffer(const char* token);
-	void appendToTokenFileBuffer(const std::string& token);
-	void appendToTokenFileBuffer(int token);
-	void appendToTokenFileBuffer(double token);
 
 	//		-> Log File Buffer Related
 	void appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar);

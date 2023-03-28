@@ -1,10 +1,5 @@
 #include "FileBuffer.h"
 
-
-FileBuffer::FileBuffer()
-{
-}
-
 FileBuffer::FileBuffer(const std::string& filename)
 {
 	if (!this->checkExtension(filename)) {
@@ -18,11 +13,16 @@ FileBuffer::FileBuffer(const std::string& filename)
 		std::cout << "Failed to open file" << std::endl;
 		return;
 	}
+}
 
+FileBuffer::~FileBuffer()
+{
+	this->finish();
 }
 
 void FileBuffer::append(const std::string& value)
 {
+	std::cout << value << std::endl;
 	this->_buffer += value + "\n";
 	if (this->_buffer.length() >= this->_bufferSizeLimit) {
 		// write to the file
@@ -46,8 +46,20 @@ bool FileBuffer::checkExtension(const std::string& filepath)
 	return true;
 }
 
+void FileBuffer::clearBuffer()
+{
+	compiler::writeToFile(this->_os, this->_buffer);
+	this->_buffer = "";
+}
+
+void FileBuffer::close()
+{
+	this->_os.close();
+}
+
 void FileBuffer::finish()
 {
 	this->_os << this->_buffer;
+	this->_buffer = "";
 	this->_os.close();
 }

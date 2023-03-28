@@ -1,5 +1,10 @@
 #include "TokenFileBuffer.h"
 
+TokenFileBuffer::~TokenFileBuffer()
+{
+	this->finish();
+}
+
 bool TokenFileBuffer::checkExtension(const std::string& filepath)
 {
 	if (filepath.length() < compiler::COMPILER_FILE_EXTENSION_TOKEN_LEN + 1) {
@@ -16,3 +21,4 @@ bool TokenFileBuffer::checkExtension(const std::string& filepath)
 
 	return true;
 }
+

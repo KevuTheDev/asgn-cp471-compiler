@@ -1,5 +1,10 @@
 #include "LogFileBuffer.h"
 
+LogFileBuffer::~LogFileBuffer()
+{
+	this->finish();
+}
+
 bool LogFileBuffer::checkExtension(const std::string& filepath)
 {
 	if (filepath.length() < compiler::COMPILER_FILE_EXTENSION_LOG_LEN + 1) {

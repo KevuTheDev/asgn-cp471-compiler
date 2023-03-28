@@ -8,11 +8,14 @@
 class FileBuffer
 {
 public:
-	FileBuffer();
 	FileBuffer(const std::string &filename);
+	virtual ~FileBuffer();
 
 	void append(const std::string& value);
 	void append(const char* value);
+
+	void clearBuffer();
+	void close();
 	void finish();
 
 
