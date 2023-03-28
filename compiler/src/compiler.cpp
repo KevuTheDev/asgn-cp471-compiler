@@ -29,8 +29,22 @@ int main(int argc, char* argv[])
     ::TOKEN_FILE_BUFFER = std::make_unique<TokenFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
 
 
+    ::RESERVED_WORDS->addReservedWord("def");
+    ::RESERVED_WORDS->addReservedWord("fed");
+    ::RESERVED_WORDS->addReservedWord("int");
+    ::RESERVED_WORDS->addReservedWord("double");
     ::RESERVED_WORDS->addReservedWord("if");
-    ::RESERVED_WORDS->findReservedWord("if");
+    ::RESERVED_WORDS->addReservedWord("then");
+    ::RESERVED_WORDS->addReservedWord("else");
+    ::RESERVED_WORDS->addReservedWord("fi");
+    ::RESERVED_WORDS->addReservedWord("while");
+    ::RESERVED_WORDS->addReservedWord("do");
+    ::RESERVED_WORDS->addReservedWord("od");
+    ::RESERVED_WORDS->addReservedWord("print");
+    ::RESERVED_WORDS->addReservedWord("return");
+    ::RESERVED_WORDS->addReservedWord("or");
+    ::RESERVED_WORDS->addReservedWord("and");
+    ::RESERVED_WORDS->addReservedWord("not");
 
     //SymbolTable st = SymbolTable();
 

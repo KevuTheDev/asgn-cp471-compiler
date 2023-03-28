@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <string>
 
 namespace compiler
@@ -42,12 +43,16 @@ namespace compiler
 
     inline void readFileToBuffers(std::ifstream& is, char* buf)
     {
-        is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
-        return;
+        if (is.is_open()) {
+            is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
+            return;
+        }
     }
 
     inline void writeToFile(std::ofstream& os, std::string buffer)
     {
-        os << buffer;
+        if (os.is_open()) {
+            os << buffer;
+        }
     }
 }

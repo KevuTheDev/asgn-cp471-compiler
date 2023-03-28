@@ -1,5 +1,6 @@
 #include "Lexical.h"
 
+extern std::unique_ptr<ReservedWords> RESERVED_WORDS;
 extern std::unique_ptr<SymbolTable> SYMBOL_TABLE;
 extern std::unique_ptr<LogFileBuffer> LOG_FILE_BUFFER;
 extern std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
@@ -301,7 +302,13 @@ bool Lexical::getNextToken()
 			this->readNextChar();
 		} while (std::isalnum(this->_peek));
 
-		appendToSymbolTable("ID", b, this->_lineNumber);
+		if (::RESERVED_WORDS->findReservedWord(b)) {
+			appendToSymbolTable(b, b, this->_lineNumber);
+		}
+		else {
+			appendToSymbolTable("ID", b, this->_lineNumber);
+		}
+
 		//std::cout << b << std::endl;
 		return true;
 	}

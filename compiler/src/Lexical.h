@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "globals.h"
+#include "ReservedWords.h"
 #include "SymbolTable.h"
 #include "LogFileBuffer.h"
 #include "TokenFileBuffer.h"

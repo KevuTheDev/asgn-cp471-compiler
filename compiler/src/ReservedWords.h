@@ -9,7 +9,7 @@ public:
 	ReservedWords();
 	void addReservedWord(std::string word);
 
-	void findReservedWord(const std::string& word);
+	bool findReservedWord(const std::string& word);
 
 
 
