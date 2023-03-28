@@ -23,16 +23,20 @@
     <ClCompile Include="src\globals.cpp" />
     <ClCompile Include="src\Lexical.cpp" />
     <ClCompile Include="src\LogFileBuffer.cpp" />
+    <ClCompile Include="src\ReservedWords.cpp" />
     <ClCompile Include="src\SymbolTable.cpp" />
     <ClCompile Include="src\FileBuffer.cpp" />
+    <ClCompile Include="src\Syntax.cpp" />
     <ClCompile Include="src\TokenFileBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\Lexical.h" />
     <ClInclude Include="src\LogFileBuffer.h" />
+    <ClInclude Include="src\ReservedWords.h" />
     <ClInclude Include="src\SymbolTable.h" />
     <ClInclude Include="src\FileBuffer.h" />
+    <ClInclude Include="src\Syntax.h" />
     <ClInclude Include="src\TokenFileBuffer.h" />
   </ItemGroup>
   <ItemGroup>

@@ -130,133 +130,133 @@ bool Lexical::getNextToken()
 	// special characters involved, go here
 	switch (this->_peek) {
 	case ';':
-		appendToSymbolTable("SEMICO", ";", this->_lineNumber);
+		appendToSymbolTable(";", ";", this->_lineNumber);
 		//std::cout << ";" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '(':
-		appendToSymbolTable("LPAREN", "(", this->_lineNumber);
+		appendToSymbolTable("(", "(", this->_lineNumber);
 		//std::cout << "(" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case ')':
-		appendToSymbolTable("RPAREN", ")", this->_lineNumber);
+		appendToSymbolTable(")", ")", this->_lineNumber);
 		//std::cout << ")" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '&':
 		if (readNextChar('&')) {
-			appendToSymbolTable("EXPRES", "&&", this->_lineNumber);
+			appendToSymbolTable("&&", "&&", this->_lineNumber);
 			//std::cout << "&&" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("OPERAT", "&", this->_lineNumber);
+			appendToSymbolTable("&", "&", this->_lineNumber);
 			//std::cout << "&" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case '|':
 		if (readNextChar('|')) {
-			appendToSymbolTable("EXPRES", "||", this->_lineNumber);
+			appendToSymbolTable("||", "||", this->_lineNumber);
 			//std::cout << "||" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("OPERAT", "|", this->_lineNumber);
+			appendToSymbolTable("|", "|", this->_lineNumber);
 			//std::cout << "|" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case '=':
 		if (readNextChar('=')) {
-			appendToSymbolTable("EXPRES", "==", this->_lineNumber);
+			appendToSymbolTable("==", "==", this->_lineNumber);
 			//std::cout << "==" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("OPERAT", "=", this->_lineNumber);
+			appendToSymbolTable("=", "=", this->_lineNumber);
 			//std::cout << "=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case '<':
 		if (readNextChar('=')) {
-			appendToSymbolTable("LETHAN", "<=", this->_lineNumber);
+			appendToSymbolTable("<=", "<=", this->_lineNumber);
 			//std::cout << "<=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else if (readNextChar('>')) {
-			appendToSymbolTable("NEQUAL", "<>", this->_lineNumber);
+			appendToSymbolTable("<>", "<>", this->_lineNumber);
 			//std::cout << "<>" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("LLTHAN", "<", this->_lineNumber);
+			appendToSymbolTable("<", "<", this->_lineNumber);
 			//std::cout << "<" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case '>':
 		if (readNextChar('=')) {
-			appendToSymbolTable("GETHAN", ">=", this->_lineNumber);
+			appendToSymbolTable(">=", ">=", this->_lineNumber);
 			//std::cout << ">=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("GGTHAN", ">", this->_lineNumber);
+			appendToSymbolTable(">", ">", this->_lineNumber);
 			//std::cout << ">" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case ',':
-		appendToSymbolTable("GRAMMR", ",", this->_lineNumber);
+		appendToSymbolTable(",", ",", this->_lineNumber);
 		//std::cout << "," << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '+':
-		appendToSymbolTable("ARITHM", "+", this->_lineNumber);
+		appendToSymbolTable("+", "+", this->_lineNumber);
 		//std::cout << "+" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '*':
-		appendToSymbolTable("ARITHM", "*", this->_lineNumber);
+		appendToSymbolTable("*", "*", this->_lineNumber);
 		//std::cout << "*" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '-':
-		appendToSymbolTable("ARITHM", "-", this->_lineNumber);
+		appendToSymbolTable("-", "-", this->_lineNumber);
 		//std::cout << "-" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '%':
-		appendToSymbolTable("ARITHM", "%", this->_lineNumber);
+		appendToSymbolTable("%", "%", this->_lineNumber);
 		//std::cout << "%" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '/':
-		appendToSymbolTable("ARITHM", "/", this->_lineNumber);
+		appendToSymbolTable("/", "/", this->_lineNumber);
 		//std::cout << "/" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '[':
-		appendToSymbolTable("GRAMMR", "[", this->_lineNumber);
+		appendToSymbolTable("[", "[", this->_lineNumber);
 		//std::cout << "[" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case ']':
-		appendToSymbolTable("GRAMMR", "]", this->_lineNumber);
+		appendToSymbolTable("]", "]", this->_lineNumber);
 		//std::cout << "]" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '.':
-		appendToSymbolTable("GRAMMR", ".", this->_lineNumber);
+		appendToSymbolTable(".", ".", this->_lineNumber);
 		//std::cout << "." << std::endl;
 		this->_peek = ' ';
 		return true;
@@ -289,7 +289,7 @@ bool Lexical::getNextToken()
 			d = d * 10;
 		}
 		
-		appendToSymbolTable("FLOAT", std::to_string(x), this->_lineNumber);
+		appendToSymbolTable("DOUBLE", std::to_string(x), this->_lineNumber);
 		//std::cout << x << std::endl;
 		return true;
 	}
@@ -301,7 +301,7 @@ bool Lexical::getNextToken()
 			this->readNextChar();
 		} while (std::isalnum(this->_peek));
 
-		appendToSymbolTable("IDENTI", b, this->_lineNumber);
+		appendToSymbolTable("ID", b, this->_lineNumber);
 		//std::cout << b << std::endl;
 		return true;
 	}

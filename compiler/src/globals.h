@@ -36,9 +36,6 @@ namespace compiler
         NUMBER,
 
     };
-    
-
-
 
 
     // Function methods
