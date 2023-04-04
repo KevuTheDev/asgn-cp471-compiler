@@ -29,6 +29,8 @@ private:
 
 	std::string getPeek();
 
+	std::string readString = "";
+
 	
 
 	// states

@@ -370,17 +370,18 @@ void Lexical::readNextChar()
 bool Lexical::readNextChar(char c)
 {
 	this->readNextChar();
-	if (this->_doubleBufferSwitch) {
-		this->_doubleBufferCounter1 -= 1;
-		this->_charNumber -= 1;
-	}
-	else {
-		this->_doubleBufferCounter2 -= 1;
-		this->_charNumber -= 1;
-	}
 
-	if (this->_peek != c)
+	if (this->_peek != c) {
+		if (this->_doubleBufferSwitch) {
+			this->_doubleBufferCounter1 -= 1;
+			this->_charNumber -= 1;
+		}
+		else {
+			this->_doubleBufferCounter2 -= 1;
+			this->_charNumber -= 1;
+		}
 		return false;
+	}
 
 	this->_peek = ' ';
 	return true;

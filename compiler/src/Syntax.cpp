@@ -17,7 +17,7 @@ Syntax::Syntax()
 
 void Syntax::start()
 {
-	bool hmm = E();
+	bool hmm = NT_PROGRAM();
 
 	if (hmm) {
 		std::cout << "COMPLETE" << std::endl;
@@ -53,6 +53,7 @@ bool Syntax::matchTokenNew(const std::string& token)
 
 void Syntax::getNextToken()
 {
+	readString += " " + this->_peek;
 	this->_position += 1;
 
 	if (this->_position == this->_limit) {
@@ -75,195 +76,196 @@ bool Syntax::NT_PROGRAM()
 		|| getPeek() == "int" || getPeek() == "print"
 		|| getPeek() == "return" || getPeek() == "while"
 		|| getPeek() == "$") {
-		NT_FDECLS();
-		NT_DECLARATIONS();
-		NT_STATEMENTSEQ();
-		matchToken(".");
-		return true;
+		return NT_FDECLS() && NT_DECLARATIONS()
+			&& NT_STATEMENTSEQ() && matchTokenNew(".");
 	}
+
+	std::cout << "ERROR::PROGRAM" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_FDECLS()
 {
 	if (getPeek() == "def") {
-		NT_FDEC();
-		matchToken(";");
-		NT_FDECLS();
-		return true;
+		return NT_FDEC() && matchTokenNew(";")
+			&& NT_FDECLS();
 	}
 	else if (getPeek() == "ID" || getPeek() == "double"
 		|| getPeek() == "if" || getPeek() == "int" 
 		|| getPeek() == "print" || getPeek() == "return" 
 		|| getPeek() == "while") {
-
 		// EPSILON
+		return true;
 	}
+
+	std::cout << "ERROR::FDECLS" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_FDEC()
 {
 	if (getPeek() == "def") {
-		matchToken("def");
-		NT_TYPE();
-		NT_FNAME();
-		matchToken("(");
-		NT_PARAMS();
-		matchToken(")");
-		NT_DECLARATIONS();
-		NT_STATEMENTSEQ();
-		matchToken("fed");
-		return true;
+		return matchTokenNew("def") && NT_TYPE()
+			&& NT_FNAME() && matchTokenNew("(")
+			&& NT_PARAMS() && matchTokenNew(")")
+			&& NT_DECLARATIONS() && NT_STATEMENTSEQ()
+			&& matchTokenNew("fed");
 	}
+
+	std::cout << "ERROR::FDEC" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_PARAMS()
 {
 	if (getPeek() == "double" || getPeek() == "int") {
-		NT_TYPE();
-		NT_VAR();
-		NT_PARAMS_EXT();
-		return true;
+		return NT_TYPE() && NT_VAR() 
+			&& NT_PARAMS_EXT();
 	}
+
+	std::cout << "ERROR::PARAMS" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_PARAMS_EXT()
 {
 	if (getPeek() == ",") {
-		matchToken(",");
-		NT_PARAMS();
-		return true;
+		return matchTokenNew(",") && NT_PARAMS();
 	}
 	else if (getPeek() == ")") {
 		// EPSILON
+		return true;
 	}
+
+	std::cout << "ERROR::PARAMS_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_FNAME()
 {
 	if (getPeek() == "ID") {
-		matchToken("ID");
-		return true;
+		return matchTokenNew("ID");
 	}
+
+	std::cout << "ERROR::FNAME" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_DECLARATIONS()
 {
 	if (getPeek() == "double" || getPeek() == "int") {
-		NT_DECL();
-		matchToken(";");
-		NT_DECLARATIONS();
-		return true;
+		return NT_DECL() && matchTokenNew(";") 
+			&& NT_DECLARATIONS();
 	}
-	else if (getPeek() == "ID" || getPeek() == "id" 
-		|| getPeek() == "print" || getPeek() == "return"
+	else if (getPeek() == "ID" || getPeek() == "if"
+		|| getPeek() == "print" || getPeek() == "return" 
 		|| getPeek() == "while") {
 		// EPSILON
-
+		return true;
 	}
+
+	std::cout << "ERROR::DECLARATIONS" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_DECL()
 {
 	if (getPeek() == "double" || getPeek() == "int") {
-		NT_TYPE();
-		NT_VARLIST();
-		return true;
+		return NT_TYPE() && NT_VARLIST();
 	}
+
+	std::cout << "ERROR::DECL" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_TYPE()
 {
 	if (getPeek() == "double") {
-		matchToken("double");
-		return true;
+		return matchTokenNew("double");
 	}
 	else if (getPeek() == "int") {
-		matchToken("int");
-		return true;
+		return matchTokenNew("int");
 	}
+
+	std::cout << "ERROR::TYPE" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_VARLIST()
 {
 	if (getPeek() == "ID") {
-		NT_VAR();
-		NT_VARLIST_EXT();
-		return true;
+		return NT_VAR() && NT_VARLIST_EXT();
 	}
+
+	std::cout << "ERROR::VARLIST" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_VARLIST_EXT()
 {
 	if (getPeek() == ",") {
-		matchToken(",");
-		NT_VARLIST();
-		return true;
+		return matchTokenNew(",") && NT_VARLIST();
 	}
 	else if (getPeek() == ";") {
 		// EPSILON
+		return true;
 	}
+
+	std::cout << "ERROR::VARLIST_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_STATEMENT()
 {
 	if (getPeek() == "ID") {
-		NT_VAR();
-		matchToken("=");
-		NT_EXPR();
-		return true;
+		return NT_VAR() && matchTokenNew("=")
+			&& NT_EXPR();
 	}
 	else if (getPeek() == "if") {
-		matchToken("if");
-		NT_BEXPR();
-		matchToken("then");
-		NT_STATEMENTSEQ();
-		NT_STATEMENT_EXT();
-		return true;
+		return matchTokenNew("if") && NT_BEXPR()
+			&& matchTokenNew("then") && NT_STATEMENTSEQ()
+			&& NT_STATEMENT_EXT();
 	}
 	else if (getPeek() == "print") {
-		matchToken("print");
-		NT_EXPR();
-		return true;
+		return matchTokenNew("print") && NT_EXPR();
 	}
 	else if (getPeek() == "return") {
-		matchToken("return");
-		NT_EXPR();
-		return true;
+		return matchTokenNew("return") && NT_EXPR();
 	}
 	else if (getPeek() == "while") {
-		matchToken("while");
-		NT_BEXPR();
-		matchToken("do");
-		NT_STATEMENTSEQ();
-		matchToken("od");
-		return true;
+		return matchTokenNew("while") && NT_BEXPR()
+			&& matchTokenNew("do") && NT_STATEMENTSEQ()
+			&& matchTokenNew("od");
 	}
+
+	std::cout << "ERROR::STATEMENT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_STATEMENT_EXT()
 {
 	if (getPeek() == "else") {
-		matchToken("else");
-		NT_STATEMENTSEQ();
-		matchToken("fi");
-		return true;
+		return matchTokenNew("else") && NT_STATEMENTSEQ()
+			&& matchTokenNew("fi");
 	}
 	else if (getPeek() == "fi") {
-		matchToken("fi");
-		return true;
+		return matchTokenNew("fi");
 	}
+
+	std::cout << "ERROR::STATEMENT_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
@@ -272,25 +274,28 @@ bool Syntax::NT_STATEMENTSEQ()
 	if (getPeek() == "ID" || getPeek() == "if"
 		|| getPeek() == "print" || getPeek() == "return"
 		|| getPeek() == "while") {
-		NT_STATEMENT();
-		NT_STATEMENTSEQ_EXT();
-		return true;
+		return NT_STATEMENT() && NT_STATEMENTSEQ_EXT();
 	}
+
+	std::cout << "ERROR::STATEMENTSEQ" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_STATEMENTSEQ_EXT()
 {
 	if (getPeek() == ";") {
-		matchToken(";");
-		NT_STATEMENTSEQ();
-		return true;
+		return matchTokenNew(";") && NT_STATEMENTSEQ();
 	}
 	else if (getPeek() == "." || getPeek() == "else"
 		|| getPeek() == "fed" || getPeek() == "fi"
 		|| getPeek() == "fi" || getPeek() == "od") {
 		// EPISLON
+		return true;
 	}
+
+	std::cout << "ERROR::STATEMENTSEQ_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
@@ -298,26 +303,23 @@ bool Syntax::NT_EXPR()
 {
 	if (getPeek() == "(" || getPeek() == "DOUBLE"
 		|| getPeek() == "ID" || getPeek() == "INTEGER") {
-		NT_TERM();
-		NT_EXPR_EXT();
-		return true;
+		return NT_TERM() && NT_EXPR_EXT();
 	}
+
+	std::cout << "ERROR::EXPR" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_EXPR_EXT()
 {
 	if (getPeek() == "+") {
-		matchToken("+");
-		NT_TERM();
-		NT_EXPR_EXT();
-		return true;
+		return matchTokenNew("+") && NT_TERM()
+			&& NT_EXPR_EXT();
 	}
 	else if (getPeek() == "-") {
-		matchToken("-");
-		NT_TERM();
-		NT_EXPR_EXT();
-		return true;
+		return matchTokenNew("-") && NT_TERM()
+			&& NT_EXPR_EXT();
 	}
 	else if (getPeek() == ")" || getPeek() == "]"
 		|| getPeek() == "," || getPeek() == "."
@@ -327,7 +329,11 @@ bool Syntax::NT_EXPR_EXT()
 		|| getPeek() == "else" || getPeek() == "fed"
 		|| getPeek() == "fi" || getPeek() == "od") {
 		// EPSILON
+		return true;
 	}
+
+	std::cout << "ERROR::EXPR_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
@@ -335,35 +341,30 @@ bool Syntax::NT_TERM()
 {
 	if (getPeek() == "(" || getPeek() == "DOUBLE" 
 		|| getPeek() == "ID" || getPeek() == "INTEGER") {
-		NT_FACTOR();
-		NT_TERM_EXT();
-		return true;
+		return NT_FACTOR() && NT_TERM_EXT();
 	}
+
+	std::cout << "ERROR::TERM" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_TERM_EXT()
 {
 	if (getPeek() == "%") {
-		matchToken("%");
-		NT_FACTOR();
-		NT_TERM_EXT();
-		return true;
+		return matchTokenNew("%") && NT_FACTOR()
+			&& NT_TERM_EXT();
 	}
 	else if (getPeek() == "*") {
-		matchToken("*");
-		NT_FACTOR();
-		NT_TERM_EXT();
-		return true;
+		return matchTokenNew("*") && NT_FACTOR()
+			&& NT_TERM_EXT();
 	}
 	else if (getPeek() == "/") {
-		matchToken("/");
-		NT_FACTOR();
-		NT_TERM_EXT();
-		return true;
+		return matchTokenNew("/") && NT_FACTOR()
+			&& NT_TERM_EXT();
 	}
 	else if (getPeek() == ")" || getPeek() == "+"
-		|| getPeek() == "-" || getPeek() == "."
+		|| getPeek() == "-" || getPeek() == "," || getPeek() == "."
 		|| getPeek() == ";" || getPeek() == "<"
 		|| getPeek() == "<=" || getPeek() == "<>"
 		|| getPeek() == "==" || getPeek() == ">"
@@ -371,36 +372,36 @@ bool Syntax::NT_TERM_EXT()
 		|| getPeek() == "fed" || getPeek() == "fi"
 		|| getPeek() == "od") {
 		// EPSILON
+		return true;
 	}
+
+	std::cout << "ERROR::TERM_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_FACTOR()
 {
 	if (getPeek() == "(") {
-		matchToken("(");
-		NT_EXPR();
-		matchToken(")");
-		return true;
+		return matchTokenNew("(") && NT_EXPR() 
+			&& matchTokenNew(")");
 	}
 	else if (getPeek() == "DOUBLE" || getPeek() == "INTEGER") {
-		NT_NUMBER();
-		return true;
+		return NT_NUMBER();
 	}
 	else if (getPeek() == "ID") {
-		matchToken("ID");
-		NT_FACTOR_EXT();
-		return true;
+		return matchTokenNew("ID") && NT_FACTOR_EXT();
 	}
+
+	std::cout << "ERROR::FACTOR" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_FACTOR_EXT()
 {
 	if (getPeek() == "(") {
-		matchToken("(");
-		NT_EXPRSEQ();
-		return true;
+		return matchTokenNew("(") && NT_EXPRSEQ() && matchTokenNew(")");
 	}
 	else if (getPeek() == "%" || getPeek() == ")"
 		|| getPeek() == "[" || getPeek() == "*"
@@ -412,9 +413,11 @@ bool Syntax::NT_FACTOR_EXT()
 		|| getPeek() == ">" || getPeek() == ">="
 		|| getPeek() == "else" || getPeek() == "fed"
 		|| getPeek() == "fi" || getPeek() == "od") {
-		NT_VAR_EXT();
-		return true;
+		return NT_VAR_EXT();
 	}
+
+	std::cout << "ERROR::FACTOR_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
@@ -422,156 +425,163 @@ bool Syntax::NT_EXPRSEQ()
 {
 	if (getPeek() == "(" || getPeek() == "DOUBLE"
 		|| getPeek() == "ID" || getPeek() == "INTEGER") {
-		NT_EXPR();
-		NT_EXPRSEQ_EXT();
-		return true;
+		return NT_EXPR() && NT_EXPRSEQ_EXT();
 	}
+
+	std::cout << "ERROR::EXPRSEQ" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_EXPRSEQ_EXT()
 {
 	if (getPeek() == ",") {
-		matchToken(",");
-		NT_EXPRSEQ();
-		return true;
+		return matchTokenNew(",") && NT_EXPRSEQ();
 	}
 	else if (getPeek() == ")") {
 		// EPSILON
+		return true;
 	}
+
+	std::cout << "ERROR::EXPRSEQ_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_BEXPR()
 {
 	if (getPeek() == "(" || getPeek() == "not") {
-		NT_BTERM();
-		NT_BEXPR_EXT();
-		return true;
+		return NT_BTERM() && NT_BEXPR_EXT();
 	}
+
+	std::cout << "ERROR::BEXPR" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_BEXPR_EXT()
 {
 	if (getPeek() == "or") {
-		matchToken("or");
-		NT_BTERM();
-		NT_BEXPR_EXT();
-		return true;
+		return matchTokenNew("or") && NT_BTERM()
+			&& NT_BEXPR_EXT();
 	}
 	else if (getPeek() == ")" || getPeek() == "do"
 		|| getPeek() == "then") {
 		// EPSILON
+		return true;
 	}
+
+	std::cout << "ERROR::BEXPR_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_BTERM()
 {
 	if (getPeek() == "(" || getPeek() == "not") {
-		NT_BFACTOR();
-		NT_BTERM_EXT();
-		return true;
+		return NT_BFACTOR() && NT_BTERM_EXT();
 	}
+
+	std::cout << "ERROR::BTERM" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_BTERM_EXT()
 {
 	if (getPeek() == "and") {
-		matchToken("and");
-		NT_BFACTOR();
-		NT_BTERM_EXT();
-		return true;
+		return matchTokenNew("and") && NT_BFACTOR()
+			&&NT_BTERM_EXT();
 	}
 	else if (getPeek() == ")" || getPeek() == "do"
 		|| getPeek() == "or" || getPeek() == "then") {
 		// EPSILON
+		return true;
 	}
+
+	std::cout << "ERROR::BTERM_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_BFACTOR()
 {
 	if (getPeek() == "(") {
-		matchToken("(");
-		NT_BFACTOR_EXT();
-		matchToken(")");
-		return true;
+		return matchTokenNew("(") && NT_BFACTOR_EXT()
+			&& matchTokenNew(")");
 	}
 	else if (getPeek() == "not") {
-		matchToken("not");
-		NT_BFACTOR();
-		return true;
+		return matchTokenNew("not") && NT_BFACTOR();
 	}
+
+	std::cout << "ERROR::BFACTOR" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_BFACTOR_EXT()
 {
-	if (NT_BEXPR()) {
-		return true;
-	}
-	if (NT_EXPR()) {
-		return true;
-	}
-	if (getPeek() == "DOUBLE" || getPeek() == "ID"
+	if (getPeek() == "(") {
+		if (NT_BEXPR()) {
+			return true;
+		}
+
+		if (NT_EXPR()) {
+			return true;
+		}
+	}else if (getPeek() == "DOUBLE" || getPeek() == "ID"
 		|| getPeek() == "INTEGER") {
-		NT_EXPR();
-		NT_COMP();
-		NT_EXPR();
-		return true;
+		return NT_EXPR() && NT_COMP()
+			&& NT_EXPR();
 	}
+
+	std::cout << "ERROR::BFACTOR_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_COMP()
 {
 	if (getPeek() == "<") {
-		matchToken("<");
-		return true;
+		return matchTokenNew("<");
 	}
 	else if (getPeek() == "<=") {
-		matchToken("<=");
-		return true;
+		return matchTokenNew("<=");
 	}
 	else if (getPeek() == "<>") {
-		matchToken("<>");
-		return true;
+		return matchTokenNew("<>");
 	}
 	else if (getPeek() == "==") {
-		matchToken("==");
-		return true;
+		return matchTokenNew("==");
 	}
 	else if (getPeek() == ">") {
-		matchToken(">");
-		return true;
+		return matchTokenNew(">");
 
 	}else if (getPeek() == ">=") {
-		matchToken(">=");
-		return true;
+		return matchTokenNew(">=");
 	}
+
+	std::cout << "ERROR::COMP" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_VAR()
 {
 	if (getPeek() == "ID") {
-		matchToken("ID");
-		NT_VAR_EXT();
-		return true;
+		return matchTokenNew("ID") && NT_VAR_EXT();
 	}
+
+	std::cout << "ERROR::VAR" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_VAR_EXT()
 {
 	if (getPeek() == "[") {
-		matchToken("[");
-		NT_EXPR();
-		matchToken("]");
-		return true;
+		return matchTokenNew("[") && NT_EXPR()
+			&& matchTokenNew("]");
 	}
 	else if (getPeek() == "%" || getPeek() == ")"
 		|| getPeek() == "*" || getPeek() == "/"
@@ -584,18 +594,16 @@ bool Syntax::NT_VAR_EXT()
 		|| getPeek() == "else" || getPeek() == "fed"
 		|| getPeek() == "fi" || getPeek() == "od") {
 		// EPSILON
+		return true;
 	}
 
+	std::cout << "ERROR::VAR_EXT" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
 bool Syntax::NT_NUMBER()
 {
-	if (getPeek() != "DOUBLE" && getPeek() != "INTEGER") {
-		std::cout << "ERROR::NUMBER" << std::endl;
-		return false;
-	}
-
 	if (getPeek() == "DOUBLE") {
 		return matchTokenNew("DOUBLE");
 	}
@@ -603,7 +611,9 @@ bool Syntax::NT_NUMBER()
 		return matchTokenNew("INTEGER");
 	}
 
-	return true;
+	std::cout << "ERROR::NUMBER" << std::endl;
+	std::cout << getPeek() << " :: "<< readString << std::endl;
+	return false;
 }
 
 bool Syntax::E()
