@@ -18,6 +18,20 @@ namespace compiler
     const uint16_t COMPILER_BUFFER_SIZE = 2048;
     const uint16_t COMPILER_BUFFER_SIZE_NULL = COMPILER_BUFFER_SIZE - 1;
 
+    const std::string TK_END = "$";
+    const std::string TK_MODULU = "%";
+    const std::string TK_LSEMIC = "(";
+    const std::string TK_RSEMIC = ")";
+    const std::string TK_LBRACK = "[";
+    const std::string TK_RBRACK = "]";
+    const std::string TK_MULTIP = "*";
+    const std::string TK_DIVIDE = "/";
+    const std::string TK_ADDITI = "+";
+    const std::string TK_MINUS = "-";
+
+
+
+
     enum Symbol {
         TOKEN,
         LEXEME,
