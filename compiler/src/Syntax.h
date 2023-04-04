@@ -67,13 +67,13 @@ private:
 	bool NT_NUMBER();
 
 
-	void E();
-	void E1();
+	bool E();
+	bool E1();
 
-	void T();
-	void T1();
+	bool T();
+	bool T1();
 
-	void F();
+	bool F();
 
 };
 

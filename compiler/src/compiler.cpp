@@ -21,7 +21,7 @@ std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
 
 int main(int argc, char* argv[]) 
 {
-    std::string filename = "Test10";
+    std::string filename = "e1";
 
     ::LOG_FILE_BUFFER = std::make_unique<LogFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
     ::TOKEN_FILE_BUFFER = std::make_unique<TokenFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);

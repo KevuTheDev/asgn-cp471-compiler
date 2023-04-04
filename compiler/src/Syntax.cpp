@@ -19,7 +19,7 @@ Syntax::Syntax()
 
 void Syntax::start()
 {
-	bool hmm = NT_PROGRAM();
+	bool hmm = E();
 
 	if (hmm) {
 		std::cout << "COMPLETE" << std::endl;
@@ -594,22 +594,19 @@ bool Syntax::NT_NUMBER()
 	return false;
 }
 
-void Syntax::E()
+bool Syntax::E()
 {
-	if (this->_peek == "id") {
-		T();
-		E1();
-	}
-	else if (this->_peek == "(") {
+	if (getPeek() == "id" || getPeek() == "(") {
 		T();
 		E1();
 	}
 	else {
 		std::cout << "ERROR E" << std::endl;
 	}
+	return false;
 }
 
-void Syntax::E1()
+bool Syntax::E1()
 {
 	if (this->_peek == "+") {
 		matchToken("+");
@@ -622,9 +619,10 @@ void Syntax::E1()
 	else {
 		std::cout << "ERROR E1" << std::endl;
 	}
+	return false;
 }
 
-void Syntax::T()
+bool Syntax::T()
 {
 	if (this->_peek == "id") {
 		F();
@@ -637,9 +635,10 @@ void Syntax::T()
 	else {
 		std::cout << "ERROR T" << std::endl;
 	}
+	return false;
 }
 
-void Syntax::T1()
+bool Syntax::T1()
 {
 	if (this->_peek == "*") {
 		matchToken("*");
@@ -652,9 +651,10 @@ void Syntax::T1()
 	else {
 		std::cout << "ERROR T1" << std::endl;
 	}
+	return false;
 }
 
-void Syntax::F()
+bool Syntax::F()
 {
 	if (this->_peek == "id") {
 		matchToken("id");
@@ -667,4 +667,5 @@ void Syntax::F()
 	else {
 		std::cout << "ERROR F" << std::endl;
 	}
+	return false;
 }
