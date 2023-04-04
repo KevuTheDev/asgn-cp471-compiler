@@ -24,6 +24,7 @@ private:
 
 
 	void matchToken(const std::string& token);
+	bool matchTokenNew(const std::string& token);
 	void getNextToken();
 
 	std::string getPeek();
@@ -77,3 +78,13 @@ private:
 
 };
 
+
+/* Syntax Simple Grammar v1
+	void E();
+	void E1();
+
+	void T();
+	void T1();
+
+	void F();
+*/
