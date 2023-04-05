@@ -37,19 +37,21 @@ private:
 
 	bool NT_PROGRAM();
 	bool NT_FDECLS();
+	bool NT_FDECLS_EXT();
 	bool NT_FDEC();
 	bool NT_PARAMS();
 	bool NT_PARAMS_EXT();
 	bool NT_FNAME();
 	bool NT_DECLARATIONS();
+	bool NT_DECLARATIONS_EXT();
 	bool NT_DECL();
 	bool NT_TYPE();
 	bool NT_VARLIST();
 	bool NT_VARLIST_EXT();
+	bool NT_STATEMENT_SEQ();
+	bool NT_STATEMENT_SEQ_EXT();
 	bool NT_STATEMENT();
 	bool NT_STATEMENT_EXT();
-	bool NT_STATEMENTSEQ();
-	bool NT_STATEMENTSEQ_EXT();
 	bool NT_EXPR();
 	bool NT_EXPR_EXT();
 	bool NT_TERM();
