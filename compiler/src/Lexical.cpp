@@ -1,12 +1,9 @@
 #include "Lexical.h"
 
-
-void readFileToBuffers(std::ifstream& is, char* buf)
-{
-	is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
-
-	return;
-}
+extern std::unique_ptr<ReservedWords> RESERVED_WORDS;
+extern std::unique_ptr<SymbolTable> SYMBOL_TABLE;
+extern std::unique_ptr<LogFileBuffer> LOG_FILE_BUFFER;
+extern std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
 
 Lexical::Lexical(const std::string& filename) 
 {
@@ -22,35 +19,28 @@ Lexical::Lexical(const std::string& filename)
 	sanitizeFileName(filename);
 
 
-
+	// Initialize attributes
 	this->_peek = ' ';
-	this->_lineNumber = 0;
+	this->_lineNumber = 1;
 	this->_doubleBufferSwitch = true;
 	this->_doubleBufferCounter1 = 0;
 	this->_doubleBufferCounter2 = 0;
 	this->_doubleBuffer1 = new char[compiler::COMPILER_BUFFER_SIZE];
 	this->_doubleBuffer2 = new char[compiler::COMPILER_BUFFER_SIZE];
 
-	std::cout << this->_fileName + compiler::COMPILER_FILE_EXTENSION_TOKEN << std::endl;
-
-	this->_tokenFileBuffer = FileBuffer(this->_fileName + compiler::COMPILER_FILE_EXTENSION_TOKEN);
-
-	this->_symbolTable = SymbolTable();
-
-
-
 	memset(this->_doubleBuffer1, 0, compiler::COMPILER_BUFFER_SIZE);
 	memset(this->_doubleBuffer2, 0, compiler::COMPILER_BUFFER_SIZE);
+}
 
-
-	auto helper1 = std::thread(readFileToBuffers, std::ref(this->_is), this->_doubleBuffer1);
+void Lexical::run()
+{
+	auto helper1 = std::thread(compiler::readFileToBuffers,
+		std::ref(this->_is), this->_doubleBuffer1);
 	helper1.join();
 
-
-	auto helper2 = std::thread(readFileToBuffers, std::ref(this->_is), this->_doubleBuffer2);
+	auto helper2 = std::thread(compiler::readFileToBuffers,
+		std::ref(this->_is), this->_doubleBuffer2);
 	helper2.join();
-
-
 
 
 	bool loop = true;
@@ -58,13 +48,15 @@ Lexical::Lexical(const std::string& filename)
 		loop = this->getNextToken();
 	}
 
-	this->_tokenFileBuffer.finish();
+	::SYMBOL_TABLE->printTable();
+
+
+	::LOG_FILE_BUFFER->clearBuffer();
 	this->_is.close();
 }
 
 bool Lexical::checkExtension(const std::string& filepath)
 {
-
 	if (filepath.length() < compiler::COMPILER_FILE_EXTENSION_MAIN_LEN + 1) {
 		std::cout << "Invalid file string specified: length size" << std::endl;
 		return false;
@@ -81,7 +73,8 @@ bool Lexical::checkExtension(const std::string& filepath)
 	return true;
 }
 
-void Lexical::readFileToBuffer(std::ifstream& is, char* buf) {
+void Lexical::readFileToBuffer(std::ifstream& is, char* buf)
+{
 	is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
 
 	return;
@@ -91,8 +84,6 @@ void Lexical::sanitizeFileName(const std::string& filename)
 {
 	// This assumes that the given filename is already valid
 	this->_fileName = filename.substr(0, filename.length() - compiler::COMPILER_FILE_EXTENSION_MAIN_LEN);
-
-
 	size_t char_pos = this->_fileName.find('/');
 
 	
@@ -103,29 +94,14 @@ void Lexical::sanitizeFileName(const std::string& filename)
 	}
 }
 
-void Lexical::appendToTokenFileBuffer(const char* token)
+void Lexical::appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar)
 {
-	this->_tokenFileBuffer.append(token);
-}
-
-void Lexical::appendToTokenFileBuffer(const std::string& token)
-{
-	this->_tokenFileBuffer.append(token);
-}
-
-void Lexical::appendToTokenFileBuffer(int token)
-{
-	this->_tokenFileBuffer.append(std::to_string(token));
-}
-
-void Lexical::appendToTokenFileBuffer(double token)
-{
-	this->_tokenFileBuffer.append(std::to_string(token));
+	::LOG_FILE_BUFFER->errorChar(linenumber, rownumber, errorchar);
 }
 
 void Lexical::appendToSymbolTable(std::string token, std::string lexeme, int lineNumber)
 {
-	this->_symbolTable.append(token, lexeme, lineNumber);
+	::SYMBOL_TABLE->append(token, lexeme, lineNumber);
 }
 
 bool Lexical::getNextToken()
@@ -144,7 +120,10 @@ bool Lexical::getNextToken()
 		if (this->_peek == ' ' || this->_peek == '\t')
 			continue;
 		else if (this->_peek == '\n')
+		{
+			this->_charNumber = 0;
 			this->_lineNumber += 1;
+		}
 		else
 			break;
 	}
@@ -152,156 +131,133 @@ bool Lexical::getNextToken()
 	// special characters involved, go here
 	switch (this->_peek) {
 	case ';':
-		appendToSymbolTable("SEMICO", ";", this->_lineNumber);
-		appendToTokenFileBuffer(";");
+		appendToSymbolTable(";", ";", this->_lineNumber);
 		//std::cout << ";" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '(':
-		appendToSymbolTable("LPAREN", "(", this->_lineNumber);
-		appendToTokenFileBuffer("(");
+		appendToSymbolTable("(", "(", this->_lineNumber);
 		//std::cout << "(" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case ')':
-		appendToSymbolTable("RPAREN", ")", this->_lineNumber);
-		appendToTokenFileBuffer(")");
+		appendToSymbolTable(")", ")", this->_lineNumber);
 		//std::cout << ")" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '&':
 		if (readNextChar('&')) {
-			appendToSymbolTable("EXPRES", "&&", this->_lineNumber);
-			appendToTokenFileBuffer("&&");
+			appendToSymbolTable("&&", "&&", this->_lineNumber);
 			//std::cout << "&&" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("OPERAT", "&", this->_lineNumber);
-			appendToTokenFileBuffer("&");
+			appendToSymbolTable("&", "&", this->_lineNumber);
 			//std::cout << "&" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case '|':
 		if (readNextChar('|')) {
-			appendToSymbolTable("EXPRES", "||", this->_lineNumber);
-			appendToTokenFileBuffer("||");
+			appendToSymbolTable("||", "||", this->_lineNumber);
 			//std::cout << "||" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("OPERAT", "|", this->_lineNumber);
-			appendToTokenFileBuffer("|");
+			appendToSymbolTable("|", "|", this->_lineNumber);
 			//std::cout << "|" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case '=':
 		if (readNextChar('=')) {
-			appendToSymbolTable("EXPRES", "==", this->_lineNumber);
-			appendToTokenFileBuffer("==");
+			appendToSymbolTable("==", "==", this->_lineNumber);
 			//std::cout << "==" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("OPERAT", "=", this->_lineNumber);
-			appendToTokenFileBuffer("=");
+			appendToSymbolTable("=", "=", this->_lineNumber);
 			//std::cout << "=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case '<':
 		if (readNextChar('=')) {
-			appendToSymbolTable("LETHAN", "<=", this->_lineNumber);
-			appendToTokenFileBuffer("<=");
+			appendToSymbolTable("<=", "<=", this->_lineNumber);
 			//std::cout << "<=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else if (readNextChar('>')) {
-			appendToSymbolTable("NEQUAL", "<>", this->_lineNumber);
-			appendToTokenFileBuffer("<>");
+			appendToSymbolTable("<>", "<>", this->_lineNumber);
 			//std::cout << "<>" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("LLTHAN", "<", this->_lineNumber);
-			appendToTokenFileBuffer("<");
+			appendToSymbolTable("<", "<", this->_lineNumber);
 			//std::cout << "<" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case '>':
 		if (readNextChar('=')) {
-			appendToSymbolTable("GETHAN", ">=", this->_lineNumber);
-			appendToTokenFileBuffer(">=");
+			appendToSymbolTable(">=", ">=", this->_lineNumber);
 			//std::cout << ">=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("GGTHAN", ">", this->_lineNumber);
-			appendToTokenFileBuffer(">");
+			appendToSymbolTable(">", ">", this->_lineNumber);
 			//std::cout << ">" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case ',':
-		appendToSymbolTable("GRAMMR", ",", this->_lineNumber);
-		appendToTokenFileBuffer(",");
+		appendToSymbolTable(",", ",", this->_lineNumber);
 		//std::cout << "," << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '+':
-		appendToSymbolTable("ARITHM", "+", this->_lineNumber);
-		appendToTokenFileBuffer("+");
+		appendToSymbolTable("+", "+", this->_lineNumber);
 		//std::cout << "+" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '*':
-		appendToSymbolTable("ARITHM", "*", this->_lineNumber);
-		appendToTokenFileBuffer("*");
+		appendToSymbolTable("*", "*", this->_lineNumber);
 		//std::cout << "*" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '-':
-		appendToSymbolTable("ARITHM", "-", this->_lineNumber);
-		appendToTokenFileBuffer("-");
+		appendToSymbolTable("-", "-", this->_lineNumber);
 		//std::cout << "-" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '%':
-		appendToSymbolTable("ARITHM", "%", this->_lineNumber);
-		appendToTokenFileBuffer("%");
+		appendToSymbolTable("%", "%", this->_lineNumber);
 		//std::cout << "%" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '/':
-		appendToSymbolTable("ARITHM", "/", this->_lineNumber);
-		appendToTokenFileBuffer("/");
+		appendToSymbolTable("/", "/", this->_lineNumber);
 		//std::cout << "/" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '[':
-		appendToSymbolTable("GRAMMR", "[", this->_lineNumber);
-		appendToTokenFileBuffer("[");
+		appendToSymbolTable("[", "[", this->_lineNumber);
 		//std::cout << "[" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case ']':
-		appendToSymbolTable("GRAMMR", "]", this->_lineNumber);
-		appendToTokenFileBuffer("]");
+		appendToSymbolTable("]", "]", this->_lineNumber);
 		//std::cout << "]" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '.':
-		appendToSymbolTable("GRAMMR", ".", this->_lineNumber);
-		appendToTokenFileBuffer(".");
+		appendToSymbolTable(".", ".", this->_lineNumber);
 		//std::cout << "." << std::endl;
 		this->_peek = ' ';
 		return true;
@@ -317,8 +273,7 @@ bool Lexical::getNextToken()
 		} while (std::isdigit(this->_peek));
 
 		if (this->_peek != '.') {
-			appendToSymbolTable("INT", std::to_string(v), this->_lineNumber);
-			appendToTokenFileBuffer(v);
+			appendToSymbolTable("INTEGER", std::to_string(v), this->_lineNumber);
 			//std::cout << v << std::endl;
 			return true;
 		}
@@ -335,8 +290,7 @@ bool Lexical::getNextToken()
 			d = d * 10;
 		}
 		
-		appendToSymbolTable("FLOAT", std::to_string(x), this->_lineNumber);
-		appendToTokenFileBuffer(x);
+		appendToSymbolTable("DOUBLE", std::to_string(x), this->_lineNumber);
 		//std::cout << x << std::endl;
 		return true;
 	}
@@ -348,15 +302,21 @@ bool Lexical::getNextToken()
 			this->readNextChar();
 		} while (std::isalnum(this->_peek));
 
-		appendToSymbolTable("IDENTI", b, this->_lineNumber);
-		appendToTokenFileBuffer(b);
+		if (::RESERVED_WORDS->findReservedWord(b)) {
+			appendToSymbolTable(b, b, this->_lineNumber);
+		}
+		else {
+			appendToSymbolTable("ID", b, this->_lineNumber);
+		}
+
 		//std::cout << b << std::endl;
 		return true;
 	}
 
 	std::string s(&this->_peek);
-	appendToSymbolTable("OTHER", s, this->_lineNumber);
-	appendToTokenFileBuffer("ERROR: " + s);
+	this->appendToLogFileBuffer(this->_lineNumber, this->_charNumber, s);
+	//appendToSymbolTable("OTHER", s, this->_lineNumber);
+	//appendToTokenFileBuffer("ERROR: " + s);
 	//std::cout << this->_peek << std::endl;
 	this->_peek = ' ';
 	return true;
@@ -368,16 +328,18 @@ void Lexical::readNextChar()
 	if (this->_doubleBufferSwitch) {
 		this->_peek = this->_doubleBuffer1[this->_doubleBufferCounter1];
 		this->_doubleBufferCounter1 += 1;
+		this->_charNumber += 1;
 		
 		if (this->_doubleBufferCounter1 == compiler::COMPILER_BUFFER_SIZE) {
 			// Get the next char from buffer 2
 			this->_peek = this->_doubleBuffer2[this->_doubleBufferCounter2];
 			this->_doubleBufferCounter2 += 1;
+			this->_charNumber += 1;
 
 			this->_doubleBufferSwitch = !this->_doubleBufferSwitch;
 
 			memset(this->_doubleBuffer1, 0, compiler::COMPILER_BUFFER_SIZE);
-			auto helper1 = std::thread(readFileToBuffers, std::ref(this->_is), std::ref(this->_doubleBuffer1));
+			auto helper1 = std::thread(compiler::readFileToBuffers, std::ref(this->_is), std::ref(this->_doubleBuffer1));
 			helper1.join();
 
 			this->_doubleBufferCounter1 = 0;
@@ -386,16 +348,18 @@ void Lexical::readNextChar()
 	else {
 		this->_peek = this->_doubleBuffer2[this->_doubleBufferCounter2];
 		this->_doubleBufferCounter2 += 1;
+		this->_charNumber += 1;
 
 		if (this->_doubleBufferCounter2 == compiler::COMPILER_BUFFER_SIZE) {
 			// Get the next char from buffer 1
 			this->_peek = this->_doubleBuffer1[this->_doubleBufferCounter1];
 			this->_doubleBufferCounter1 += 1;
+			this->_charNumber += 1;
 
 			this->_doubleBufferSwitch = !this->_doubleBufferSwitch;
 
 			memset(this->_doubleBuffer2, 0, compiler::COMPILER_BUFFER_SIZE);
-			auto helper1 = std::thread(readFileToBuffers, std::ref(this->_is), std::ref(this->_doubleBuffer2));
+			auto helper1 = std::thread(compiler::readFileToBuffers, std::ref(this->_is), std::ref(this->_doubleBuffer2));
 			helper1.join();
 
 			this->_doubleBufferCounter2 = 0;
@@ -406,15 +370,18 @@ void Lexical::readNextChar()
 bool Lexical::readNextChar(char c)
 {
 	this->readNextChar();
-	if (this->_doubleBufferSwitch) {
-		this->_doubleBufferCounter1 -= 1;
-	}
-	else {
-		this->_doubleBufferCounter2 -= 1;
-	}
 
-	if (this->_peek != c)
+	if (this->_peek != c) {
+		if (this->_doubleBufferSwitch) {
+			this->_doubleBufferCounter1 -= 1;
+			this->_charNumber -= 1;
+		}
+		else {
+			this->_doubleBufferCounter2 -= 1;
+			this->_charNumber -= 1;
+		}
 		return false;
+	}
 
 	this->_peek = ' ';
 	return true;

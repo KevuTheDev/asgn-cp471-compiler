@@ -1,11 +1,15 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <string>
 #include <thread>
+
 #include "globals.h"
+#include "ReservedWords.h"
 #include "SymbolTable.h"
-#include "FileBuffer.h"
+#include "LogFileBuffer.h"
+#include "TokenFileBuffer.h"
 
 
 class Lexical
@@ -13,17 +17,15 @@ class Lexical
 public:
 	Lexical(const std::string &filename);
 
+	void run();
+
 private:
 	std::ifstream _is;
 	std::string _fileName;
-
-	FileBuffer _tokenFileBuffer;
-	SymbolTable _symbolTable;
-
-
-
+		
 	char _peek;
 	uint32_t _lineNumber;
+	uint32_t _charNumber;
 
 	char* _doubleBuffer1;
 	char* _doubleBuffer2;
@@ -41,10 +43,9 @@ private:
 
 	//		-> Token File Buffer Related
 	void sanitizeFileName(const std::string& filepath);
-	void appendToTokenFileBuffer(const char* token);
-	void appendToTokenFileBuffer(const std::string& token);
-	void appendToTokenFileBuffer(int token);
-	void appendToTokenFileBuffer(double token);
+
+	//		-> Log File Buffer Related
+	void appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar);
 
 	//		-> Symbol Table Related
 	void appendToSymbolTable(std::string token, std::string lexeme, int lineNumber);

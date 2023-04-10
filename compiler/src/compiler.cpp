@@ -1,110 +1,62 @@
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <string>
+
 #include "globals.h"
 #include "Lexical.h"
+#include "Syntax.h"
 
-#include <thread>
+#include "ReservedWords.h"
+#include "SymbolTable.h"
+#include "LogFileBuffer.h"
+#include "TokenFileBuffer.h"
 
-using namespace std::chrono_literals;
-
-void process(int num) {
-
-    for (auto i = 0; i < num; i++) {
-        std::this_thread::sleep_for(1000ms);
-    }
-}
-
-void readFileLine(std::ifstream &is, char* buf) {
-    is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
-
-    return;
-}
-
+std::unique_ptr<Lexical> LEXICAL;
+std::unique_ptr<Syntax> SYNTAX;
+std::unique_ptr<ReservedWords> RESERVED_WORDS;
+std::unique_ptr<SymbolTable> SYMBOL_TABLE;
+std::unique_ptr<LogFileBuffer> LOG_FILE_BUFFER;
+std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
 
 int main(int argc, char* argv[]) 
 {
-    //std::cout << "READING FILE" << std::endl;
-    //std::cout << "==========================================" << std::endl;
+    std::string filename = "Test10";
+
+    ::LOG_FILE_BUFFER = std::make_unique<LogFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
+    ::TOKEN_FILE_BUFFER = std::make_unique<TokenFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
+
+    ::RESERVED_WORDS = std::make_unique<ReservedWords>();
+    ::SYMBOL_TABLE = std::make_unique<SymbolTable>();
+
+    ::LEXICAL = std::make_unique<Lexical>("res/" + filename + compiler::COMPILER_FILE_EXTENSION_MAIN);
 
 
-    //std::ifstream file("res/Test0.cp", std::ifstream::in);
-
-    //if (!file.is_open()) {
-    //    std::cout << "Failed to open file" << std::endl;
-    //    return 1;
-    //}
-
-    //char* buffer1 = new char[compiler::COMPILER_BUFFER_SIZE];
-    //char* buffer2 = new char[compiler::COMPILER_BUFFER_SIZE];
-
-    //memset(buffer1, 0, compiler::COMPILER_BUFFER_SIZE);
-    //memset(buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
-
-    //while (true) {
-    //    auto helper1 = std::thread(readFileLine, std::ref(file), std::ref(buffer1));
-    //    helper1.join();
-    //    std::cout << buffer1 << " " << strlen(buffer1);
-    //    memset(buffer1, 0, compiler::COMPILER_BUFFER_SIZE);
-
-    //    if (file.gcount() == 0) {
-    //        break;
-    //    }
+    ::RESERVED_WORDS->addReservedWord("def");
+    ::RESERVED_WORDS->addReservedWord("fed");
+    ::RESERVED_WORDS->addReservedWord("int");
+    ::RESERVED_WORDS->addReservedWord("double");
+    ::RESERVED_WORDS->addReservedWord("if");
+    ::RESERVED_WORDS->addReservedWord("then");
+    ::RESERVED_WORDS->addReservedWord("else");
+    ::RESERVED_WORDS->addReservedWord("fi");
+    ::RESERVED_WORDS->addReservedWord("while");
+    ::RESERVED_WORDS->addReservedWord("do");
+    ::RESERVED_WORDS->addReservedWord("od");
+    ::RESERVED_WORDS->addReservedWord("print");
+    ::RESERVED_WORDS->addReservedWord("return");
+    ::RESERVED_WORDS->addReservedWord("or");
+    ::RESERVED_WORDS->addReservedWord("and");
+    ::RESERVED_WORDS->addReservedWord("not");
 
 
-    //    auto helper2 = std::thread(readFileLine, std::ref(file), std::ref(buffer2));
-    //    helper2.join();
-    //    std::cout << buffer2 << " " << strlen(buffer2);
-    //    memset(buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
-    //}
-
-    //
+    ::LEXICAL->run();
 
 
+    ::SYNTAX = std::make_unique<Syntax>();
+    ::SYNTAX->start();
 
-
-
-    //std::cout << std::endl;
-    //std::cout << "==========================================" << std::endl;
-
-    //if (file)
-    //    std::cout << "all characters read successfully.";
-    //else
-    //    std::cout << "error: only " << file.gcount() << " could be read";
-
-
-    //file.close();
-
-    //char i = '1';
-
-    //int ia = i - '0';
-
-    //std::cout << int(ia) << std::endl;
-
-
-    //Lexical lex00 = Lexical("res/Test0.cp");
-    Lexical lex01 = Lexical("res/Test1.cp");
-    Lexical lex02 = Lexical("res/Test2.cp");
-    Lexical lex03 = Lexical("res/Test3.cp");
-    Lexical lex04 = Lexical("res/Test4.cp");
-    Lexical lex05 = Lexical("res/Test5.cp");
-    Lexical lex06 = Lexical("res/Test6.cp");
-    Lexical lex07 = Lexical("res/Test7.cp");
-    Lexical lex08 = Lexical("res/Test8.cp");
-    Lexical lex09 = Lexical("res/Test9.cp");
 
 
     return 0;
 }
-
-
-// !!!make the lexical analyzer to scan the whole file
-// 
-
-/*
-    Main loop, read till end of file
-
-    scan for lexemes,
-        Must have a way to peak
-    
-*/

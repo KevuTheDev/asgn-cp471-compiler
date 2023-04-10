@@ -18,59 +18,11 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\compiler.cpp" />
-    <ClCompile Include="src\globals.cpp" />
-    <ClCompile Include="src\Lexical.cpp" />
-    <ClCompile Include="src\LogFileBuffer.cpp" />
-    <ClCompile Include="src\ReservedWords.cpp" />
-    <ClCompile Include="src\SymbolTable.cpp" />
-    <ClCompile Include="src\FileBuffer.cpp" />
-    <ClCompile Include="src\Syntax.cpp" />
-    <ClCompile Include="src\TokenFileBuffer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\globals.h" />
-    <ClInclude Include="src\Lexical.h" />
-    <ClInclude Include="src\LogFileBuffer.h" />
-    <ClInclude Include="src\ReservedWords.h" />
-    <ClInclude Include="src\SymbolTable.h" />
-    <ClInclude Include="src\FileBuffer.h" />
-    <ClInclude Include="src\Syntax.h" />
-    <ClInclude Include="src\TokenFileBuffer.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\e1.cp" />
-    <None Include="res\grammar.cpg" />
-    <None Include="res\Test0.cp" />
-    <None Include="res\Test1.cp" />
-    <None Include="res\Test10.cp" />
-    <None Include="res\Test2.cp" />
-    <None Include="res\Test3.cp" />
-    <None Include="res\Test4.cp" />
-    <None Include="res\Test5.cp" />
-    <None Include="res\Test6.cp" />
-    <None Include="res\Test7.cp" />
-    <None Include="res\Test8.cp" />
-    <None Include="res\Test9.cp" />
-    <None Include="Test0.cpt" />
-    <None Include="Test2.cpt" />
-    <None Include="Test3.cpt" />
-    <None Include="Test4.cpt" />
-    <None Include="Test5.cpt" />
-    <None Include="Test6.cpt" />
-    <None Include="Test7.cpt" />
-    <None Include="Test8.cpt" />
-    <None Include="Test9.cpt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Test0.log" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{23efdc8a-8b5a-46a9-a23b-738e7a105f65}</ProjectGuid>
-    <RootNamespace>compiler</RootNamespace>
+    <ProjectGuid>{fdb50206-8e7e-478c-ba64-c11ab3deafec}</ProjectGuid>
+    <RootNamespace>playground</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -124,7 +76,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +90,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -178,6 +128,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="playground.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

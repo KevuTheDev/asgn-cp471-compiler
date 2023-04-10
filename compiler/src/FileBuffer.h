@@ -8,11 +8,14 @@
 class FileBuffer
 {
 public:
-	FileBuffer();
 	FileBuffer(const std::string &filename);
+	virtual ~FileBuffer();
 
 	void append(const std::string& value);
 	void append(const char* value);
+
+	void clearBuffer();
+	void close();
 	void finish();
 
 
@@ -22,10 +25,10 @@ private:
 
 
 	std::string _buffer = ""; // buffer size 2048
-	uint16_t _bufferSize = 2048;
+	uint16_t _bufferSizeLimit = 2048;
 
 	// Utilities
-	bool checkExtension(const std::string& filepath);
+	virtual bool checkExtension(const std::string& filepath);
 
 };
 
