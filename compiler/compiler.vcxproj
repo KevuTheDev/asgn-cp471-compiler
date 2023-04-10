@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Compiler.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\globals.cpp" />
     <ClCompile Include="src\Lexical.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="src\TokenFileBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Compiler.h" />
     <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\Lexical.h" />
     <ClInclude Include="src\LogFileBuffer.h" />

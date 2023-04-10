@@ -4,6 +4,9 @@
 #include <string>
 
 #include "globals.h"
+
+#include "Compiler.h"
+
 #include "Lexical.h"
 #include "Syntax.h"
 
@@ -23,38 +26,41 @@ int main(int argc, char* argv[])
 {
     std::string filename = "Test10";
 
-    ::LOG_FILE_BUFFER = std::make_unique<LogFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
-    ::TOKEN_FILE_BUFFER = std::make_unique<TokenFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
+    Compiler compiler = Compiler(filename);
+    
 
-    ::RESERVED_WORDS = std::make_unique<ReservedWords>();
-    ::SYMBOL_TABLE = std::make_unique<SymbolTable>();
+    //::LOG_FILE_BUFFER = std::make_unique<LogFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
+    //::TOKEN_FILE_BUFFER = std::make_unique<TokenFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
 
-    ::LEXICAL = std::make_unique<Lexical>("res/" + filename + compiler::COMPILER_FILE_EXTENSION_MAIN);
+    //::RESERVED_WORDS = std::make_unique<ReservedWords>();
+    //::SYMBOL_TABLE = std::make_unique<SymbolTable>();
 
-
-    ::RESERVED_WORDS->addReservedWord("def");
-    ::RESERVED_WORDS->addReservedWord("fed");
-    ::RESERVED_WORDS->addReservedWord("int");
-    ::RESERVED_WORDS->addReservedWord("double");
-    ::RESERVED_WORDS->addReservedWord("if");
-    ::RESERVED_WORDS->addReservedWord("then");
-    ::RESERVED_WORDS->addReservedWord("else");
-    ::RESERVED_WORDS->addReservedWord("fi");
-    ::RESERVED_WORDS->addReservedWord("while");
-    ::RESERVED_WORDS->addReservedWord("do");
-    ::RESERVED_WORDS->addReservedWord("od");
-    ::RESERVED_WORDS->addReservedWord("print");
-    ::RESERVED_WORDS->addReservedWord("return");
-    ::RESERVED_WORDS->addReservedWord("or");
-    ::RESERVED_WORDS->addReservedWord("and");
-    ::RESERVED_WORDS->addReservedWord("not");
+    //::LEXICAL = std::make_unique<Lexical>("res/" + filename + compiler::COMPILER_FILE_EXTENSION_MAIN);
 
 
-    ::LEXICAL->run();
+    //::RESERVED_WORDS->addReservedWord("def");
+    //::RESERVED_WORDS->addReservedWord("fed");
+    //::RESERVED_WORDS->addReservedWord("int");
+    //::RESERVED_WORDS->addReservedWord("double");
+    //::RESERVED_WORDS->addReservedWord("if");
+    //::RESERVED_WORDS->addReservedWord("then");
+    //::RESERVED_WORDS->addReservedWord("else");
+    //::RESERVED_WORDS->addReservedWord("fi");
+    //::RESERVED_WORDS->addReservedWord("while");
+    //::RESERVED_WORDS->addReservedWord("do");
+    //::RESERVED_WORDS->addReservedWord("od");
+    //::RESERVED_WORDS->addReservedWord("print");
+    //::RESERVED_WORDS->addReservedWord("return");
+    //::RESERVED_WORDS->addReservedWord("or");
+    //::RESERVED_WORDS->addReservedWord("and");
+    //::RESERVED_WORDS->addReservedWord("not");
 
 
-    ::SYNTAX = std::make_unique<Syntax>();
-    ::SYNTAX->start();
+    //::LEXICAL->run();
+
+
+    //::SYNTAX = std::make_unique<Syntax>();
+    //::SYNTAX->start();
 
 
 
