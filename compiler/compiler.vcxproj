@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\compiler.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\globals.cpp" />
     <ClCompile Include="src\Lexical.cpp" />
     <ClCompile Include="src\LogFileBuffer.cpp" />
