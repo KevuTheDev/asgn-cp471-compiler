@@ -3,6 +3,7 @@
 LogFileBuffer::~LogFileBuffer()
 {
 	this->finish();
+	std::cout << "LOGFILEBUFFER DESCTURCTOR CALLED" << std::endl;
 }
 
 bool LogFileBuffer::checkExtension(const std::string& filepath)

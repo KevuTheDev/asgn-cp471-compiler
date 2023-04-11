@@ -5,6 +5,10 @@ ReservedWords::ReservedWords()
 	this->_table = std::vector<std::string>();
 }
 
+ReservedWords::~ReservedWords()
+{
+}
+
 void ReservedWords::addReservedWord(std::string word)
 {
 	this->_table.push_back(word);

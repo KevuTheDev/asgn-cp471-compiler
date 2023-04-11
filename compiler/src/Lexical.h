@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <fstream>
 #include <memory>
 #include <string>
 #include <thread>
@@ -17,6 +16,11 @@ class Lexical
 public:
 	Lexical(const std::string &filename);
 
+	void linkLogFileBuffer(LogFileBuffer* buffer);
+	void linkTokenFileBuffer(TokenFileBuffer* buffer);
+	void linkReservedWords(ReservedWords* table);
+	void linkSymbolTable(SymbolTable* table);
+
 	void run();
 
 private:
@@ -32,6 +36,13 @@ private:
 	uint16_t _doubleBufferCounter1;
 	uint16_t _doubleBufferCounter2;
 	bool _doubleBufferSwitch; // buffer1 - true, buffer2 - false
+
+	///
+	LogFileBuffer* _logFileBuffer;
+	TokenFileBuffer* _tokenFileBuffer;
+
+	ReservedWords* _reservedWords;
+	SymbolTable* _symbolTable;
 
 
 	

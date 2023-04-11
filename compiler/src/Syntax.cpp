@@ -1,38 +1,44 @@
 #include "Syntax.h"
 
-extern std::unique_ptr<ReservedWords> RESERVED_WORDS;
-extern std::unique_ptr<SymbolTable> SYMBOL_TABLE;
-extern std::unique_ptr<LogFileBuffer> LOG_FILE_BUFFER;
-extern std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
-
 Syntax::Syntax()
 {
 	this->_position = 0;
-	this->_limit = ::SYMBOL_TABLE->length();
-
-	std::cout << this->_limit << std::endl;
-
-	this->_peek = ::SYMBOL_TABLE->getTokenAtIndex(this->_position);;
 }
 
-void Syntax::start()
+Syntax::~Syntax()
 {
-	bool hmm = NT_PROGRAM();
+	this->_logFileBuffer = nullptr;
+	this->_tokenFileBuffer = nullptr;
+	this->_reservedWords = nullptr;
+	this->_symbolTable = nullptr;
+}
 
-	if (hmm) {
-		std::cout << "COMPLETE" << std::endl;
-		std::cout << "COMPLETE" << std::endl;
-		std::cout << "COMPLETE" << std::endl;
-		std::cout << "COMPLETE" << std::endl;
-		std::cout << "COMPLETE" << std::endl;
-	}
-	else {
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-	}
+void Syntax::linkLogFileBuffer(LogFileBuffer* buffer)
+{
+	this->_logFileBuffer = buffer;
+}
+
+void Syntax::linkTokenFileBuffer(TokenFileBuffer* buffer)
+{
+	this->_tokenFileBuffer = buffer;
+}
+
+void Syntax::linkReservedWords(ReservedWords* table)
+{
+	this->_reservedWords = table;
+}
+
+void Syntax::linkSymbolTable(SymbolTable* table)
+{
+	this->_symbolTable = table;
+	this->_limit = this->_symbolTable->length();
+	std::cout << this->_limit << std::endl;
+	this->_peek = this->_symbolTable->getTokenAtIndex(this->_position);;
+}
+
+void Syntax::run()
+{
+	this->start();
 }
 
 void Syntax::matchToken(const std::string& token)
@@ -60,7 +66,7 @@ void Syntax::getNextToken()
 		this->_peek = "$";
 	}
 	else {
-		this->_peek = ::SYMBOL_TABLE->getTokenAtIndex(this->_position);
+		this->_peek = this->_symbolTable->getTokenAtIndex(this->_position);
 	}
 }
 
@@ -69,7 +75,27 @@ std::string Syntax::getPeek()
 	return this->_peek;
 }
 
-bool Syntax::NT_PROGRAM()
+void Syntax::start()
+{
+	bool hmm = PROGRAM();
+
+	if (hmm) {
+		std::cout << "COMPLETE" << std::endl;
+		std::cout << "COMPLETE" << std::endl;
+		std::cout << "COMPLETE" << std::endl;
+		std::cout << "COMPLETE" << std::endl;
+		std::cout << "COMPLETE" << std::endl;
+	}
+	else {
+		std::cout << "INCOMPLETE" << std::endl;
+		std::cout << "INCOMPLETE" << std::endl;
+		std::cout << "INCOMPLETE" << std::endl;
+		std::cout << "INCOMPLETE" << std::endl;
+		std::cout << "INCOMPLETE" << std::endl;
+	}
+}
+
+bool Syntax::PROGRAM()
 {
 	if (getPeek() == "$" || getPeek() == "."
 		|| getPeek() == ";" || getPeek() == "ID"
@@ -77,8 +103,8 @@ bool Syntax::NT_PROGRAM()
 		|| getPeek() == "if" || getPeek() == "int"
 		|| getPeek() == "print" || getPeek() == "return"
 		|| getPeek() == "while") {
-		return NT_FDECLS() && NT_DECLARATIONS()
-			&& NT_STATEMENT_SEQ() && matchTokenNew(".");
+		return FDECLS() && DECLARATIONS()
+			&& STATEMESEQ() && matchTokenNew(".");
 	}
 
 	std::cout << "ERROR::PROGRAM" << std::endl;
@@ -86,11 +112,11 @@ bool Syntax::NT_PROGRAM()
 	return false;
 }
 
-bool Syntax::NT_FDECLS()
+bool Syntax::FDECLS()
 {
 	if (getPeek() == "def") {
-		return NT_FDEC() && matchTokenNew(";")
-			&& NT_FDECLS_EXT();
+		return FDEC() && matchTokenNew(";")
+			&& FDECLS_EXT();
 	}
 	else if (getPeek() == "." || getPeek() == ";"
 		|| getPeek() == "ID" || getPeek() == "def"
@@ -98,7 +124,7 @@ bool Syntax::NT_FDECLS()
 		|| getPeek() == "int" || getPeek() == "print"
 		|| getPeek() == "return" || getPeek() == "while") {
 		// EPSILON
-		return NT_FDECLS_EXT();
+		return FDECLS_EXT();
 	}
 
 	std::cout << "ERROR::FDECLS" << std::endl;
@@ -106,10 +132,10 @@ bool Syntax::NT_FDECLS()
 	return false;
 }
 
-bool Syntax::NT_FDECLS_EXT()
+bool Syntax::FDECLS_EXT()
 {
 	if (getPeek() == "def") {
-		return NT_FDEC() && matchTokenNew(";") && NT_FDECLS_EXT();
+		return FDEC() && matchTokenNew(";") && FDECLS_EXT();
 	}
 	else if (getPeek() == "." || getPeek() == ";"
 		|| getPeek() == "ID" || getPeek() == "double"
@@ -125,13 +151,13 @@ bool Syntax::NT_FDECLS_EXT()
 	return false;
 }
 
-bool Syntax::NT_FDEC()
+bool Syntax::FDEC()
 {
 	if (getPeek() == "def") {
-		return matchTokenNew("def") && NT_TYPE()
-			&& NT_FNAME() && matchTokenNew("(")
-			&& NT_PARAMS() && matchTokenNew(")")
-			&& NT_DECLARATIONS() && NT_STATEMENT_SEQ()
+		return matchTokenNew("def") && TYPE()
+			&& FNAME() && matchTokenNew("(")
+			&& PARAMS() && matchTokenNew(")")
+			&& DECLARATIONS() && STATEMESEQ()
 			&& matchTokenNew("fed");
 	}
 
@@ -140,11 +166,11 @@ bool Syntax::NT_FDEC()
 	return false;
 }
 
-bool Syntax::NT_PARAMS()
+bool Syntax::PARAMS()
 {
 	if (getPeek() == "double" || getPeek() == "int") {
-		return NT_TYPE() && NT_VAR() 
-			&& NT_PARAMS_EXT();
+		return TYPE() && VAR() 
+			&& PARAMS_EXT();
 	}
 
 	std::cout << "ERROR::PARAMS" << std::endl;
@@ -152,10 +178,10 @@ bool Syntax::NT_PARAMS()
 	return false;
 }
 
-bool Syntax::NT_PARAMS_EXT()
+bool Syntax::PARAMS_EXT()
 {
 	if (getPeek() == ",") {
-		return matchTokenNew(",") && NT_PARAMS();
+		return matchTokenNew(",") && PARAMS();
 	}
 	else if (getPeek() == ")") {
 		// EPSILON
@@ -167,7 +193,7 @@ bool Syntax::NT_PARAMS_EXT()
 	return false;
 }
 
-bool Syntax::NT_FNAME()
+bool Syntax::FNAME()
 {
 	if (getPeek() == "ID") {
 		return matchTokenNew("ID");
@@ -178,18 +204,18 @@ bool Syntax::NT_FNAME()
 	return false;
 }
 
-bool Syntax::NT_DECLARATIONS()
+bool Syntax::DECLARATIONS()
 {
 	if (getPeek() == "double" || getPeek() == "int") {
-		return NT_DECL() && matchTokenNew(";") 
-			&& NT_DECLARATIONS_EXT();
+		return DECL() && matchTokenNew(";") 
+			&& DECLARATIONS_EXT();
 	}
 	else if (getPeek() == "." || getPeek() == ";"
 		|| getPeek() == "ID" || getPeek() == "fed"
 		|| getPeek() == "if" || getPeek() == "print" 
 		|| getPeek() == "return" || getPeek() == "while") {
 		// EPSILON
-		return NT_DECLARATIONS_EXT();
+		return DECLARATIONS_EXT();
 	}
 
 	std::cout << "ERROR::DECLARATIONS" << std::endl;
@@ -197,11 +223,11 @@ bool Syntax::NT_DECLARATIONS()
 	return false;
 }
 
-bool Syntax::NT_DECLARATIONS_EXT()
+bool Syntax::DECLARATIONS_EXT()
 {
 		if (getPeek() == "double" || getPeek() == "int") {
-			return NT_DECL() && matchTokenNew(";")
-				&& NT_DECLARATIONS_EXT();
+			return DECL() && matchTokenNew(";")
+				&& DECLARATIONS_EXT();
 		}
 		else if (getPeek() == "." || getPeek() == ";"
 			|| getPeek() == "ID" || getPeek() == "fed"
@@ -216,10 +242,10 @@ bool Syntax::NT_DECLARATIONS_EXT()
 	return false;
 }
 
-bool Syntax::NT_DECL()
+bool Syntax::DECL()
 {
 	if (getPeek() == "double" || getPeek() == "int") {
-		return NT_TYPE() && NT_VARLIST();
+		return TYPE() && VARLIST();
 	}
 
 	std::cout << "ERROR::DECL" << std::endl;
@@ -227,7 +253,7 @@ bool Syntax::NT_DECL()
 	return false;
 }
 
-bool Syntax::NT_TYPE()
+bool Syntax::TYPE()
 {
 	if (getPeek() == "double") {
 		return matchTokenNew("double");
@@ -241,10 +267,10 @@ bool Syntax::NT_TYPE()
 	return false;
 }
 
-bool Syntax::NT_VARLIST()
+bool Syntax::VARLIST()
 {
 	if (getPeek() == "ID") {
-		return NT_VAR() && NT_VARLIST_EXT();
+		return VAR() && VARLIST_EXT();
 	}
 
 	std::cout << "ERROR::VARLIST" << std::endl;
@@ -252,10 +278,10 @@ bool Syntax::NT_VARLIST()
 	return false;
 }
 
-bool Syntax::NT_VARLIST_EXT()
+bool Syntax::VARLIST_EXT()
 {
 	if (getPeek() == ",") {
-		return matchTokenNew(",") && NT_VARLIST();
+		return matchTokenNew(",") && VARLIST();
 	}
 	else if (getPeek() == ";") {
 		// EPSILON
@@ -267,18 +293,18 @@ bool Syntax::NT_VARLIST_EXT()
 	return false;
 }
 
-bool Syntax::NT_STATEMENT_SEQ()
+bool Syntax::STATEMESEQ()
 {
 	if (getPeek() == ";" || getPeek() == "ID" 
 		|| getPeek() == "if" || getPeek() == "print" 
 		|| getPeek() == "return" || getPeek() == "while") {
-		return NT_STATEMENT() && NT_STATEMENT_SEQ_EXT();
+		return STATEMENT() && STATEMESEQ_EXT();
 	}
 	else if (getPeek() == "." || getPeek() == "else"
 		|| getPeek() == "fed" || getPeek() == "fi"
 		|| getPeek() == "od") {
 		// EPISLON
-		return NT_STATEMENT() && NT_STATEMENT_SEQ_EXT();
+		return STATEMENT() && STATEMESEQ_EXT();
 	}
 
 	std::cout << "ERROR::STATEMENTSEQ" << std::endl;
@@ -286,10 +312,10 @@ bool Syntax::NT_STATEMENT_SEQ()
 	return false;
 }
 
-bool Syntax::NT_STATEMENT_SEQ_EXT()
+bool Syntax::STATEMESEQ_EXT()
 {
 	if (getPeek() == ";") {
-		return matchTokenNew(";") && NT_STATEMENT_SEQ();
+		return matchTokenNew(";") && STATEMESEQ();
 	}
 	else if (getPeek() == "." || getPeek() == "else"
 		|| getPeek() == "fed" || getPeek() == "fi"
@@ -303,26 +329,26 @@ bool Syntax::NT_STATEMENT_SEQ_EXT()
 	return false;
 }
 
-bool Syntax::NT_STATEMENT()
+bool Syntax::STATEMENT()
 {
 	if (getPeek() == "ID") {
-		return NT_VAR() && matchTokenNew("=")
-			&& NT_EXPR();
+		return VAR() && matchTokenNew("=")
+			&& EXPR();
 	}
 	else if (getPeek() == "if") {
-		return matchTokenNew("if") && NT_BEXPR()
-			&& matchTokenNew("then") && NT_STATEMENT_SEQ()
-			&& NT_STATEMENT_EXT();
+		return matchTokenNew("if") && BEXPR()
+			&& matchTokenNew("then") && STATEMESEQ()
+			&& STATEMEEXT();
 	}
 	else if (getPeek() == "print") {
-		return matchTokenNew("print") && NT_EXPR();
+		return matchTokenNew("print") && EXPR();
 	}
 	else if (getPeek() == "return") {
-		return matchTokenNew("return") && NT_EXPR();
+		return matchTokenNew("return") && EXPR();
 	}
 	else if (getPeek() == "while") {
-		return matchTokenNew("while") && NT_BEXPR()
-			&& matchTokenNew("do") && NT_STATEMENT_SEQ()
+		return matchTokenNew("while") && BEXPR()
+			&& matchTokenNew("do") && STATEMESEQ()
 			&& matchTokenNew("od");
 	}
 	else if (getPeek() == "." || getPeek() == ";"
@@ -336,26 +362,26 @@ bool Syntax::NT_STATEMENT()
 	return false;
 }
 
-bool Syntax::NT_STATEMENT_EXT()
+bool Syntax::STATEMEEXT()
 {
 	if (getPeek() == "else") {
-		return matchTokenNew("else") && NT_STATEMENT_SEQ()
+		return matchTokenNew("else") && STATEMESEQ()
 			&& matchTokenNew("fi");
 	}
 	else if (getPeek() == "fi") {
 		return matchTokenNew("fi");
 	}
 
-	std::cout << "ERROR::STATEMENT_EXT" << std::endl;
+	std::cout << "ERROR::STATEMEEXT" << std::endl;
 	std::cout << getPeek() << " :: "<< readString << std::endl;
 	return false;
 }
 
-bool Syntax::NT_EXPR()
+bool Syntax::EXPR()
 {
 	if (getPeek() == "(" || getPeek() == "DOUBLE"
 		|| getPeek() == "ID" || getPeek() == "INTEGER") {
-		return NT_TERM() && NT_EXPR_EXT();
+		return TERM() && EXPR_EXT();
 	}
 
 	std::cout << "ERROR::EXPR" << std::endl;
@@ -363,15 +389,15 @@ bool Syntax::NT_EXPR()
 	return false;
 }
 
-bool Syntax::NT_EXPR_EXT()
+bool Syntax::EXPR_EXT()
 {
 	if (getPeek() == "+") {
-		return matchTokenNew("+") && NT_TERM()
-			&& NT_EXPR_EXT();
+		return matchTokenNew("+") && TERM()
+			&& EXPR_EXT();
 	}
 	else if (getPeek() == "-") {
-		return matchTokenNew("-") && NT_TERM()
-			&& NT_EXPR_EXT();
+		return matchTokenNew("-") && TERM()
+			&& EXPR_EXT();
 	}
 	else if (getPeek() == ")" || getPeek() == "]"
 		|| getPeek() == "," || getPeek() == "."
@@ -390,11 +416,11 @@ bool Syntax::NT_EXPR_EXT()
 	return false;
 }
 
-bool Syntax::NT_TERM()
+bool Syntax::TERM()
 {
 	if (getPeek() == "(" || getPeek() == "DOUBLE" 
 		|| getPeek() == "ID" || getPeek() == "INTEGER") {
-		return NT_FACTOR() && NT_TERM_EXT();
+		return FACTOR() && TERM_EXT();
 	}
 
 	std::cout << "ERROR::TERM" << std::endl;
@@ -402,19 +428,19 @@ bool Syntax::NT_TERM()
 	return false;
 }
 
-bool Syntax::NT_TERM_EXT()
+bool Syntax::TERM_EXT()
 {
 	if (getPeek() == "%") {
-		return matchTokenNew("%") && NT_FACTOR()
-			&& NT_TERM_EXT();
+		return matchTokenNew("%") && FACTOR()
+			&& TERM_EXT();
 	}
 	else if (getPeek() == "*") {
-		return matchTokenNew("*") && NT_FACTOR()
-			&& NT_TERM_EXT();
+		return matchTokenNew("*") && FACTOR()
+			&& TERM_EXT();
 	}
 	else if (getPeek() == "/") {
-		return matchTokenNew("/") && NT_FACTOR()
-			&& NT_TERM_EXT();
+		return matchTokenNew("/") && FACTOR()
+			&& TERM_EXT();
 	}
 	else if (
 		getPeek() == ")" || getPeek() == "]"
@@ -435,17 +461,17 @@ bool Syntax::NT_TERM_EXT()
 	return false;
 }
 
-bool Syntax::NT_FACTOR()
+bool Syntax::FACTOR()
 {
 	if (getPeek() == "(") {
-		return matchTokenNew("(") && NT_EXPR() 
+		return matchTokenNew("(") && EXPR() 
 			&& matchTokenNew(")");
 	}
 	else if (getPeek() == "DOUBLE" || getPeek() == "INTEGER") {
-		return NT_NUMBER();
+		return NUMBER();
 	}
 	else if (getPeek() == "ID") {
-		return matchTokenNew("ID") && NT_FACTOR_EXT();
+		return matchTokenNew("ID") && FACTOR_EXT();
 	}
 
 	std::cout << "ERROR::FACTOR" << std::endl;
@@ -453,10 +479,10 @@ bool Syntax::NT_FACTOR()
 	return false;
 }
 
-bool Syntax::NT_FACTOR_EXT()
+bool Syntax::FACTOR_EXT()
 {
 	if (getPeek() == "(") {
-		return matchTokenNew("(") && NT_EXPRSEQ() && matchTokenNew(")");
+		return matchTokenNew("(") && EXPRSEQ() && matchTokenNew(")");
 	}
 	else if (getPeek() == "%" || getPeek() == ")"
 		|| getPeek() == "]" || getPeek() == "*"
@@ -468,7 +494,7 @@ bool Syntax::NT_FACTOR_EXT()
 		|| getPeek() == ">" || getPeek() == ">="
 		|| getPeek() == "else" || getPeek() == "fed"
 		|| getPeek() == "fi" || getPeek() == "od") {
-		return NT_VAR_EXT();
+		return VAR_EXT();
 	}
 
 	std::cout << "ERROR::FACTOR_EXT" << std::endl;
@@ -476,11 +502,11 @@ bool Syntax::NT_FACTOR_EXT()
 	return false;
 }
 
-bool Syntax::NT_EXPRSEQ()
+bool Syntax::EXPRSEQ()
 {
 	if (getPeek() == "(" || getPeek() == "DOUBLE"
 		|| getPeek() == "ID" || getPeek() == "INTEGER") {
-		return NT_EXPR() && NT_EXPRSEQ_EXT();
+		return EXPR() && EXPRSEQ_EXT();
 	}
 	else if (getPeek() == ")") {
 		return true;
@@ -491,10 +517,10 @@ bool Syntax::NT_EXPRSEQ()
 	return false;
 }
 
-bool Syntax::NT_EXPRSEQ_EXT()
+bool Syntax::EXPRSEQ_EXT()
 {
 	if (getPeek() == ",") {
-		return matchTokenNew(",") && NT_EXPRSEQ();
+		return matchTokenNew(",") && EXPRSEQ();
 	}
 	else if (getPeek() == ")") {
 		// EPSILON
@@ -506,10 +532,10 @@ bool Syntax::NT_EXPRSEQ_EXT()
 	return false;
 }
 
-bool Syntax::NT_BEXPR()
+bool Syntax::BEXPR()
 {
 	if (getPeek() == "(" || getPeek() == "not") {
-		return NT_BTERM() && NT_BEXPR_EXT();
+		return BTERM() && BEXPR_EXT();
 	}
 
 	std::cout << "ERROR::BEXPR" << std::endl;
@@ -517,11 +543,11 @@ bool Syntax::NT_BEXPR()
 	return false;
 }
 
-bool Syntax::NT_BEXPR_EXT()
+bool Syntax::BEXPR_EXT()
 {
 	if (getPeek() == "or") {
-		return matchTokenNew("or") && NT_BTERM()
-			&& NT_BEXPR_EXT();
+		return matchTokenNew("or") && BTERM()
+			&& BEXPR_EXT();
 	}
 	else if (getPeek() == ")" || getPeek() == "do"
 		|| getPeek() == "then") {
@@ -534,10 +560,10 @@ bool Syntax::NT_BEXPR_EXT()
 	return false;
 }
 
-bool Syntax::NT_BTERM()
+bool Syntax::BTERM()
 {
 	if (getPeek() == "(" || getPeek() == "not") {
-		return NT_BFACTOR() && NT_BTERM_EXT();
+		return BFACTOR() && BTERM_EXT();
 	}
 
 	std::cout << "ERROR::BTERM" << std::endl;
@@ -545,11 +571,11 @@ bool Syntax::NT_BTERM()
 	return false;
 }
 
-bool Syntax::NT_BTERM_EXT()
+bool Syntax::BTERM_EXT()
 {
 	if (getPeek() == "and") {
-		return matchTokenNew("and") && NT_BFACTOR()
-			&& NT_BTERM_EXT();
+		return matchTokenNew("and") && BFACTOR()
+			&& BTERM_EXT();
 	}
 	else if (getPeek() == ")" || getPeek() == "do"
 		|| getPeek() == "or" || getPeek() == "then") {
@@ -562,14 +588,14 @@ bool Syntax::NT_BTERM_EXT()
 	return false;
 }
 
-bool Syntax::NT_BFACTOR()
+bool Syntax::BFACTOR()
 {
 	if (getPeek() == "(") {
-		return matchTokenNew("(") && NT_BFACTOR_EXT()
+		return matchTokenNew("(") && BFACTOR_EXT()
 			&& matchTokenNew(")");
 	}
 	else if (getPeek() == "not") {
-		return matchTokenNew("not") && NT_BFACTOR();
+		return matchTokenNew("not") && BFACTOR();
 	}
 
 	std::cout << "ERROR::BFACTOR" << std::endl;
@@ -577,24 +603,24 @@ bool Syntax::NT_BFACTOR()
 	return false;
 }
 
-bool Syntax::NT_BFACTOR_EXT()
+bool Syntax::BFACTOR_EXT()
 {
 	if (getPeek() == "(") {
-		if (NT_BEXPR()) {
+		if (BEXPR()) {
 			return true;
 		}
 
-		if (NT_EXPR()) {
+		if (EXPR()) {
 			return true;
 		}
 	}
 	else if (getPeek() == "not") {
-		return NT_BEXPR();
+		return BEXPR();
 	}
 	else if (getPeek() == "DOUBLE" || getPeek() == "ID"
 		|| getPeek() == "INTEGER") {
-		return NT_EXPR() && NT_COMP()
-			&& NT_EXPR();
+		return EXPR() && COMP()
+			&& EXPR();
 	}
 
 	std::cout << "ERROR::BFACTOR_EXT" << std::endl;
@@ -602,7 +628,7 @@ bool Syntax::NT_BFACTOR_EXT()
 	return false;
 }
 
-bool Syntax::NT_COMP()
+bool Syntax::COMP()
 {
 	if (getPeek() == "<") {
 		return matchTokenNew("<");
@@ -628,10 +654,10 @@ bool Syntax::NT_COMP()
 	return false;
 }
 
-bool Syntax::NT_VAR()
+bool Syntax::VAR()
 {
 	if (getPeek() == "ID") {
-		return matchTokenNew("ID") && NT_VAR_EXT();
+		return matchTokenNew("ID") && VAR_EXT();
 	}
 
 	std::cout << "ERROR::VAR" << std::endl;
@@ -639,10 +665,10 @@ bool Syntax::NT_VAR()
 	return false;
 }
 
-bool Syntax::NT_VAR_EXT()
+bool Syntax::VAR_EXT()
 {
 	if (getPeek() == "[") {
-		return matchTokenNew("[") && NT_EXPR()
+		return matchTokenNew("[") && EXPR()
 			&& matchTokenNew("]");
 	}
 	else if (getPeek() == "%" || getPeek() == ")" || getPeek() == "]"
@@ -664,7 +690,7 @@ bool Syntax::NT_VAR_EXT()
 	return false;
 }
 
-bool Syntax::NT_NUMBER()
+bool Syntax::NUMBER()
 {
 	if (getPeek() == "DOUBLE") {
 		return matchTokenNew("DOUBLE");

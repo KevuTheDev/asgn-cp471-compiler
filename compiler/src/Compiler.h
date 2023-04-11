@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "globals.h"
@@ -17,25 +18,39 @@
 class Compiler
 {
 public:
-	Compiler(const std::string& filename);
+	Compiler(const std::string& filename, const std::string& outpath, const std::string& respath);
 
 	void run();
 
-	~Compiler();
-
 private:
 	std::string _filename;
+	std::string _outpath;
+	std::string _respath;
 
-	LogFileBuffer *_logfilebuffer;
-	TokenFileBuffer *_tokenfilebuffer;
+	LogFileBuffer* _logFileBuffer; 
+	TokenFileBuffer* _tokenFileBuffer;
 
-	ReservedWords *_reservedwords;
-	SymbolTable *_symboltable;
-	
+	ReservedWords* _reservedWords;
+	SymbolTable* _symbolTable;
 
-	Lexical *_lexical;
+	Lexical* _lexical;
+	Syntax* _syntax;
 
-	Syntax *_syntax;
+
+	// Reserved Words
+	void setupReservedWordsTable();
+	void addReservedWords();
+
+	// Symbol Table
+	void setupSymbolTable();
+
+	// Lexical
+	void setupLexicalAnalysis();
+	void runLexicalAnalysis();
+
+	// Syntax
+	void setupSyntaxAnalysis();
+	void runSyntaxAnalysis();
 
 };
 

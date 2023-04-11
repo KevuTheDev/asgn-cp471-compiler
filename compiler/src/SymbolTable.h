@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "FileBuffer.h"
 #include "TokenFileBuffer.h"
 
 struct SymbolRow {
@@ -26,6 +25,8 @@ public:
 	SymbolTable();
 	~SymbolTable();
 
+	void linkTokenFileBuffer(TokenFileBuffer* buffer);
+
 	bool append(std::string token, std::string lexeme, int lineNumber);
 	void printTable();
 
@@ -39,5 +40,7 @@ private:
 	RowSize _tableLineNum;
 
 	std::vector <SymbolRow> _table;
+
+	TokenFileBuffer* _tokenFileBuffer;
 };
 

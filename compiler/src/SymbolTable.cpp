@@ -1,7 +1,5 @@
 #include "SymbolTable.h"
 
-extern std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
-
 std::string repeatChar(char ch, int num) {
     if (num == 0) { // base case: when num is 0, return an empty string
         return "";
@@ -20,6 +18,11 @@ SymbolTable::SymbolTable()
 
 SymbolTable::~SymbolTable()
 {
+}
+
+void SymbolTable::linkTokenFileBuffer(TokenFileBuffer* buffer)
+{
+    this->_tokenFileBuffer = buffer;
 }
 
 bool SymbolTable::append(std::string token, std::string lexeme, int lineNumber)
@@ -46,8 +49,8 @@ void SymbolTable::printTable()
 
     // print table head
     std::cout << "PRINT" << std::endl;
-    ::TOKEN_FILE_BUFFER->append(tableHead);
-    ::TOKEN_FILE_BUFFER->append("|" +
+    this->_tokenFileBuffer->append(tableHead);
+    this->_tokenFileBuffer->append("|" +
         padding +
         "TOKEN" +
         std::string(this->_tableToken.limit - this->_tableToken.length
@@ -65,12 +68,12 @@ void SymbolTable::printTable()
         "|"
     );
 
-    ::TOKEN_FILE_BUFFER->append(tableHead);
+    this->_tokenFileBuffer->append(tableHead);
 
 
 
     for (auto i : this->_table) {
-        ::TOKEN_FILE_BUFFER->append("|" +
+        this->_tokenFileBuffer->append("|" +
             padding +
             i.token.substr(0, this->_tableToken.limit) +
             std::string(this->_tableToken.limit - i.token.length()
@@ -88,8 +91,8 @@ void SymbolTable::printTable()
         );
     }
 
-    ::TOKEN_FILE_BUFFER->append(tableHead);
-    ::TOKEN_FILE_BUFFER->clearBuffer();
+    this->_tokenFileBuffer->append(tableHead);
+    this->_tokenFileBuffer->clearBuffer();
 
 
     /*

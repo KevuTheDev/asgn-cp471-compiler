@@ -1,10 +1,5 @@
 #include "Lexical.h"
 
-extern std::unique_ptr<ReservedWords> RESERVED_WORDS;
-extern std::unique_ptr<SymbolTable> SYMBOL_TABLE;
-extern std::unique_ptr<LogFileBuffer> LOG_FILE_BUFFER;
-extern std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
-
 Lexical::Lexical(const std::string& filename) 
 {
 	if (!this->checkExtension(filename)) {
@@ -30,6 +25,35 @@ Lexical::Lexical(const std::string& filename)
 
 	memset(this->_doubleBuffer1, 0, compiler::COMPILER_BUFFER_SIZE);
 	memset(this->_doubleBuffer2, 0, compiler::COMPILER_BUFFER_SIZE);
+
+	this->_logFileBuffer = nullptr;
+	this->_tokenFileBuffer = nullptr;
+
+	this->_reservedWords = nullptr;
+	this->_symbolTable = nullptr;
+}
+
+void Lexical::linkLogFileBuffer(LogFileBuffer* buffer)
+{
+	if (this == nullptr) {
+		std::cout << "e" << std::endl;
+	}
+	this->_logFileBuffer = buffer;
+}
+
+void Lexical::linkTokenFileBuffer(TokenFileBuffer* buffer)
+{
+	this->_tokenFileBuffer = buffer;
+}
+
+void Lexical::linkReservedWords(ReservedWords* table)
+{
+	this->_reservedWords = table;
+}
+
+void Lexical::linkSymbolTable(SymbolTable* table)
+{
+	this->_symbolTable = table;
 }
 
 void Lexical::run()
@@ -48,10 +72,10 @@ void Lexical::run()
 		loop = this->getNextToken();
 	}
 
-	::SYMBOL_TABLE->printTable();
+	this->_symbolTable->printTable();
 
 
-	::LOG_FILE_BUFFER->clearBuffer();
+	this->_logFileBuffer->clearBuffer();
 	this->_is.close();
 }
 
@@ -96,12 +120,12 @@ void Lexical::sanitizeFileName(const std::string& filename)
 
 void Lexical::appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar)
 {
-	::LOG_FILE_BUFFER->errorChar(linenumber, rownumber, errorchar);
+	this->_logFileBuffer->errorChar(linenumber, rownumber, errorchar);
 }
 
 void Lexical::appendToSymbolTable(std::string token, std::string lexeme, int lineNumber)
 {
-	::SYMBOL_TABLE->append(token, lexeme, lineNumber);
+	this->_symbolTable->append(token, lexeme, lineNumber);
 }
 
 bool Lexical::getNextToken()
@@ -302,7 +326,7 @@ bool Lexical::getNextToken()
 			this->readNextChar();
 		} while (std::isalnum(this->_peek));
 
-		if (::RESERVED_WORDS->findReservedWord(b)) {
+		if (this->_reservedWords->findReservedWord(b)) {
 			appendToSymbolTable(b, b, this->_lineNumber);
 		}
 		else {

@@ -3,6 +3,7 @@
 TokenFileBuffer::~TokenFileBuffer()
 {
 	this->finish();
+	std::cout << "TOKENBUFFER DESCTURCTOR CALLED" << std::endl;
 }
 
 bool TokenFileBuffer::checkExtension(const std::string& filepath)
