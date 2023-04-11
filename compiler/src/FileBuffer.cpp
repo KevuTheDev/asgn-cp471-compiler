@@ -22,7 +22,6 @@ FileBuffer::FileBuffer()
 FileBuffer::~FileBuffer()
 {
 	this->finish();
-	std::cout << "FILEBUFFER DESCTURCTOR CALLED" << std::endl;
 }
 
 void FileBuffer::append(const std::string& value)

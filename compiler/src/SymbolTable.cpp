@@ -14,13 +14,15 @@ SymbolTable::SymbolTable()
     this->_tableToken = { 12, 5 };
     this->_tableLexeme = { 20, 6 };
     this->_tableLineNum = { 4, 4 };
+
+    this->_tokenFileBuffer = nullptr;
 }
 
 SymbolTable::~SymbolTable()
 {
 }
 
-void SymbolTable::linkTokenFileBuffer(TokenFileBuffer* buffer)
+void SymbolTable::linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer)
 {
     this->_tokenFileBuffer = buffer;
 }

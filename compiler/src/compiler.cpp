@@ -6,11 +6,11 @@ Compiler::Compiler(const std::string& filename, const std::string& outpath, cons
 	this->_outpath = outpath;
 	this->_respath = respath;
 
-	this->_logFileBuffer = new LogFileBuffer(outpath + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
-	this->_tokenFileBuffer = new TokenFileBuffer(outpath + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
+	this->_logFileBuffer = std::make_shared<LogFileBuffer>(outpath + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
+	this->_tokenFileBuffer = std::make_shared<TokenFileBuffer>(outpath + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
 	
-	this->_reservedWords = new ReservedWords();
-	this->_symbolTable = new SymbolTable();
+	this->_reservedWords = std::make_shared<ReservedWords>();
+	this->_symbolTable = std::make_shared<SymbolTable>();
 }
 
 void Compiler::setupReservedWordsTable()
@@ -45,7 +45,7 @@ void Compiler::setupSymbolTable()
 
 void Compiler::setupLexicalAnalysis()
 {
-	this->_lexical = new Lexical(this->_respath + this->_filename + compiler::COMPILER_FILE_EXTENSION_MAIN);
+	this->_lexical = std::make_unique<Lexical>(this->_respath + this->_filename + compiler::COMPILER_FILE_EXTENSION_MAIN);
 	this->_lexical->linkLogFileBuffer(this->_logFileBuffer);
 	this->_lexical->linkTokenFileBuffer(this->_tokenFileBuffer);
 	this->_lexical->linkReservedWords(this->_reservedWords);
@@ -59,7 +59,7 @@ void Compiler::runLexicalAnalysis()
 
 void Compiler::setupSyntaxAnalysis()
 {
-	this->_syntax = new Syntax();
+	this->_syntax = std::make_unique<Syntax>();
 	this->_syntax->linkLogFileBuffer(this->_logFileBuffer);
 	this->_syntax->linkTokenFileBuffer(this->_tokenFileBuffer);
 	this->_syntax->linkReservedWords(this->_reservedWords);

@@ -27,14 +27,14 @@ private:
 	std::string _outpath;
 	std::string _respath;
 
-	LogFileBuffer* _logFileBuffer; 
-	TokenFileBuffer* _tokenFileBuffer;
+	std::shared_ptr<LogFileBuffer> _logFileBuffer;
+	std::shared_ptr<TokenFileBuffer> _tokenFileBuffer;
 
-	ReservedWords* _reservedWords;
-	SymbolTable* _symbolTable;
+	std::shared_ptr<ReservedWords> _reservedWords;
+	std::shared_ptr<SymbolTable> _symbolTable;
 
-	Lexical* _lexical;
-	Syntax* _syntax;
+	std::unique_ptr<Lexical> _lexical;
+	std::unique_ptr<Syntax> _syntax;
 
 
 	// Reserved Words

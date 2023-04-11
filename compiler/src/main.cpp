@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     std::string outpath = "output/";
     std::string respath = "res/";
 
-    auto compiler = new Compiler(filename, outpath, respath);
+    auto compiler = std::make_unique<Compiler>(filename, outpath, respath);
     compiler->run();
     
 

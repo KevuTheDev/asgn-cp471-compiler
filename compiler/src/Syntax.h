@@ -17,10 +17,10 @@ public:
 	Syntax();
 	~Syntax();
 
-	void linkLogFileBuffer(LogFileBuffer* buffer);
-	void linkTokenFileBuffer(TokenFileBuffer* buffer);
-	void linkReservedWords(ReservedWords* table);
-	void linkSymbolTable(SymbolTable* table);
+	void linkLogFileBuffer(std::shared_ptr<LogFileBuffer> buffer);
+	void linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer);
+	void linkReservedWords(std::shared_ptr<ReservedWords> table);
+	void linkSymbolTable(std::shared_ptr<SymbolTable> table);
 
 	void run();
 
@@ -39,11 +39,11 @@ private:
 	std::string readString = "";
 
 
-	LogFileBuffer* _logFileBuffer;
-	TokenFileBuffer* _tokenFileBuffer;
+	std::shared_ptr<LogFileBuffer> _logFileBuffer;
+	std::shared_ptr<TokenFileBuffer> _tokenFileBuffer;
 
-	ReservedWords* _reservedWords;
-	SymbolTable* _symbolTable;
+	std::shared_ptr<ReservedWords> _reservedWords;
+	std::shared_ptr<SymbolTable> _symbolTable;
 
 
 	void start();

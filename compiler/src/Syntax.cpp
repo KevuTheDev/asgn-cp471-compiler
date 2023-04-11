@@ -3,6 +3,11 @@
 Syntax::Syntax()
 {
 	this->_position = 0;
+	this->_limit = 0;
+	this->_logFileBuffer = nullptr;
+	this->_tokenFileBuffer = nullptr;
+	this->_reservedWords = nullptr;
+	this->_symbolTable = nullptr;
 }
 
 Syntax::~Syntax()
@@ -13,22 +18,22 @@ Syntax::~Syntax()
 	this->_symbolTable = nullptr;
 }
 
-void Syntax::linkLogFileBuffer(LogFileBuffer* buffer)
+void Syntax::linkLogFileBuffer(std::shared_ptr<LogFileBuffer> buffer)
 {
 	this->_logFileBuffer = buffer;
 }
 
-void Syntax::linkTokenFileBuffer(TokenFileBuffer* buffer)
+void Syntax::linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer)
 {
 	this->_tokenFileBuffer = buffer;
 }
 
-void Syntax::linkReservedWords(ReservedWords* table)
+void Syntax::linkReservedWords(std::shared_ptr<ReservedWords> table)
 {
 	this->_reservedWords = table;
 }
 
-void Syntax::linkSymbolTable(SymbolTable* table)
+void Syntax::linkSymbolTable(std::shared_ptr<SymbolTable> table)
 {
 	this->_symbolTable = table;
 	this->_limit = this->_symbolTable->length();

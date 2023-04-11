@@ -33,25 +33,22 @@ Lexical::Lexical(const std::string& filename)
 	this->_symbolTable = nullptr;
 }
 
-void Lexical::linkLogFileBuffer(LogFileBuffer* buffer)
+void Lexical::linkLogFileBuffer(std::shared_ptr<LogFileBuffer> buffer)
 {
-	if (this == nullptr) {
-		std::cout << "e" << std::endl;
-	}
 	this->_logFileBuffer = buffer;
 }
 
-void Lexical::linkTokenFileBuffer(TokenFileBuffer* buffer)
+void Lexical::linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer)
 {
 	this->_tokenFileBuffer = buffer;
 }
 
-void Lexical::linkReservedWords(ReservedWords* table)
+void Lexical::linkReservedWords(std::shared_ptr<ReservedWords> table)
 {
 	this->_reservedWords = table;
 }
 
-void Lexical::linkSymbolTable(SymbolTable* table)
+void Lexical::linkSymbolTable(std::shared_ptr<SymbolTable> table)
 {
 	this->_symbolTable = table;
 }

@@ -25,7 +25,7 @@ public:
 	SymbolTable();
 	~SymbolTable();
 
-	void linkTokenFileBuffer(TokenFileBuffer* buffer);
+	void linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer);
 
 	bool append(std::string token, std::string lexeme, int lineNumber);
 	void printTable();
@@ -41,6 +41,6 @@ private:
 
 	std::vector <SymbolRow> _table;
 
-	TokenFileBuffer* _tokenFileBuffer;
+	std::shared_ptr<TokenFileBuffer> _tokenFileBuffer;
 };
 
