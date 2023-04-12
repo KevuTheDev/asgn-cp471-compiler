@@ -122,9 +122,9 @@ void Lexical::sanitizeFileName(const std::string& filename)
 	}
 }
 
-void Lexical::appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar)
+void Lexical::appendToLogFileBuffer(const std::string& errorchar)
 {
-	this->_logFileBuffer->logLexicalError(linenumber, rownumber, errorchar);
+	this->_logFileBuffer->logLexicalError(this->_lineNumber, this->_charNumber, errorchar);
 }
 
 void Lexical::appendToSymbolTable(compiler::TOKEN token, std::string lexeme)
@@ -267,32 +267,49 @@ bool Lexical::getNextToken()
 	}
 
 	if (std::isdigit(this->_peek)) {
-		int v = 0;
+		std::string v = "";
 		//std::cout << "std:::::" << this->_peek << " " << static_cast<int>(this->_peek) <<std::endl;
 		do {
-			v = 10 * v + int(this->_peek - '0');
+			v += this->_peek;
 			this->readNextChar();
 		} while (std::isdigit(this->_peek));
 
 		if (this->_peek != '.') {
-			appendToSymbolTable(compiler::VALUE_INTEGER, std::to_string(v));
+			appendToSymbolTable(compiler::VALUE_INTEGER, v);
 			//std::cout << v << std::endl;
 			return true;
 		}
 
-		float x = static_cast<float>(v);
-		float d = 10;
+		v += ".";
+		for (;;) {
+			this->readNextChar();
+			if (!std::isdigit(this->_peek)) {
+				break;
+			}
+			v += this->_peek;
+		}
+
+		if (this->_peek != 'e') {
+			// if a letter is placed other than a 'e', means a ID will be position
+			return true;
+		}
+
+		v += this->_peek;
+		this->readNextChar();
+
+		if (this->_peek == '+' || this->_peek == '-') {
+			v += this->_peek;
+		}
 
 		for (;;) {
 			this->readNextChar();
 			if (!std::isdigit(this->_peek)) {
 				break;
 			}
-			x = x + float(this->_peek - '0') / 10;
-			d = d * 10;
+			v += this->_peek;
 		}
 		
-		appendToSymbolTable(compiler::VALUE_DOUBLE, std::to_string(x));
+		appendToSymbolTable(compiler::VALUE_DOUBLE, v);
 		//std::cout << x << std::endl;
 		return true;
 	}
@@ -316,7 +333,7 @@ bool Lexical::getNextToken()
 	}
 
 	std::string s(&this->_peek);
-	this->appendToLogFileBuffer(this->_lineNumber, this->_charNumber, s);
+	this->appendToLogFileBuffer(s);
 	this->_error = true;
 	//appendToSymbolTable("OTHER", s);
 	//appendToTokenFileBuffer("ERROR: " + s);

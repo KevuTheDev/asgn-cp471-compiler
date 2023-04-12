@@ -59,7 +59,7 @@ private:
 	void sanitizeFileName(const std::string& filepath);
 
 	//		-> Log File Buffer Related
-	void appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar);
+	void appendToLogFileBuffer(const std::string& errorchar);
 
 	//		-> Symbol Table Related
 	void appendToSymbolTable(compiler::TOKEN token, std::string lexeme);

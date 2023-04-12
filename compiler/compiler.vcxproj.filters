@@ -145,6 +145,9 @@
     <None Include="res\Test10.cp">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\Test11.cp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Test0.log" />

@@ -47,6 +47,7 @@
     <None Include="res\Test0.cp" />
     <None Include="res\Test1.cp" />
     <None Include="res\Test10.cp" />
+    <None Include="res\Test11.cp" />
     <None Include="res\Test2.cp" />
     <None Include="res\Test3.cp" />
     <None Include="res\Test4.cp" />

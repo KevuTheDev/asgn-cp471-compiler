@@ -118,7 +118,7 @@ bool Syntax::PROGRAM()
 {
 	if (getPeek() == compiler::DOLLAR_SIGN || getPeek() == compiler::DOT
 		|| getPeek() == compiler::SEMICOLON || getPeek() == compiler::ID
-		|| getPeek() == compiler::KW_DEF || getPeek() == compiler::VALUE_DOUBLE
+		|| getPeek() == compiler::KW_DEF || getPeek() == compiler::KW_DOUBLE
 		|| getPeek() == compiler::KW_IF || getPeek() == compiler::KW_INT
 		|| getPeek() == compiler::KW_PRINT || getPeek() == compiler::KW_RETURN
 		|| getPeek() == compiler::KW_WHILE) {
@@ -138,7 +138,7 @@ bool Syntax::FDECLS()
 	}
 	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
 		|| getPeek() == compiler::ID || getPeek() == compiler::KW_DEF
-		|| getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::KW_IF
+		|| getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_IF
 		|| getPeek() == compiler::KW_INT || getPeek() == compiler::KW_PRINT
 		|| getPeek() == compiler::KW_RETURN || getPeek() == compiler::KW_WHILE) {
 		// EPSILON
@@ -155,7 +155,7 @@ bool Syntax::FDECLS_EXT()
 		return FDEC() && matchTokenNew(compiler::SEMICOLON) && FDECLS_EXT();
 	}
 	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
-		|| getPeek() == compiler::ID || getPeek() == compiler::VALUE_DOUBLE
+		|| getPeek() == compiler::ID || getPeek() == compiler::KW_DOUBLE
 		|| getPeek() == compiler::KW_IF || getPeek() == compiler::KW_INT
 		|| getPeek() == compiler::KW_PRINT || getPeek() == compiler::KW_RETURN
 		|| getPeek() == compiler::KW_WHILE) {
@@ -183,7 +183,7 @@ bool Syntax::FDEC()
 
 bool Syntax::PARAMS()
 {
-	if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::KW_INT) {
+	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
 		return TYPE() && VAR() 
 			&& PARAMS_EXT();
 	}
@@ -218,7 +218,7 @@ bool Syntax::FNAME()
 
 bool Syntax::DECLARATIONS()
 {
-	if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::KW_INT) {
+	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
 		return DECL() && matchTokenNew(compiler::SEMICOLON) 
 			&& DECLARATIONS_EXT();
 	}
@@ -236,7 +236,7 @@ bool Syntax::DECLARATIONS()
 
 bool Syntax::DECLARATIONS_EXT()
 {
-	if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::KW_INT) {
+	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
 		return DECL() && matchTokenNew(compiler::SEMICOLON)
 			&& DECLARATIONS_EXT();
 	}
@@ -254,7 +254,7 @@ bool Syntax::DECLARATIONS_EXT()
 
 bool Syntax::DECL()
 {
-	if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::KW_INT) {
+	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
 		return TYPE() && VARLIST();
 	}
 
@@ -264,8 +264,8 @@ bool Syntax::DECL()
 
 bool Syntax::TYPE()
 {
-	if (getPeek() == compiler::VALUE_DOUBLE) {
-		return matchTokenNew(compiler::VALUE_DOUBLE);
+	if (getPeek() == compiler::KW_DOUBLE) {
+		return matchTokenNew(compiler::KW_DOUBLE);
 	}
 	else if (getPeek() == compiler::KW_INT) {
 		return matchTokenNew(compiler::KW_INT);
