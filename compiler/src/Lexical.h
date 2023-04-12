@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <fstream>
 #include <memory>
 #include <string>
 #include <thread>
@@ -17,7 +16,13 @@ class Lexical
 public:
 	Lexical(const std::string &filename);
 
+	void linkLogFileBuffer(std::shared_ptr<LogFileBuffer> buffer);
+	void linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer);
+	void linkReservedWords(std::shared_ptr<ReservedWords> table);
+	void linkSymbolTable(std::shared_ptr<SymbolTable> table);
+
 	void run();
+	bool getError();
 
 private:
 	std::ifstream _is;
@@ -32,6 +37,15 @@ private:
 	uint16_t _doubleBufferCounter1;
 	uint16_t _doubleBufferCounter2;
 	bool _doubleBufferSwitch; // buffer1 - true, buffer2 - false
+
+	bool _error;
+
+	///
+	std::shared_ptr<LogFileBuffer> _logFileBuffer;
+	std::shared_ptr<TokenFileBuffer> _tokenFileBuffer;
+
+	std::shared_ptr<ReservedWords> _reservedWords;
+	std::shared_ptr<SymbolTable> _symbolTable;
 
 
 	
@@ -48,7 +62,7 @@ private:
 	void appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar);
 
 	//		-> Symbol Table Related
-	void appendToSymbolTable(std::string token, std::string lexeme, int lineNumber);
+	void appendToSymbolTable(compiler::TOKEN token, std::string lexeme);
 
 
 

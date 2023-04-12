@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
+#include <chrono>
 
 namespace compiler
 {
@@ -18,37 +20,94 @@ namespace compiler
     const uint16_t COMPILER_BUFFER_SIZE = 2048;
     const uint16_t COMPILER_BUFFER_SIZE_NULL = COMPILER_BUFFER_SIZE - 1;
 
-    const std::string TK_END = "$";
-    const std::string TK_MODULU = "%";
-    const std::string TK_LSEMIC = "(";
-    const std::string TK_RSEMIC = ")";
-    const std::string TK_LBRACK = "[";
-    const std::string TK_RBRACK = "]";
-    const std::string TK_MULTIP = "*";
-    const std::string TK_DIVIDE = "/";
-    const std::string TK_ADDITI = "+";
-    const std::string TK_MINUS = "-";
+    const std::string KEYWORDS[] = {"def", "fed", "int", "double", "if",
+        "then", "else", "fi", "while", "do", "od", "print", "return", "or", "and", "not" };
+    // adding keyword to vector, must also add keyword to TOKEN ENUM
+    
+    const std::string ST_KEYWORDS[] = {"KW_DEF",
+        "KW_FED",
+        "KW_INT",
+        "KW_DOUBLE",
+        "KW_IF",
+        "KW_THEN",
+        "KW_ELSE",
+        "KW_FI",
+        "KW_WHILE",
+        "KW_DO",
+        "KW_OD",
+        "KW_PRINT",
+        "KW_RETURN",
+        "KW_OR",
+        "KW_AND",
+        "KW_NOT",
 
+        "SEMICOLON",
+        "LEFT_PAREN",
+        "RIGHT_PAREN",
+        "EQUAL",
+        "COMP_EQUAL",
+        "COMP_LEQUAL",
+        "COMP_NOT",
+        "COMP_LTHAN",
+        "COMP_GEQUAL",
+        "COMP_GTHAN",
+        "COMMA",
+        "PLUS",
+        "MULTIPLY",
+        "MINUS",
+        "MODULUS",
+        "DIVIDE",
+        "LEFT_BRACK",
+        "RIGHT_BRACK",
+        "DOT",
+        "DOLLAR_SIGN",
 
-
-
-    enum Symbol {
-        TOKEN,
-        LEXEME,
-        LINE
-    };
+        "ID",
+        "VALUE_INTEGER",
+        "VALUE_DOUBLE" };
 
     enum TOKEN {
-        SEMICOLON = ';',
-        LPAREN = '(',
-        RPAREN = ')',
-        AMPERS = '&',
+        KW_DEF,
+        KW_FED,
+        KW_INT,
+        KW_DOUBLE,
+        KW_IF,
+        KW_THEN,
+        KW_ELSE,
+        KW_FI,
+        KW_WHILE,
+        KW_DO,
+        KW_OD,
+        KW_PRINT,
+        KW_RETURN,
+        KW_OR,
+        KW_AND,
+        KW_NOT,
 
+        SEMICOLON,
+        LEFT_PAREN,
+        RIGHT_PAREN,
+        EQUAL,
+        COMP_EQUAL,
+        COMP_LEQUAL,
+        COMP_NOT,
+        COMP_LTHAN,
+        COMP_GEQUAL,
+        COMP_GTHAN,
+        COMMA,
+        PLUS,
+        MULTIPLY,
+        MINUS,
+        MODULUS,
+        DIVIDE,
+        LEFT_BRACK,
+        RIGHT_BRACK,
+        DOT,
+        DOLLAR_SIGN,
 
-
-        COMPARISON,
-        IDENTIFIER,
-        NUMBER,
+        ID,
+        VALUE_INTEGER,
+        VALUE_DOUBLE
 
     };
 
@@ -68,5 +127,20 @@ namespace compiler
         if (os.is_open()) {
             os << buffer;
         }
+    }
+
+    inline void printConsoleError(const std::string& errorMsg)
+    {
+
+    }
+
+    inline void printConsoleWarning(const std::string& warningMsg)
+    {
+
+    }
+
+    inline void printConsoleInfo(const std::string& infoMsg)
+    {
+
     }
 }

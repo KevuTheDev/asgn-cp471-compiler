@@ -1,24 +1,20 @@
 #pragma once
 #include <iostream>
 #include <fstream>
-#include <cstdio>
 #include <memory>
 #include <string>
 #include <vector>
+#include <format>
 
-#include "FileBuffer.h"
 #include "TokenFileBuffer.h"
 
 struct SymbolRow {
-	std::string token;
+	compiler::TOKEN token;
 	std::string lexeme;
 	int lineNumber;
+	int charNumber;
 };
 
-struct RowSize {
-	int limit;
-	int length;
-};
 
 class SymbolTable
 {
@@ -26,18 +22,24 @@ public:
 	SymbolTable();
 	~SymbolTable();
 
-	bool append(std::string token, std::string lexeme, int lineNumber);
+	void linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer);
+
+	bool append(compiler::TOKEN token, std::string lexeme, int lineNumber, int charNumber);
 	void printTable();
 
 	int length();
-	std::string getTokenAtIndex(int index);
+	compiler::TOKEN getTokenAtIndex(int index);
+	SymbolRow getSymbolRowAtIndex(int index);
 
 private:
-	// token, lexeme, line number
-	RowSize _tableToken;
-	RowSize _tableLexeme;
-	RowSize _tableLineNum;
+	// token, lexeme, line number, char number limits
+	int _printTokenLimit;
+	int _printLexemeLimit;
+	int _printLineNumLimit;
+	int _printCharNumLimit;
 
 	std::vector <SymbolRow> _table;
+	std::shared_ptr<TokenFileBuffer> _tokenFileBuffer;
+
 };
 

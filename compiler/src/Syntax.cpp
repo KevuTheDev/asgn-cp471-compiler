@@ -1,47 +1,63 @@
 #include "Syntax.h"
 
-extern std::unique_ptr<ReservedWords> RESERVED_WORDS;
-extern std::unique_ptr<SymbolTable> SYMBOL_TABLE;
-extern std::unique_ptr<LogFileBuffer> LOG_FILE_BUFFER;
-extern std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
-
 Syntax::Syntax()
 {
 	this->_position = 0;
-	this->_limit = ::SYMBOL_TABLE->length();
-
-	std::cout << this->_limit << std::endl;
-
-	this->_peek = ::SYMBOL_TABLE->getTokenAtIndex(this->_position);;
+	this->_limit = 0;
+	this->_logFileBuffer = nullptr;
+	this->_tokenFileBuffer = nullptr;
+	this->_reservedWords = nullptr;
+	this->_symbolTable = nullptr;
 }
 
-void Syntax::start()
+Syntax::~Syntax()
 {
-	bool hmm = NT_PROGRAM();
-
-	if (hmm) {
-		std::cout << "COMPLETE" << std::endl;
-		std::cout << "COMPLETE" << std::endl;
-		std::cout << "COMPLETE" << std::endl;
-		std::cout << "COMPLETE" << std::endl;
-		std::cout << "COMPLETE" << std::endl;
-	}
-	else {
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-	}
+	this->_logFileBuffer = nullptr;
+	this->_tokenFileBuffer = nullptr;
+	this->_reservedWords = nullptr;
+	this->_symbolTable = nullptr;
 }
 
-void Syntax::matchToken(const std::string& token)
+void Syntax::linkLogFileBuffer(std::shared_ptr<LogFileBuffer> buffer)
+{
+	this->_logFileBuffer = buffer;
+}
+
+void Syntax::linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer)
+{
+	this->_tokenFileBuffer = buffer;
+}
+
+void Syntax::linkReservedWords(std::shared_ptr<ReservedWords> table)
+{
+	this->_reservedWords = table;
+}
+
+void Syntax::linkSymbolTable(std::shared_ptr<SymbolTable> table)
+{
+	this->_symbolTable = table;
+	this->_limit = this->_symbolTable->length();
+	std::cout << this->_limit << std::endl;
+	this->_peek = this->_symbolTable->getTokenAtIndex(this->_position);;
+}
+
+void Syntax::run()
+{
+	this->start();
+}
+
+bool Syntax::getError()
+{
+	return this->_error;
+}
+
+void Syntax::matchToken(compiler::TOKEN token)
 {
 	if (token == this->_peek) {
 		getNextToken();
 	}
 }
-bool Syntax::matchTokenNew(const std::string& token)
+bool Syntax::matchTokenNew(compiler::TOKEN token)
 {
 	if (getPeek() != token) {
 		return false;
@@ -57,630 +73,624 @@ void Syntax::getNextToken()
 	this->_position += 1;
 
 	if (this->_position == this->_limit) {
-		this->_peek = "$";
+		this->_peek = compiler::DOLLAR_SIGN;
 	}
 	else {
-		this->_peek = ::SYMBOL_TABLE->getTokenAtIndex(this->_position);
+		this->_peek = this->_symbolTable->getTokenAtIndex(this->_position);
 	}
 }
 
-std::string Syntax::getPeek()
+compiler::TOKEN Syntax::getPeek()
 {
 	return this->_peek;
 }
 
-bool Syntax::NT_PROGRAM()
+void Syntax::printSyntaxError(std::string code)
 {
-	if (getPeek() == "$" || getPeek() == "."
-		|| getPeek() == ";" || getPeek() == "ID"
-		|| getPeek() == "def" || getPeek() == "double"
-		|| getPeek() == "if" || getPeek() == "int"
-		|| getPeek() == "print" || getPeek() == "return"
-		|| getPeek() == "while") {
-		return NT_FDECLS() && NT_DECLARATIONS()
-			&& NT_STATEMENT_SEQ() && matchTokenNew(".");
+	SymbolRow sr = this->_symbolTable->getSymbolRowAtIndex(this->_position);
+
+	this->_logFileBuffer->logSyntaxError(sr.lineNumber, sr.charNumber, sr.lexeme);
+}
+
+
+void Syntax::start()
+{
+	bool hmm = PROGRAM();
+
+	if (!hmm) {
+		std::cout << "INCOMPLETE" << std::endl;
+		std::cout << "INCOMPLETE" << std::endl;
+		std::cout << "INCOMPLETE" << std::endl;
+		std::cout << "INCOMPLETE" << std::endl;
+		std::cout << "INCOMPLETE" << std::endl;
+		return;
 	}
 
-	std::cout << "ERROR::PROGRAM" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	std::cout << "COMPLETE" << std::endl;
+	std::cout << "COMPLETE" << std::endl;
+	std::cout << "COMPLETE" << std::endl;
+	std::cout << "COMPLETE" << std::endl;
+	std::cout << "COMPLETE" << std::endl;
+
+}
+
+bool Syntax::PROGRAM()
+{
+	if (getPeek() == compiler::DOLLAR_SIGN || getPeek() == compiler::DOT
+		|| getPeek() == compiler::SEMICOLON || getPeek() == compiler::ID
+		|| getPeek() == compiler::KW_DEF || getPeek() == compiler::VALUE_DOUBLE
+		|| getPeek() == compiler::KW_IF || getPeek() == compiler::KW_INT
+		|| getPeek() == compiler::KW_PRINT || getPeek() == compiler::KW_RETURN
+		|| getPeek() == compiler::KW_WHILE) {
+		return FDECLS() && DECLARATIONS()
+			&& STATEMESEQ() && matchTokenNew(compiler::DOT);
+	}
+
+	printSyntaxError("PROGRAM");
 	return false;
 }
 
-bool Syntax::NT_FDECLS()
+bool Syntax::FDECLS()
 {
-	if (getPeek() == "def") {
-		return NT_FDEC() && matchTokenNew(";")
-			&& NT_FDECLS_EXT();
+	if (getPeek() == compiler::KW_DEF) {
+		return FDEC() && matchTokenNew(compiler::SEMICOLON)
+			&& FDECLS_EXT();
 	}
-	else if (getPeek() == "." || getPeek() == ";"
-		|| getPeek() == "ID" || getPeek() == "def"
-		|| getPeek() == "double" || getPeek() == "if"
-		|| getPeek() == "int" || getPeek() == "print"
-		|| getPeek() == "return" || getPeek() == "while") {
+	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
+		|| getPeek() == compiler::ID || getPeek() == compiler::KW_DEF
+		|| getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::KW_IF
+		|| getPeek() == compiler::KW_INT || getPeek() == compiler::KW_PRINT
+		|| getPeek() == compiler::KW_RETURN || getPeek() == compiler::KW_WHILE) {
 		// EPSILON
-		return NT_FDECLS_EXT();
+		return FDECLS_EXT();
 	}
 
-	std::cout << "ERROR::FDECLS" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("FDECLS");
 	return false;
 }
 
-bool Syntax::NT_FDECLS_EXT()
+bool Syntax::FDECLS_EXT()
 {
-	if (getPeek() == "def") {
-		return NT_FDEC() && matchTokenNew(";") && NT_FDECLS_EXT();
+	if (getPeek() == compiler::KW_DEF) {
+		return FDEC() && matchTokenNew(compiler::SEMICOLON) && FDECLS_EXT();
 	}
-	else if (getPeek() == "." || getPeek() == ";"
-		|| getPeek() == "ID" || getPeek() == "double"
-		|| getPeek() == "if" || getPeek() == "int"
-		|| getPeek() == "print" || getPeek() == "return"
-		|| getPeek() == "while") {
-		// EPSILON
-		return true;
-	}
-
-	std::cout << "ERROR::FDECLS_EXT" << std::endl;
-	std::cout << getPeek() << " :: " << readString << std::endl;
-	return false;
-}
-
-bool Syntax::NT_FDEC()
-{
-	if (getPeek() == "def") {
-		return matchTokenNew("def") && NT_TYPE()
-			&& NT_FNAME() && matchTokenNew("(")
-			&& NT_PARAMS() && matchTokenNew(")")
-			&& NT_DECLARATIONS() && NT_STATEMENT_SEQ()
-			&& matchTokenNew("fed");
-	}
-
-	std::cout << "ERROR::FDEC" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
-	return false;
-}
-
-bool Syntax::NT_PARAMS()
-{
-	if (getPeek() == "double" || getPeek() == "int") {
-		return NT_TYPE() && NT_VAR() 
-			&& NT_PARAMS_EXT();
-	}
-
-	std::cout << "ERROR::PARAMS" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
-	return false;
-}
-
-bool Syntax::NT_PARAMS_EXT()
-{
-	if (getPeek() == ",") {
-		return matchTokenNew(",") && NT_PARAMS();
-	}
-	else if (getPeek() == ")") {
+	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
+		|| getPeek() == compiler::ID || getPeek() == compiler::VALUE_DOUBLE
+		|| getPeek() == compiler::KW_IF || getPeek() == compiler::KW_INT
+		|| getPeek() == compiler::KW_PRINT || getPeek() == compiler::KW_RETURN
+		|| getPeek() == compiler::KW_WHILE) {
 		// EPSILON
 		return true;
 	}
 
-	std::cout << "ERROR::PARAMS_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("FDECLS_EXT");
 	return false;
 }
 
-bool Syntax::NT_FNAME()
+bool Syntax::FDEC()
 {
-	if (getPeek() == "ID") {
-		return matchTokenNew("ID");
+	if (getPeek() == compiler::KW_DEF) {
+		return matchTokenNew(compiler::KW_DEF) && TYPE()
+			&& FNAME() && matchTokenNew(compiler::LEFT_PAREN)
+			&& PARAMS() && matchTokenNew(compiler::RIGHT_PAREN)
+			&& DECLARATIONS() && STATEMESEQ()
+			&& matchTokenNew(compiler::KW_FED);
 	}
 
-	std::cout << "ERROR::FNAME" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("FDEC");
 	return false;
 }
 
-bool Syntax::NT_DECLARATIONS()
+bool Syntax::PARAMS()
 {
-	if (getPeek() == "double" || getPeek() == "int") {
-		return NT_DECL() && matchTokenNew(";") 
-			&& NT_DECLARATIONS_EXT();
-	}
-	else if (getPeek() == "." || getPeek() == ";"
-		|| getPeek() == "ID" || getPeek() == "fed"
-		|| getPeek() == "if" || getPeek() == "print" 
-		|| getPeek() == "return" || getPeek() == "while") {
-		// EPSILON
-		return NT_DECLARATIONS_EXT();
+	if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::KW_INT) {
+		return TYPE() && VAR() 
+			&& PARAMS_EXT();
 	}
 
-	std::cout << "ERROR::DECLARATIONS" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("PARAMS");
 	return false;
 }
 
-bool Syntax::NT_DECLARATIONS_EXT()
+bool Syntax::PARAMS_EXT()
 {
-		if (getPeek() == "double" || getPeek() == "int") {
-			return NT_DECL() && matchTokenNew(";")
-				&& NT_DECLARATIONS_EXT();
-		}
-		else if (getPeek() == "." || getPeek() == ";"
-			|| getPeek() == "ID" || getPeek() == "fed"
-			|| getPeek() == "if" || getPeek() == "print"
-			|| getPeek() == "return" || getPeek() == "while") {
-			// EPSILON
-			return true;
-		}
-
-	std::cout << "ERROR::DECLARATIONS_EXT" << std::endl;
-	std::cout << getPeek() << " :: " << readString << std::endl;
-	return false;
-}
-
-bool Syntax::NT_DECL()
-{
-	if (getPeek() == "double" || getPeek() == "int") {
-		return NT_TYPE() && NT_VARLIST();
+	if (getPeek() == compiler::COMMA) {
+		return matchTokenNew(compiler::COMMA) && PARAMS();
 	}
-
-	std::cout << "ERROR::DECL" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
-	return false;
-}
-
-bool Syntax::NT_TYPE()
-{
-	if (getPeek() == "double") {
-		return matchTokenNew("double");
-	}
-	else if (getPeek() == "int") {
-		return matchTokenNew("int");
-	}
-
-	std::cout << "ERROR::TYPE" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
-	return false;
-}
-
-bool Syntax::NT_VARLIST()
-{
-	if (getPeek() == "ID") {
-		return NT_VAR() && NT_VARLIST_EXT();
-	}
-
-	std::cout << "ERROR::VARLIST" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
-	return false;
-}
-
-bool Syntax::NT_VARLIST_EXT()
-{
-	if (getPeek() == ",") {
-		return matchTokenNew(",") && NT_VARLIST();
-	}
-	else if (getPeek() == ";") {
+	else if (getPeek() == compiler::RIGHT_PAREN) {
 		// EPSILON
 		return true;
 	}
 
-	std::cout << "ERROR::VARLIST_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("PARAMS_EXT");
 	return false;
 }
 
-bool Syntax::NT_STATEMENT_SEQ()
+bool Syntax::FNAME()
 {
-	if (getPeek() == ";" || getPeek() == "ID" 
-		|| getPeek() == "if" || getPeek() == "print" 
-		|| getPeek() == "return" || getPeek() == "while") {
-		return NT_STATEMENT() && NT_STATEMENT_SEQ_EXT();
+	if (getPeek() == compiler::ID) {
+		return matchTokenNew(compiler::ID);
 	}
-	else if (getPeek() == "." || getPeek() == "else"
-		|| getPeek() == "fed" || getPeek() == "fi"
-		|| getPeek() == "od") {
+
+	printSyntaxError("FNAME");
+	return false;
+}
+
+bool Syntax::DECLARATIONS()
+{
+	if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::KW_INT) {
+		return DECL() && matchTokenNew(compiler::SEMICOLON) 
+			&& DECLARATIONS_EXT();
+	}
+	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
+		|| getPeek() == compiler::ID || getPeek() == compiler::KW_FED
+		|| getPeek() == compiler::KW_IF || getPeek() == compiler::KW_PRINT 
+		|| getPeek() == compiler::KW_RETURN || getPeek() == compiler::KW_WHILE) {
+		// EPSILON
+		return DECLARATIONS_EXT();
+	}
+
+	printSyntaxError("DECLARATIONS");
+	return false;
+}
+
+bool Syntax::DECLARATIONS_EXT()
+{
+	if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::KW_INT) {
+		return DECL() && matchTokenNew(compiler::SEMICOLON)
+			&& DECLARATIONS_EXT();
+	}
+	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
+		|| getPeek() == compiler::ID || getPeek() == compiler::KW_FED
+		|| getPeek() == compiler::KW_IF || getPeek() == compiler::KW_PRINT
+		|| getPeek() == compiler::KW_RETURN || getPeek() == compiler::KW_WHILE) {
+		// EPSILON
+		return true;
+	}
+
+	printSyntaxError("DECLARATIONS_EXT");
+	return false;
+}
+
+bool Syntax::DECL()
+{
+	if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::KW_INT) {
+		return TYPE() && VARLIST();
+	}
+
+	printSyntaxError("DECL");
+	return false;
+}
+
+bool Syntax::TYPE()
+{
+	if (getPeek() == compiler::VALUE_DOUBLE) {
+		return matchTokenNew(compiler::VALUE_DOUBLE);
+	}
+	else if (getPeek() == compiler::KW_INT) {
+		return matchTokenNew(compiler::KW_INT);
+	}
+
+	printSyntaxError("TYPE");
+	return false;
+}
+
+bool Syntax::VARLIST()
+{
+	if (getPeek() == compiler::ID) {
+		return VAR() && VARLIST_EXT();
+	}
+
+	printSyntaxError("VARLIST");
+	return false;
+}
+
+bool Syntax::VARLIST_EXT()
+{
+	if (getPeek() == compiler::COMMA) {
+		return matchTokenNew(compiler::COMMA) && VARLIST();
+	}
+	else if (getPeek() == compiler::SEMICOLON) {
+		// EPSILON
+		return true;
+	}
+
+	printSyntaxError("VARLIST_EXT");
+	return false;
+}
+
+bool Syntax::STATEMESEQ()
+{
+	if (getPeek() == compiler::SEMICOLON || getPeek() == compiler::ID 
+		|| getPeek() == compiler::KW_IF || getPeek() == compiler::KW_PRINT 
+		|| getPeek() == compiler::KW_RETURN || getPeek() == compiler::KW_WHILE) {
+		return STATEMENT() && STATEMESEQ_EXT();
+	}
+	else if (getPeek() == compiler::DOT || getPeek() == compiler::KW_ELSE
+		|| getPeek() == compiler::KW_FED || getPeek() == compiler::KW_FI
+		|| getPeek() == compiler::KW_OD) {
 		// EPISLON
-		return NT_STATEMENT() && NT_STATEMENT_SEQ_EXT();
+		return STATEMENT() && STATEMESEQ_EXT();
 	}
 
-	std::cout << "ERROR::STATEMENTSEQ" << std::endl;
-	std::cout << getPeek() << " :: " << readString << std::endl;
+	printSyntaxError("STATEMENTSEQ");
 	return false;
 }
 
-bool Syntax::NT_STATEMENT_SEQ_EXT()
+bool Syntax::STATEMESEQ_EXT()
 {
-	if (getPeek() == ";") {
-		return matchTokenNew(";") && NT_STATEMENT_SEQ();
+	if (getPeek() == compiler::SEMICOLON) {
+		return matchTokenNew(compiler::SEMICOLON) && STATEMESEQ();
 	}
-	else if (getPeek() == "." || getPeek() == "else"
-		|| getPeek() == "fed" || getPeek() == "fi"
-		|| getPeek() == "od") {
+	else if (getPeek() == compiler::DOT || getPeek() == compiler::KW_ELSE
+		|| getPeek() == compiler::KW_FED || getPeek() == compiler::KW_FI
+		|| getPeek() == compiler::KW_OD) {
 		// EPISLON
 		return true;
 	}
 
-	std::cout << "ERROR::STATEMENTSEQ_EXT" << std::endl;
-	std::cout << getPeek() << " :: " << readString << std::endl;
+	printSyntaxError("STATEMENTSEQ_EXT");
 	return false;
 }
 
-bool Syntax::NT_STATEMENT()
+bool Syntax::STATEMENT()
 {
-	if (getPeek() == "ID") {
-		return NT_VAR() && matchTokenNew("=")
-			&& NT_EXPR();
+	if (getPeek() == compiler::ID) {
+		return VAR() && matchTokenNew(compiler::EQUAL)
+			&& EXPR();
 	}
-	else if (getPeek() == "if") {
-		return matchTokenNew("if") && NT_BEXPR()
-			&& matchTokenNew("then") && NT_STATEMENT_SEQ()
-			&& NT_STATEMENT_EXT();
+	else if (getPeek() == compiler::KW_IF) {
+		return matchTokenNew(compiler::KW_IF) && BEXPR()
+			&& matchTokenNew(compiler::KW_THEN) && STATEMESEQ()
+			&& STATEMENT_EXT();
 	}
-	else if (getPeek() == "print") {
-		return matchTokenNew("print") && NT_EXPR();
+	else if (getPeek() == compiler::KW_PRINT) {
+		return matchTokenNew(compiler::KW_PRINT) && EXPR();
 	}
-	else if (getPeek() == "return") {
-		return matchTokenNew("return") && NT_EXPR();
+	else if (getPeek() == compiler::KW_RETURN) {
+		return matchTokenNew(compiler::KW_RETURN) && EXPR();
 	}
-	else if (getPeek() == "while") {
-		return matchTokenNew("while") && NT_BEXPR()
-			&& matchTokenNew("do") && NT_STATEMENT_SEQ()
-			&& matchTokenNew("od");
+	else if (getPeek() == compiler::KW_WHILE) {
+		return matchTokenNew(compiler::KW_WHILE) && BEXPR()
+			&& matchTokenNew(compiler::KW_DO) && STATEMESEQ()
+			&& matchTokenNew(compiler::KW_OD);
 	}
-	else if (getPeek() == "." || getPeek() == ";"
-		|| getPeek() == "else" || getPeek() == "fed"
-		|| getPeek() == "fi" || getPeek() == "od") {
+	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
+		|| getPeek() == compiler::KW_ELSE || getPeek() == compiler::KW_FED
+		|| getPeek() == compiler::KW_FI || getPeek() == compiler::KW_OD) {
 		return true;
 	}
 
-	std::cout << "ERROR::STATEMENT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("STATEMENT");
 	return false;
 }
 
-bool Syntax::NT_STATEMENT_EXT()
+bool Syntax::STATEMENT_EXT()
 {
-	if (getPeek() == "else") {
-		return matchTokenNew("else") && NT_STATEMENT_SEQ()
-			&& matchTokenNew("fi");
+	if (getPeek() == compiler::KW_ELSE) {
+		return matchTokenNew(compiler::KW_ELSE) && STATEMESEQ()
+			&& matchTokenNew(compiler::KW_FI);
 	}
-	else if (getPeek() == "fi") {
-		return matchTokenNew("fi");
+	else if (getPeek() == compiler::KW_FI) {
+		return matchTokenNew(compiler::KW_FI);
 	}
 
-	std::cout << "ERROR::STATEMENT_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("STATEMENT_EXT");
 	return false;
 }
 
-bool Syntax::NT_EXPR()
+bool Syntax::EXPR()
 {
-	if (getPeek() == "(" || getPeek() == "DOUBLE"
-		|| getPeek() == "ID" || getPeek() == "INTEGER") {
-		return NT_TERM() && NT_EXPR_EXT();
+	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::VALUE_DOUBLE
+		|| getPeek() == compiler::ID || getPeek() == compiler::VALUE_INTEGER) {
+		return TERM() && EXPR_EXT();
 	}
 
-	std::cout << "ERROR::EXPR" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("EXPR");
 	return false;
 }
 
-bool Syntax::NT_EXPR_EXT()
+bool Syntax::EXPR_EXT()
 {
-	if (getPeek() == "+") {
-		return matchTokenNew("+") && NT_TERM()
-			&& NT_EXPR_EXT();
+	if (getPeek() == compiler::PLUS) {
+		return matchTokenNew(compiler::PLUS) && TERM()
+			&& EXPR_EXT();
 	}
-	else if (getPeek() == "-") {
-		return matchTokenNew("-") && NT_TERM()
-			&& NT_EXPR_EXT();
+	else if (getPeek() == compiler::MINUS) {
+		return matchTokenNew(compiler::MINUS) && TERM()
+			&& EXPR_EXT();
 	}
-	else if (getPeek() == ")" || getPeek() == "]"
-		|| getPeek() == "," || getPeek() == "."
-		|| getPeek() == ";"
-		|| getPeek() == "<" || getPeek() == "<="
-		|| getPeek() == "<>" || getPeek() == "=="
-		|| getPeek() == ">" || getPeek() == ">="
-		|| getPeek() == "else" || getPeek() == "fed"
-		|| getPeek() == "fi" || getPeek() == "od") {
+	else if (getPeek() == compiler::RIGHT_PAREN|| getPeek() == compiler::LEFT_BRACK
+		|| getPeek() == compiler::COMMA || getPeek() == compiler::DOT
+		|| getPeek() == compiler::SEMICOLON
+		|| getPeek() == compiler::COMP_LTHAN || getPeek() == compiler::COMP_LEQUAL
+		|| getPeek() == compiler::COMP_NOT || getPeek() == compiler::COMP_EQUAL
+		|| getPeek() == compiler::COMP_GTHAN || getPeek() == compiler::COMP_GEQUAL
+		|| getPeek() == compiler::KW_ELSE || getPeek() == compiler::KW_FED
+		|| getPeek() == compiler::KW_FI || getPeek() == compiler::KW_OD) {
 		// EPSILON
 		return true;
 	}
 
-	std::cout << "ERROR::EXPR_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("EXPR_EXT");
 	return false;
 }
 
-bool Syntax::NT_TERM()
+bool Syntax::TERM()
 {
-	if (getPeek() == "(" || getPeek() == "DOUBLE" 
-		|| getPeek() == "ID" || getPeek() == "INTEGER") {
-		return NT_FACTOR() && NT_TERM_EXT();
+	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::VALUE_DOUBLE 
+		|| getPeek() == compiler::ID || getPeek() == compiler::VALUE_INTEGER) {
+		return FACTOR() && TERM_EXT();
 	}
 
-	std::cout << "ERROR::TERM" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("TERM");
 	return false;
 }
 
-bool Syntax::NT_TERM_EXT()
+bool Syntax::TERM_EXT()
 {
-	if (getPeek() == "%") {
-		return matchTokenNew("%") && NT_FACTOR()
-			&& NT_TERM_EXT();
+	if (getPeek() == compiler::MODULUS) {
+		return matchTokenNew(compiler::MODULUS) && FACTOR()
+			&& TERM_EXT();
 	}
-	else if (getPeek() == "*") {
-		return matchTokenNew("*") && NT_FACTOR()
-			&& NT_TERM_EXT();
+	else if (getPeek() == compiler::MULTIPLY) {
+		return matchTokenNew(compiler::MULTIPLY) && FACTOR()
+			&& TERM_EXT();
 	}
-	else if (getPeek() == "/") {
-		return matchTokenNew("/") && NT_FACTOR()
-			&& NT_TERM_EXT();
+	else if (getPeek() == compiler::DIVIDE) {
+		return matchTokenNew(compiler::DIVIDE) && FACTOR()
+			&& TERM_EXT();
 	}
 	else if (
-		getPeek() == ")" || getPeek() == "]"
-		|| getPeek() == "+" || getPeek() == "-"
-		|| getPeek() == "," || getPeek() == "."
-		|| getPeek() == ";"
-		|| getPeek() == "<" || getPeek() == "<="
-		|| getPeek() == "<>" || getPeek() == "=="
-		|| getPeek() == ">" || getPeek() == ">="
-		|| getPeek() == "else" || getPeek() == "fed"
-		|| getPeek() == "fi" || getPeek() == "od") {
+		getPeek() == compiler::RIGHT_PAREN|| getPeek() == compiler::LEFT_BRACK
+		|| getPeek() == compiler::PLUS || getPeek() == compiler::MINUS
+		|| getPeek() == compiler::COMMA || getPeek() == compiler::DOT
+		|| getPeek() == compiler::SEMICOLON
+		|| getPeek() == compiler::COMP_LTHAN || getPeek() == compiler::COMP_LEQUAL
+		|| getPeek() == compiler::COMP_NOT || getPeek() == compiler::COMP_EQUAL
+		|| getPeek() == compiler::COMP_GTHAN || getPeek() == compiler::COMP_GEQUAL
+		|| getPeek() == compiler::KW_ELSE || getPeek() == compiler::KW_FED
+		|| getPeek() == compiler::KW_FI || getPeek() == compiler::KW_OD) {
 		// EPSILON
 		return true;
 	}
 
-	std::cout << "ERROR::TERM_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("TERM_EXT");
 	return false;
 }
 
-bool Syntax::NT_FACTOR()
+bool Syntax::FACTOR()
 {
-	if (getPeek() == "(") {
-		return matchTokenNew("(") && NT_EXPR() 
-			&& matchTokenNew(")");
+	if (getPeek() == compiler::LEFT_PAREN) {
+		return matchTokenNew(compiler::LEFT_PAREN) && EXPR() 
+			&& matchTokenNew(compiler::RIGHT_PAREN);
 	}
-	else if (getPeek() == "DOUBLE" || getPeek() == "INTEGER") {
-		return NT_NUMBER();
+	else if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::VALUE_INTEGER) {
+		return NUMBER();
 	}
-	else if (getPeek() == "ID") {
-		return matchTokenNew("ID") && NT_FACTOR_EXT();
+	else if (getPeek() == compiler::ID) {
+		return matchTokenNew(compiler::ID) && FACTOR_EXT();
 	}
 
-	std::cout << "ERROR::FACTOR" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("FACTOR");
 	return false;
 }
 
-bool Syntax::NT_FACTOR_EXT()
+bool Syntax::FACTOR_EXT()
 {
-	if (getPeek() == "(") {
-		return matchTokenNew("(") && NT_EXPRSEQ() && matchTokenNew(")");
+	if (getPeek() == compiler::LEFT_PAREN) {
+		return matchTokenNew(compiler::LEFT_PAREN) && EXPRSEQ() && matchTokenNew(compiler::RIGHT_PAREN);
 	}
-	else if (getPeek() == "%" || getPeek() == ")"
-		|| getPeek() == "]" || getPeek() == "*"
-		|| getPeek() == "/" || getPeek() == "+"
-		|| getPeek() == "-" || getPeek() == ","
-		|| getPeek() == "." || getPeek() == ";"
-		|| getPeek() == "<" || getPeek() == "<="
-		|| getPeek() == "<>" || getPeek() == "=="
-		|| getPeek() == ">" || getPeek() == ">="
-		|| getPeek() == "else" || getPeek() == "fed"
-		|| getPeek() == "fi" || getPeek() == "od") {
-		return NT_VAR_EXT();
+	else if (getPeek() == compiler::MODULUS || getPeek() == compiler::RIGHT_PAREN
+		|| getPeek() == compiler::LEFT_BRACK || getPeek() == compiler::MULTIPLY
+		|| getPeek() == compiler::DIVIDE || getPeek() == compiler::PLUS
+		|| getPeek() == compiler::MINUS || getPeek() == compiler::COMMA
+		|| getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
+		|| getPeek() == compiler::COMP_LTHAN || getPeek() == compiler::COMP_LEQUAL
+		|| getPeek() == compiler::COMP_NOT || getPeek() == compiler::COMP_EQUAL
+		|| getPeek() == compiler::COMP_GTHAN || getPeek() == compiler::COMP_GEQUAL
+		|| getPeek() == compiler::KW_ELSE || getPeek() == compiler::KW_FED
+		|| getPeek() == compiler::KW_FI || getPeek() == compiler::KW_OD) {
+		return VAR_EXT();
 	}
 
-	std::cout << "ERROR::FACTOR_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("FACTOR_EXT");
 	return false;
 }
 
-bool Syntax::NT_EXPRSEQ()
+bool Syntax::EXPRSEQ()
 {
-	if (getPeek() == "(" || getPeek() == "DOUBLE"
-		|| getPeek() == "ID" || getPeek() == "INTEGER") {
-		return NT_EXPR() && NT_EXPRSEQ_EXT();
+	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::VALUE_DOUBLE
+		|| getPeek() == compiler::ID || getPeek() == compiler::VALUE_INTEGER) {
+		return EXPR() && EXPRSEQ_EXT();
 	}
-	else if (getPeek() == ")") {
+	else if (getPeek() == compiler::RIGHT_PAREN) {
 		return true;
 	}
 
-	std::cout << "ERROR::EXPRSEQ" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("EXPRSEQ");
 	return false;
 }
 
-bool Syntax::NT_EXPRSEQ_EXT()
+bool Syntax::EXPRSEQ_EXT()
 {
-	if (getPeek() == ",") {
-		return matchTokenNew(",") && NT_EXPRSEQ();
+	if (getPeek() == compiler::COMMA) {
+		return matchTokenNew(compiler::COMMA) && EXPRSEQ();
 	}
-	else if (getPeek() == ")") {
+	else if (getPeek() == compiler::RIGHT_PAREN) {
 		// EPSILON
 		return true;
 	}
 
-	std::cout << "ERROR::EXPRSEQ_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("EXPRSEQ_EXT");
 	return false;
 }
 
-bool Syntax::NT_BEXPR()
+bool Syntax::BEXPR()
 {
-	if (getPeek() == "(" || getPeek() == "not") {
-		return NT_BTERM() && NT_BEXPR_EXT();
+	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::KW_NOT) {
+		return BTERM() && BEXPR_EXT();
 	}
 
-	std::cout << "ERROR::BEXPR" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BEXPR");
 	return false;
 }
 
-bool Syntax::NT_BEXPR_EXT()
+bool Syntax::BEXPR_EXT()
 {
-	if (getPeek() == "or") {
-		return matchTokenNew("or") && NT_BTERM()
-			&& NT_BEXPR_EXT();
+	if (getPeek() == compiler::KW_OR) {
+		return matchTokenNew(compiler::KW_OR) && BTERM()
+			&& BEXPR_EXT();
 	}
-	else if (getPeek() == ")" || getPeek() == "do"
-		|| getPeek() == "then") {
+	else if (getPeek() == compiler::RIGHT_PAREN|| getPeek() == compiler::KW_DO
+		|| getPeek() == compiler::KW_THEN) {
 		// EPSILON
 		return true;
 	}
 
-	std::cout << "ERROR::BEXPR_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BEXPR_EXT");
 	return false;
 }
 
-bool Syntax::NT_BTERM()
+bool Syntax::BTERM()
 {
-	if (getPeek() == "(" || getPeek() == "not") {
-		return NT_BFACTOR() && NT_BTERM_EXT();
+	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::KW_NOT) {
+		return BFACTOR() && BTERM_EXT();
 	}
 
-	std::cout << "ERROR::BTERM" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BTERM");
 	return false;
 }
 
-bool Syntax::NT_BTERM_EXT()
+bool Syntax::BTERM_EXT()
 {
-	if (getPeek() == "and") {
-		return matchTokenNew("and") && NT_BFACTOR()
-			&& NT_BTERM_EXT();
+	if (getPeek() == compiler::KW_AND) {
+		return matchTokenNew(compiler::KW_AND) && BFACTOR()
+			&& BTERM_EXT();
 	}
-	else if (getPeek() == ")" || getPeek() == "do"
-		|| getPeek() == "or" || getPeek() == "then") {
+	else if (getPeek() == compiler::RIGHT_PAREN|| getPeek() == compiler::KW_DO
+		|| getPeek() == compiler::KW_OR || getPeek() == compiler::KW_THEN) {
 		// EPSILON
 		return true;
 	}
 
-	std::cout << "ERROR::BTERM_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BTERM_EXT");
 	return false;
 }
 
-bool Syntax::NT_BFACTOR()
+bool Syntax::BFACTOR()
 {
-	if (getPeek() == "(") {
-		return matchTokenNew("(") && NT_BFACTOR_EXT()
-			&& matchTokenNew(")");
+	if (getPeek() == compiler::LEFT_PAREN) {
+		return matchTokenNew(compiler::LEFT_PAREN) && BFACTOR_EXT()
+			&& matchTokenNew(compiler::RIGHT_PAREN);
 	}
-	else if (getPeek() == "not") {
-		return matchTokenNew("not") && NT_BFACTOR();
+	else if (getPeek() == compiler::KW_NOT) {
+		return matchTokenNew(compiler::KW_NOT) && BFACTOR();
 	}
 
-	std::cout << "ERROR::BFACTOR" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BFACTOR");
 	return false;
 }
 
-bool Syntax::NT_BFACTOR_EXT()
+bool Syntax::BFACTOR_EXT()
 {
-	if (getPeek() == "(") {
-		if (NT_BEXPR()) {
+	if (getPeek() == compiler::LEFT_PAREN) {
+		if (BEXPR()) {
 			return true;
 		}
 
-		if (NT_EXPR()) {
+		if (EXPR()) {
 			return true;
 		}
 	}
-	else if (getPeek() == "not") {
-		return NT_BEXPR();
+	else if (getPeek() == compiler::KW_NOT) {
+		return BEXPR();
 	}
-	else if (getPeek() == "DOUBLE" || getPeek() == "ID"
-		|| getPeek() == "INTEGER") {
-		return NT_EXPR() && NT_COMP()
-			&& NT_EXPR();
+	else if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::ID
+		|| getPeek() == compiler::VALUE_INTEGER) {
+		return EXPR() && COMP()
+			&& EXPR();
 	}
 
-	std::cout << "ERROR::BFACTOR_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BFACTOR_EXT");
 	return false;
 }
 
-bool Syntax::NT_COMP()
+bool Syntax::COMP()
 {
-	if (getPeek() == "<") {
-		return matchTokenNew("<");
+	if (getPeek() == compiler::COMP_LTHAN) {
+		return matchTokenNew(compiler::COMP_LTHAN);
 	}
-	else if (getPeek() == "<=") {
-		return matchTokenNew("<=");
+	else if (getPeek() == compiler::COMP_LEQUAL) {
+		return matchTokenNew(compiler::COMP_LEQUAL);
 	}
-	else if (getPeek() == "<>") {
-		return matchTokenNew("<>");
+	else if (getPeek() == compiler::COMP_NOT) {
+		return matchTokenNew(compiler::COMP_NOT);
 	}
-	else if (getPeek() == "==") {
-		return matchTokenNew("==");
+	else if (getPeek() == compiler::COMP_EQUAL) {
+		return matchTokenNew(compiler::COMP_EQUAL);
 	}
-	else if (getPeek() == ">") {
-		return matchTokenNew(">");
+	else if (getPeek() == compiler::COMP_GTHAN) {
+		return matchTokenNew(compiler::COMP_GTHAN);
 
-	}else if (getPeek() == ">=") {
-		return matchTokenNew(">=");
+	}else if (getPeek() == compiler::COMP_GEQUAL) {
+		return matchTokenNew(compiler::COMP_GEQUAL);
 	}
 
-	std::cout << "ERROR::COMP" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("COMP");
 	return false;
 }
 
-bool Syntax::NT_VAR()
+bool Syntax::VAR()
 {
-	if (getPeek() == "ID") {
-		return matchTokenNew("ID") && NT_VAR_EXT();
+	if (getPeek() == compiler::ID) {
+		return matchTokenNew(compiler::ID) && VAR_EXT();
 	}
 
-	std::cout << "ERROR::VAR" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("VAR");
 	return false;
 }
 
-bool Syntax::NT_VAR_EXT()
+bool Syntax::VAR_EXT()
 {
-	if (getPeek() == "[") {
-		return matchTokenNew("[") && NT_EXPR()
-			&& matchTokenNew("]");
+	if (getPeek() == compiler::LEFT_BRACK) {
+		return matchTokenNew(compiler::LEFT_BRACK) && EXPR()
+			&& matchTokenNew(compiler::LEFT_BRACK);
 	}
-	else if (getPeek() == "%" || getPeek() == ")" || getPeek() == "]"
-		|| getPeek() == "*" || getPeek() == "/"
-		|| getPeek() == "+" || getPeek() == "-"
-		|| getPeek() == "," || getPeek() == "."
-		|| getPeek() == ";" || getPeek() == "<"
-		|| getPeek() == "<=" || getPeek() == "<>"
-		|| getPeek() == "=" || getPeek() == "=="
-		|| getPeek() == ">" || getPeek() == ">="
-		|| getPeek() == "else" || getPeek() == "fed"
-		|| getPeek() == "fi" || getPeek() == "od") {
+	else if (getPeek() == compiler::MODULUS || getPeek() == compiler::RIGHT_PAREN|| getPeek() == compiler::LEFT_BRACK
+		|| getPeek() == compiler::MULTIPLY || getPeek() == compiler::DIVIDE
+		|| getPeek() == compiler::PLUS || getPeek() == compiler::MINUS
+		|| getPeek() == compiler::COMMA || getPeek() == compiler::DOT
+		|| getPeek() == compiler::SEMICOLON || getPeek() == compiler::COMP_LTHAN
+		|| getPeek() == compiler::COMP_LEQUAL || getPeek() == compiler::COMP_NOT
+		|| getPeek() == compiler::EQUAL || getPeek() == compiler::COMP_EQUAL
+		|| getPeek() == compiler::COMP_GTHAN || getPeek() == compiler::COMP_GEQUAL
+		|| getPeek() == compiler::KW_ELSE || getPeek() == compiler::KW_FED
+		|| getPeek() == compiler::KW_FI || getPeek() == compiler::KW_OD) {
 		// EPSILON
 		return true;
 	}
 
-	std::cout << "ERROR::VAR_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("VAR_EXT");
 	return false;
 }
 
-bool Syntax::NT_NUMBER()
+bool Syntax::NUMBER()
 {
-	if (getPeek() == "DOUBLE") {
-		return matchTokenNew("DOUBLE");
+	if (getPeek() == compiler::VALUE_DOUBLE) {
+		return matchTokenNew(compiler::VALUE_DOUBLE);
 	}
-	else if (getPeek() == "INTEGER") {
-		return matchTokenNew("INTEGER");
+	else if (getPeek() == compiler::VALUE_INTEGER) {
+		return matchTokenNew(compiler::VALUE_INTEGER);
 	}
 
-	std::cout << "ERROR::NUMBER" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("NUMBER");
 	return false;
 }
 
 bool Syntax::E()
 {
-	if (getPeek() == "ID" || getPeek() == "(") {
+	if (getPeek() == compiler::ID || getPeek() == compiler::LEFT_PAREN) {
 		return T() && E1();
 	}
 
@@ -690,12 +700,12 @@ bool Syntax::E()
 
 bool Syntax::E1()
 {
-	if (getPeek() == "+") {
-		return matchTokenNew("+") && T()
+	if (getPeek() == compiler::PLUS) {
+		return matchTokenNew(compiler::PLUS) && T()
 			&& E1();
 	}
-	else if (getPeek() == ")" || getPeek() == "$") {
-		// EPSILON VALUES = [")", "$"]
+	else if (getPeek() == compiler::RIGHT_PAREN|| getPeek() == compiler::DOLLAR_SIGN) {
+		// EPSILON VALUES = [compiler::RIGHT_PAREN, compiler::DOLLAR_SIGN]
 		return true;
 	}
 
@@ -705,10 +715,10 @@ bool Syntax::E1()
 
 bool Syntax::T()
 {
-	if (getPeek() == "ID") {
+	if (getPeek() == compiler::ID) {
 		return F() && T1();
 	}
-	else if (getPeek() == "(") {
+	else if (getPeek() == compiler::LEFT_PAREN) {
 		return F() && T1();
 	}
 
@@ -718,13 +728,13 @@ bool Syntax::T()
 
 bool Syntax::T1()
 {
-	if (getPeek() == "*") {
-		return matchTokenNew("*") && F()
+	if (getPeek() == compiler::MULTIPLY) {
+		return matchTokenNew(compiler::MULTIPLY) && F()
 			&& T1();
 	}
-	else if (getPeek() == "+" || getPeek() == ")" 
-		|| getPeek() == "$") {
-		// EPSILON VALUES = ["+", ")", "$"]
+	else if (getPeek() == compiler::PLUS || getPeek() == compiler::RIGHT_PAREN
+		|| getPeek() == compiler::DOLLAR_SIGN) {
+		// EPSILON VALUES = [compiler::PLUS, compiler::RIGHT_PAREN, compiler::DOLLAR_SIGN]
 		return true;
 	}
 
@@ -734,12 +744,12 @@ bool Syntax::T1()
 
 bool Syntax::F()
 {
-	if (getPeek() == "ID") {
-		return matchTokenNew("ID");
+	if (getPeek() == compiler::ID) {
+		return matchTokenNew(compiler::ID);
 	}
-	else if (getPeek() == "(") {
-		return matchTokenNew("(") && E()
-			&& matchTokenNew(")");
+	else if (getPeek() == compiler::LEFT_PAREN) {
+		return matchTokenNew(compiler::LEFT_PAREN) && E()
+			&& matchTokenNew(compiler::RIGHT_PAREN);
 	}
 
 	std::cout << "ERROR F" << std::endl;
@@ -749,12 +759,12 @@ bool Syntax::F()
 /* Syntax Simple Grammar v2
 bool Syntax::E()
 {
-	if (getPeek() != "ID" && getPeek() != "(") {
+	if (getPeek() != compiler::ID && getPeek() != compiler::LEFT_PAREN) {
 		std::cout << "ERROR E" << std::endl;
 		return false;
 	}
 
-	if (getPeek() == "ID" || getPeek() == "(") {
+	if (getPeek() == compiler::ID || getPeek() == compiler::LEFT_PAREN) {
 		return T() && E1();
 	}
 
@@ -763,32 +773,32 @@ bool Syntax::E()
 
 bool Syntax::E1()
 {
-	if (getPeek() != "+" && getPeek() != ")"
-		&& getPeek() != "$") {
+	if (getPeek() != compiler::PLUS && getPeek() != compiler::RIGHT_PAREN
+		&& getPeek() != compiler::DOLLAR_SIGN) {
 		std::cout << "ERROR E1" << std::endl;
 		return false;
 	}
 
-	if (getPeek() == "+") {
-		return matchTokenNew("+") && T()
+	if (getPeek() == compiler::PLUS) {
+		return matchTokenNew(compiler::PLUS) && T()
 			&& E1();
 	}
 
-	// EPSILON VALUES = [")", "$"]
+	// EPSILON VALUES = [compiler::RIGHT_PAREN, compiler::DOLLAR_SIGN]
 	return true;
 }
 
 bool Syntax::T()
 {
-	if (getPeek() != "ID" && getPeek() != "(") {
+	if (getPeek() != compiler::ID && getPeek() != compiler::LEFT_PAREN) {
 		std::cout << "ERROR T" << std::endl;
 		return false;
 	}
 
-	if (getPeek() == "ID") {
+	if (getPeek() == compiler::ID) {
 		return F() && T1();
 	}
-	else if (getPeek() == "(") {
+	else if (getPeek() == compiler::LEFT_PAREN) {
 		return F() && T1();
 	}
 
@@ -797,34 +807,34 @@ bool Syntax::T()
 
 bool Syntax::T1()
 {
-	if (getPeek() != "*" && getPeek() != "+"
-		&& getPeek() != ")" && getPeek() != "$") {
+	if (getPeek() != compiler::MULTIPLY && getPeek() != compiler::PLUS
+		&& getPeek() != compiler::RIGHT_PAREN&& getPeek() != compiler::DOLLAR_SIGN) {
 		std::cout << "ERROR T1" << std::endl;
 		return false;
 	}
 
-	if (getPeek() == "*") {
-		return matchTokenNew("*") && F()
+	if (getPeek() == compiler::MULTIPLY) {
+		return matchTokenNew(compiler::MULTIPLY) && F()
 			&& T1();
 	}
 
-	// EPSILON VALUES = ["+", ")", "$"]
+	// EPSILON VALUES = [compiler::PLUS, compiler::RIGHT_PAREN, compiler::DOLLAR_SIGN]
 	return true;
 }
 
 bool Syntax::F()
 {
-	if (getPeek() != "ID" && getPeek() != "(") {
+	if (getPeek() != compiler::ID && getPeek() != compiler::LEFT_PAREN) {
 		std::cout << "ERROR F" << std::endl;
 		return false;
 	}
 
-	if (getPeek() == "ID") {
-		return matchTokenNew("ID");
+	if (getPeek() == compiler::ID) {
+		return matchTokenNew(compiler::ID);
 	}
-	else if (getPeek() == "(") {
-		return matchTokenNew("(") && E()
-			&& matchTokenNew(")");
+	else if (getPeek() == compiler::LEFT_PAREN) {
+		return matchTokenNew(compiler::LEFT_PAREN) && E()
+			&& matchTokenNew(compiler::RIGHT_PAREN);
 	}
 
 	return true;
@@ -834,11 +844,11 @@ bool Syntax::F()
 /* Syntax Simple Grammar v1
 void Syntax::E()
 {
-	if (this->_peek == "id") {
+	if (this->_peek == compiler::ID) {
 		T();
 		E1();
 	}
-	else if (this->_peek == "(") {
+	else if (this->_peek == compiler::LEFT_PAREN) {
 		T();
 		E1();
 	}
@@ -849,12 +859,12 @@ void Syntax::E()
 
 void Syntax::E1()
 {
-	if (this->_peek == "+") {
-		matchToken("+");
+	if (this->_peek == compiler::PLUS) {
+		matchToken(compiler::PLUS);
 		T();
 		E1();
 	}
-	else if (this->_peek == ")" || this->_peek == "$") {
+	else if (this->_peek == compiler::RIGHT_PAREN|| this->_peek == compiler::DOLLAR_SIGN) {
 
 	}
 	else {
@@ -864,11 +874,11 @@ void Syntax::E1()
 
 void Syntax::T()
 {
-	if (this->_peek == "id") {
+	if (this->_peek == compiler::ID) {
 		F();
 		T1();
 	}
-	else if (this->_peek == "(") {
+	else if (this->_peek == compiler::LEFT_PAREN) {
 		F();
 		T1();
 	}
@@ -879,12 +889,12 @@ void Syntax::T()
 
 void Syntax::T1()
 {
-	if (this->_peek == "*") {
-		matchToken("*");
+	if (this->_peek == compiler::MULTIPLY) {
+		matchToken(compiler::MULTIPLY);
 		F();
 		T1();
 	}
-	else if (this->_peek == "+" || this->_peek == ")" || this->_peek == "$") {
+	else if (this->_peek == compiler::PLUS || this->_peek == compiler::RIGHT_PAREN|| this->_peek == compiler::DOLLAR_SIGN) {
 
 	}
 	else {
@@ -894,13 +904,13 @@ void Syntax::T1()
 
 void Syntax::F()
 {
-	if (this->_peek == "id") {
-		matchToken("id");
+	if (this->_peek == compiler::ID) {
+		matchToken(compiler::ID);
 	}
-	else if (this->_peek == "(") {
-		matchToken("(");
+	else if (this->_peek == compiler::LEFT_PAREN) {
+		matchToken(compiler::LEFT_PAREN);
 		E();
-		matchToken(")");
+		matchToken(compiler::RIGHT_PAREN);
 	}
 	else {
 		std::cout << "ERROR F" << std::endl;

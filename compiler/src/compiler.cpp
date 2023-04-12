@@ -1,62 +1,99 @@
-#include <iostream>
-#include <fstream>
-#include <memory>
-#include <string>
+#include "Compiler.h"
 
-#include "globals.h"
-#include "Lexical.h"
-#include "Syntax.h"
-
-#include "ReservedWords.h"
-#include "SymbolTable.h"
-#include "LogFileBuffer.h"
-#include "TokenFileBuffer.h"
-
-std::unique_ptr<Lexical> LEXICAL;
-std::unique_ptr<Syntax> SYNTAX;
-std::unique_ptr<ReservedWords> RESERVED_WORDS;
-std::unique_ptr<SymbolTable> SYMBOL_TABLE;
-std::unique_ptr<LogFileBuffer> LOG_FILE_BUFFER;
-std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
-
-int main(int argc, char* argv[]) 
+Compiler::Compiler(const std::string& filename, const std::string& outpath, const std::string& respath)
 {
-    std::string filename = "Test10";
+	this->_filename = filename;
+	this->_outpath = outpath;
+	this->_respath = respath;
 
-    ::LOG_FILE_BUFFER = std::make_unique<LogFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
-    ::TOKEN_FILE_BUFFER = std::make_unique<TokenFileBuffer>("output/" + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
+	this->_logFileBuffer = std::make_shared<LogFileBuffer>(outpath + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
+	this->_tokenFileBuffer = std::make_shared<TokenFileBuffer>(outpath + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
+	
+	this->_reservedWords = std::make_shared<ReservedWords>();
+	this->_symbolTable = std::make_shared<SymbolTable>();
+}
 
-    ::RESERVED_WORDS = std::make_unique<ReservedWords>();
-    ::SYMBOL_TABLE = std::make_unique<SymbolTable>();
+void Compiler::setupReservedWordsTable()
+{
+	this->addReservedWords();
+}
 
-    ::LEXICAL = std::make_unique<Lexical>("res/" + filename + compiler::COMPILER_FILE_EXTENSION_MAIN);
+void Compiler::addReservedWords()
+{
+	for (auto i : compiler::KEYWORDS) {
+		this->_reservedWords->addReservedWord(i);
+	}
+}
+
+void Compiler::setupSymbolTable()
+{
+	this->_symbolTable->linkTokenFileBuffer(this->_tokenFileBuffer);
+}
+
+void Compiler::printSymbolTable()
+{
+	this->_symbolTable->printTable();
+}
+
+void Compiler::setupLexicalAnalysis()
+{
+	this->_lexical = std::make_unique<Lexical>(this->_respath + this->_filename + compiler::COMPILER_FILE_EXTENSION_MAIN);
+	this->_lexical->linkLogFileBuffer(this->_logFileBuffer);
+	this->_lexical->linkTokenFileBuffer(this->_tokenFileBuffer);
+	this->_lexical->linkReservedWords(this->_reservedWords);
+	this->_lexical->linkSymbolTable(this->_symbolTable);
+}
+
+void Compiler::runLexicalAnalysis()
+{
+	this->_lexical->run();
+}
+
+void Compiler::setupSyntaxAnalysis()
+{
+	this->_syntax = std::make_unique<Syntax>();
+	this->_syntax->linkLogFileBuffer(this->_logFileBuffer);
+	this->_syntax->linkTokenFileBuffer(this->_tokenFileBuffer);
+	this->_syntax->linkReservedWords(this->_reservedWords);
+	this->_syntax->linkSymbolTable(this->_symbolTable);
+}
+
+void Compiler::runSyntaxAnalysis()
+{
+	this->_syntax->run();
+}
+
+void Compiler::run()
+{
+	// generate reserved words table
+	this->setupReservedWordsTable();
+
+	// symbol table
+	this->setupSymbolTable();
+
+	// run lexical analysis
+	this->setupLexicalAnalysis();
+	this->runLexicalAnalysis();
 
 
-    ::RESERVED_WORDS->addReservedWord("def");
-    ::RESERVED_WORDS->addReservedWord("fed");
-    ::RESERVED_WORDS->addReservedWord("int");
-    ::RESERVED_WORDS->addReservedWord("double");
-    ::RESERVED_WORDS->addReservedWord("if");
-    ::RESERVED_WORDS->addReservedWord("then");
-    ::RESERVED_WORDS->addReservedWord("else");
-    ::RESERVED_WORDS->addReservedWord("fi");
-    ::RESERVED_WORDS->addReservedWord("while");
-    ::RESERVED_WORDS->addReservedWord("do");
-    ::RESERVED_WORDS->addReservedWord("od");
-    ::RESERVED_WORDS->addReservedWord("print");
-    ::RESERVED_WORDS->addReservedWord("return");
-    ::RESERVED_WORDS->addReservedWord("or");
-    ::RESERVED_WORDS->addReservedWord("and");
-    ::RESERVED_WORDS->addReservedWord("not");
+	this->printSymbolTable();
 
+	if (this->_lexical->getError()) {
+		std::cout << "LEXICAL ANALYSIS ERRORED" << std::endl;
+		std::cout << "Please look into the log file for more information" << std::endl;
+		std::cout << _outpath + _filename + compiler::COMPILER_FILE_EXTENSION_LOG << std::endl;
+		return;
+	}
 
-    ::LEXICAL->run();
+	// run syntax analysis
+	this->setupSyntaxAnalysis();
+	this->runSyntaxAnalysis();
 
+	if (this->_syntax->getError()) {
+		std::cout << "SYNTAX ANALYSIS ERRORED" << std::endl;
+		std::cout << "Please look into the log file for more information" << std::endl;
+		std::cout << _outpath + _filename + compiler::COMPILER_FILE_EXTENSION_LOG << std::endl;
+		return;
+	}
 
-    ::SYNTAX = std::make_unique<Syntax>();
-    ::SYNTAX->start();
-
-
-
-    return 0;
 }

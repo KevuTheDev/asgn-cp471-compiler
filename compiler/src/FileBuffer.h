@@ -9,6 +9,7 @@ class FileBuffer
 {
 public:
 	FileBuffer(const std::string &filename);
+	FileBuffer();
 	virtual ~FileBuffer();
 
 	void append(const std::string& value);

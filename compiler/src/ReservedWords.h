@@ -7,9 +7,12 @@ class ReservedWords
 {
 public:
 	ReservedWords();
+	~ReservedWords();
+
 	void addReservedWord(std::string word);
 
 	bool findReservedWord(const std::string& word);
+	int findReservedWordIndex(const std::string& word);
 
 
 

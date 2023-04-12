@@ -1,105 +1,114 @@
 #include "SymbolTable.h"
 
-extern std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
-
-std::string repeatChar(char ch, int num) {
-    if (num == 0) { // base case: when num is 0, return an empty string
-        return "";
-    }
-    else { // recursive case: add the character to the output string and call the function recursively with num-1
-        return ch + repeatChar(ch, num - 1);
-    }
-}
-
 SymbolTable::SymbolTable()
 {
-    this->_tableToken = { 12, 5 };
-    this->_tableLexeme = { 20, 6 };
-    this->_tableLineNum = { 4, 4 };
+
+    this->_tokenFileBuffer = nullptr;
 }
 
 SymbolTable::~SymbolTable()
 {
 }
 
-bool SymbolTable::append(std::string token, std::string lexeme, int lineNumber)
+void SymbolTable::linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer)
 {
-    SymbolRow yy = { token, lexeme, lineNumber };
+    this->_tokenFileBuffer = buffer;
+}
+
+bool SymbolTable::append(compiler::TOKEN token, std::string lexeme, int lineNumber, int charNumber)
+{
+    SymbolRow yy = { token, lexeme, lineNumber, charNumber };
     _table.push_back(yy);
+
+    int tokenLength = compiler::ST_KEYWORDS[token].length();
+    int lexemeLength = lexeme.length();
+    int lineNumLength = std::to_string(lineNumber).length();
+    int charNumLength = std::to_string(charNumber).length();
+
+    this->_printTokenLimit = (tokenLength > this->_printTokenLimit) ? tokenLength : this->_printTokenLimit;
+    this->_printLexemeLimit = (lexemeLength > this->_printLexemeLimit) ? lexemeLength : this->_printLexemeLimit;
+    this->_printLineNumLimit = (lineNumLength > this->_printLineNumLimit) ? lineNumLength : this->_printLineNumLimit;
+    this->_printCharNumLimit = (charNumLength > this->_printCharNumLimit) ? charNumLength : this->_printCharNumLimit;
 
     return true;
 }
 
 void SymbolTable::printTable()
 {
-    int attributeNumber = 3; // Number of attribute placment
+    int attributeNumber = 4; // Number of attribute placment
     int attributePadding = 1; // size of padding between word and vertical line
     int tableVerticalLines = attributeNumber + 1; // number of vertical lines 
-    int tableHeadSize = attributeNumber * attributePadding * 2 + tableVerticalLines;
-    tableHeadSize += this->_tableToken.limit + this->_tableLexeme.limit +
-        this->_tableLineNum.limit;
+    int rightPadding = attributePadding + 7;
 
-    char headSymbol = '=';
-    std::string tableHead = repeatChar(headSymbol, tableHeadSize);
-    std::string padding = repeatChar(' ', attributePadding);
+    int tableHeadSize = attributeNumber * (attributePadding + rightPadding) + tableVerticalLines;
 
+    tableHeadSize += this->_printTokenLimit + this->_printLexemeLimit 
+        + this->_printLineNumLimit + this->_printCharNumLimit;
+
+
+    std::string headToken = "TOKEN";
+    std::string headLexeme = "LEXEME";
+    std::string headLineNum = "LINE";
+    std::string headCharNum = "CHAR";
+
+
+    std::string tableHead = std::string(tableHeadSize, '=');
+    std::string padding = std::string(attributePadding, ' ');
 
     // print table head
-    std::cout << "PRINT" << std::endl;
-    ::TOKEN_FILE_BUFFER->append(tableHead);
-    ::TOKEN_FILE_BUFFER->append("|" +
-        padding +
-        "TOKEN" +
-        std::string(this->_tableToken.limit - this->_tableToken.length
-            + attributePadding, ' ') +
-        "|" +
-        padding +
-        "LEXEME" +
-        std::string(this->_tableLexeme.limit - this->_tableLexeme.length
-            + attributePadding, ' ') +
-        "|" +
-        padding +
-        "LINE" +
-        std::string(this->_tableLineNum.limit - this->_tableLineNum.length
-            + attributePadding, ' ') +
-        "|"
+    this->_tokenFileBuffer->append(tableHead);
+    std::cout << tableHead << std::endl;
+
+    std::string header = std::format("|{}{}{}|{}{}{}|{}{}{}|{}{}{}|",
+        padding, headToken, std::string(this->_printTokenLimit - headToken.length()
+            + rightPadding, ' '),
+        padding, headLexeme, std::string(this->_printLexemeLimit - headLexeme.length()
+            + rightPadding, ' '),
+        padding, headLineNum, std::string(this->_printLineNumLimit - headLineNum.length()
+            + rightPadding, ' '),
+        padding, headCharNum, std::string(this->_printCharNumLimit - headCharNum.length()
+            + rightPadding, ' ')
     );
 
-    ::TOKEN_FILE_BUFFER->append(tableHead);
+    this->_tokenFileBuffer->append(header);
+    std::cout << header << std::endl;
+
+    this->_tokenFileBuffer->append(tableHead);
+    std::cout << tableHead << std::endl;
 
 
 
     for (auto i : this->_table) {
-        ::TOKEN_FILE_BUFFER->append("|" +
-            padding +
-            i.token.substr(0, this->_tableToken.limit) +
-            std::string(this->_tableToken.limit - i.token.length()
-                + attributePadding, ' ') +
-            "|" +
-            padding + i.lexeme.substr(0, this->_tableLexeme.limit) +
-            std::string(this->_tableLexeme.limit - i.lexeme.length()
-                + attributePadding, ' ') +
-            "|" +
-            padding +
-            std::to_string(i.lineNumber) +
-            std::string(this->_tableLineNum.length - std::to_string(i.lineNumber).length()
-                + attributePadding, ' ') +
-            "|"
+        std::string rows = std::format("|{}{}{}|{}{}{}|{}{}{}|{}{}{}|",
+            padding, compiler::ST_KEYWORDS[i.token], std::string(this->_printTokenLimit - compiler::ST_KEYWORDS[i.token].length()
+                + rightPadding, ' '),
+            padding, i.lexeme, std::string(this->_printLexemeLimit - i.lexeme.length()
+                + rightPadding, ' '),
+            padding, std::to_string(i.lineNumber), std::string(this->_printLineNumLimit - std::to_string(i.lineNumber).length()
+                + rightPadding, ' '),
+            padding, std::to_string(i.charNumber), std::string(this->_printCharNumLimit - std::to_string(i.charNumber).length()
+                + rightPadding, ' ')
         );
+
+        this->_tokenFileBuffer->append(rows);
+        std::cout << rows << std::endl;
     }
 
-    ::TOKEN_FILE_BUFFER->append(tableHead);
-    ::TOKEN_FILE_BUFFER->clearBuffer();
+    this->_tokenFileBuffer->append(tableHead);
+    std::cout << tableHead << std::endl;
+    this->_tokenFileBuffer->clearBuffer();
 
 
     /*
-    ==============================================
-    | TOKEN            | LEXEME           | LINE |
-    |------------------|------------------|------|
-    | IDENTIFIER       | i                | 10   |
-    | OPERATOR         | &&               | 13   |
-    | ...              | ...              | ...  |
-    ==============================================
+    ========================================================
+    | TOKEN          | LEXEME       | LINE     | CHAR      |
+    ========================================================
+    | int            | int          | 1        | 4         |
+    | ID             | a            | 1        | 6         |
+    | ,              | ,            | 1        | 6         |
+    | ID             | b            | 1        | 8         |
+    | ...            | ...          | ...      | ...       |
+    ========================================================
 
     */
 }
@@ -109,8 +118,13 @@ int SymbolTable::length()
     return this->_table.size();
 }
 
-std::string SymbolTable::getTokenAtIndex(int index)
+compiler::TOKEN SymbolTable::getTokenAtIndex(int index)
 {
     SymbolRow sr = this->_table.at(index);
     return sr.token;
+}
+
+SymbolRow SymbolTable::getSymbolRowAtIndex(int index)
+{
+    return this->_table.at(index);
 }

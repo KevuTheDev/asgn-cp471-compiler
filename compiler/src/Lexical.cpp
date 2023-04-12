@@ -1,10 +1,5 @@
 #include "Lexical.h"
 
-extern std::unique_ptr<ReservedWords> RESERVED_WORDS;
-extern std::unique_ptr<SymbolTable> SYMBOL_TABLE;
-extern std::unique_ptr<LogFileBuffer> LOG_FILE_BUFFER;
-extern std::unique_ptr<TokenFileBuffer> TOKEN_FILE_BUFFER;
-
 Lexical::Lexical(const std::string& filename) 
 {
 	if (!this->checkExtension(filename)) {
@@ -22,6 +17,7 @@ Lexical::Lexical(const std::string& filename)
 	// Initialize attributes
 	this->_peek = ' ';
 	this->_lineNumber = 1;
+	this->_charNumber = 0;
 	this->_doubleBufferSwitch = true;
 	this->_doubleBufferCounter1 = 0;
 	this->_doubleBufferCounter2 = 0;
@@ -30,6 +26,34 @@ Lexical::Lexical(const std::string& filename)
 
 	memset(this->_doubleBuffer1, 0, compiler::COMPILER_BUFFER_SIZE);
 	memset(this->_doubleBuffer2, 0, compiler::COMPILER_BUFFER_SIZE);
+
+	this->_error = false;
+
+	this->_logFileBuffer = nullptr;
+	this->_tokenFileBuffer = nullptr;
+
+	this->_reservedWords = nullptr;
+	this->_symbolTable = nullptr;
+}
+
+void Lexical::linkLogFileBuffer(std::shared_ptr<LogFileBuffer> buffer)
+{
+	this->_logFileBuffer = buffer;
+}
+
+void Lexical::linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer)
+{
+	this->_tokenFileBuffer = buffer;
+}
+
+void Lexical::linkReservedWords(std::shared_ptr<ReservedWords> table)
+{
+	this->_reservedWords = table;
+}
+
+void Lexical::linkSymbolTable(std::shared_ptr<SymbolTable> table)
+{
+	this->_symbolTable = table;
 }
 
 void Lexical::run()
@@ -48,11 +72,15 @@ void Lexical::run()
 		loop = this->getNextToken();
 	}
 
-	::SYMBOL_TABLE->printTable();
 
 
-	::LOG_FILE_BUFFER->clearBuffer();
+	this->_logFileBuffer->clearBuffer();
 	this->_is.close();
+}
+
+bool Lexical::getError()
+{
+	return this->_error;
 }
 
 bool Lexical::checkExtension(const std::string& filepath)
@@ -96,12 +124,12 @@ void Lexical::sanitizeFileName(const std::string& filename)
 
 void Lexical::appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar)
 {
-	::LOG_FILE_BUFFER->errorChar(linenumber, rownumber, errorchar);
+	this->_logFileBuffer->logLexicalError(linenumber, rownumber, errorchar);
 }
 
-void Lexical::appendToSymbolTable(std::string token, std::string lexeme, int lineNumber)
+void Lexical::appendToSymbolTable(compiler::TOKEN token, std::string lexeme)
 {
-	::SYMBOL_TABLE->append(token, lexeme, lineNumber);
+	this->_symbolTable->append(token, lexeme, this->_lineNumber, this->_charNumber);
 }
 
 bool Lexical::getNextToken()
@@ -131,133 +159,107 @@ bool Lexical::getNextToken()
 	// special characters involved, go here
 	switch (this->_peek) {
 	case ';':
-		appendToSymbolTable(";", ";", this->_lineNumber);
+		appendToSymbolTable(compiler::SEMICOLON, ";");
 		//std::cout << ";" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '(':
-		appendToSymbolTable("(", "(", this->_lineNumber);
+		appendToSymbolTable(compiler::LEFT_PAREN, "(");
 		//std::cout << "(" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case ')':
-		appendToSymbolTable(")", ")", this->_lineNumber);
+		appendToSymbolTable(compiler::RIGHT_PAREN, ")");
 		//std::cout << ")" << std::endl;
 		this->_peek = ' ';
 		return true;
-	case '&':
-		if (readNextChar('&')) {
-			appendToSymbolTable("&&", "&&", this->_lineNumber);
-			//std::cout << "&&" << std::endl;
-			this->_peek = ' ';
-			return true;
-		}
-		else {
-			appendToSymbolTable("&", "&", this->_lineNumber);
-			//std::cout << "&" << std::endl;
-			this->_peek = ' ';
-			return true;
-		}
-	case '|':
-		if (readNextChar('|')) {
-			appendToSymbolTable("||", "||", this->_lineNumber);
-			//std::cout << "||" << std::endl;
-			this->_peek = ' ';
-			return true;
-		}
-		else {
-			appendToSymbolTable("|", "|", this->_lineNumber);
-			//std::cout << "|" << std::endl;
-			this->_peek = ' ';
-			return true;
-		}
 	case '=':
 		if (readNextChar('=')) {
-			appendToSymbolTable("==", "==", this->_lineNumber);
+			appendToSymbolTable(compiler::COMP_EQUAL, "==");
 			//std::cout << "==" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("=", "=", this->_lineNumber);
+			appendToSymbolTable(compiler::EQUAL, "=");
 			//std::cout << "=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case '<':
 		if (readNextChar('=')) {
-			appendToSymbolTable("<=", "<=", this->_lineNumber);
+			appendToSymbolTable(compiler::COMP_LEQUAL, "<=");
 			//std::cout << "<=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else if (readNextChar('>')) {
-			appendToSymbolTable("<>", "<>", this->_lineNumber);
+			appendToSymbolTable(compiler::COMP_NOT, "<>");
 			//std::cout << "<>" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable("<", "<", this->_lineNumber);
+			appendToSymbolTable(compiler::COMP_LTHAN, "<");
 			//std::cout << "<" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case '>':
 		if (readNextChar('=')) {
-			appendToSymbolTable(">=", ">=", this->_lineNumber);
+			appendToSymbolTable(compiler::COMP_GEQUAL, ">=");
 			//std::cout << ">=" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 		else {
-			appendToSymbolTable(">", ">", this->_lineNumber);
+			appendToSymbolTable(compiler::COMP_GTHAN, ">");
 			//std::cout << ">" << std::endl;
 			this->_peek = ' ';
 			return true;
 		}
 	case ',':
-		appendToSymbolTable(",", ",", this->_lineNumber);
+		appendToSymbolTable(compiler::COMMA, ",");
 		//std::cout << "," << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '+':
-		appendToSymbolTable("+", "+", this->_lineNumber);
+		appendToSymbolTable(compiler::PLUS, "+");
 		//std::cout << "+" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '*':
-		appendToSymbolTable("*", "*", this->_lineNumber);
+		appendToSymbolTable(compiler::MULTIPLY, "*");
 		//std::cout << "*" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '-':
-		appendToSymbolTable("-", "-", this->_lineNumber);
+		appendToSymbolTable(compiler::MINUS, "-");
 		//std::cout << "-" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '%':
-		appendToSymbolTable("%", "%", this->_lineNumber);
+		appendToSymbolTable(compiler::MODULUS, "%");
 		//std::cout << "%" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '/':
-		appendToSymbolTable("/", "/", this->_lineNumber);
+		appendToSymbolTable(compiler::DIVIDE, "/");
 		//std::cout << "/" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '[':
-		appendToSymbolTable("[", "[", this->_lineNumber);
+		appendToSymbolTable(compiler::LEFT_BRACK, "[");
 		//std::cout << "[" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case ']':
-		appendToSymbolTable("]", "]", this->_lineNumber);
+		appendToSymbolTable(compiler::RIGHT_BRACK, "]");
 		//std::cout << "]" << std::endl;
 		this->_peek = ' ';
 		return true;
 	case '.':
-		appendToSymbolTable(".", ".", this->_lineNumber);
+		appendToSymbolTable(compiler::DOT, ".");
 		//std::cout << "." << std::endl;
 		this->_peek = ' ';
 		return true;
@@ -273,7 +275,7 @@ bool Lexical::getNextToken()
 		} while (std::isdigit(this->_peek));
 
 		if (this->_peek != '.') {
-			appendToSymbolTable("INTEGER", std::to_string(v), this->_lineNumber);
+			appendToSymbolTable(compiler::VALUE_INTEGER, std::to_string(v));
 			//std::cout << v << std::endl;
 			return true;
 		}
@@ -290,7 +292,7 @@ bool Lexical::getNextToken()
 			d = d * 10;
 		}
 		
-		appendToSymbolTable("DOUBLE", std::to_string(x), this->_lineNumber);
+		appendToSymbolTable(compiler::VALUE_DOUBLE, std::to_string(x));
 		//std::cout << x << std::endl;
 		return true;
 	}
@@ -302,11 +304,11 @@ bool Lexical::getNextToken()
 			this->readNextChar();
 		} while (std::isalnum(this->_peek));
 
-		if (::RESERVED_WORDS->findReservedWord(b)) {
-			appendToSymbolTable(b, b, this->_lineNumber);
+		if (this->_reservedWords->findReservedWord(b)) {
+			appendToSymbolTable(static_cast<compiler::TOKEN>(this->_reservedWords->findReservedWordIndex(b)), b);
 		}
 		else {
-			appendToSymbolTable("ID", b, this->_lineNumber);
+			appendToSymbolTable(compiler::ID, b);
 		}
 
 		//std::cout << b << std::endl;
@@ -315,7 +317,8 @@ bool Lexical::getNextToken()
 
 	std::string s(&this->_peek);
 	this->appendToLogFileBuffer(this->_lineNumber, this->_charNumber, s);
-	//appendToSymbolTable("OTHER", s, this->_lineNumber);
+	this->_error = true;
+	//appendToSymbolTable("OTHER", s);
 	//appendToTokenFileBuffer("ERROR: " + s);
 	//std::cout << this->_peek << std::endl;
 	this->_peek = ' ';

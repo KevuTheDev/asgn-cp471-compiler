@@ -19,7 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\compiler.cpp" />
+    <ClCompile Include="src\Compiler.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\globals.cpp" />
     <ClCompile Include="src\Lexical.cpp" />
     <ClCompile Include="src\LogFileBuffer.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="src\TokenFileBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Compiler.h" />
     <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\Lexical.h" />
     <ClInclude Include="src\LogFileBuffer.h" />
@@ -125,6 +127,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,6 +143,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,6 +159,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -170,6 +175,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

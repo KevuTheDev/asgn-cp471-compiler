@@ -5,6 +5,10 @@ ReservedWords::ReservedWords()
 	this->_table = std::vector<std::string>();
 }
 
+ReservedWords::~ReservedWords()
+{
+}
+
 void ReservedWords::addReservedWord(std::string word)
 {
 	this->_table.push_back(word);
@@ -22,4 +26,11 @@ bool ReservedWords::findReservedWord(const std::string& word)
         // std::cout << word << " not found." << std::endl;
         return false;
     }
+}
+
+int ReservedWords::findReservedWordIndex(const std::string& word)
+{
+    auto it = std::find(this->_table.begin(), this->_table.end(), word);
+    
+    return it - this->_table.begin();
 }
