@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 namespace compiler
 {
@@ -17,6 +18,9 @@ namespace compiler
 
     const uint16_t COMPILER_BUFFER_SIZE = 2048;
     const uint16_t COMPILER_BUFFER_SIZE_NULL = COMPILER_BUFFER_SIZE - 1;
+
+    const std::vector<std::string> KEYWORDS = { "def", "fed", "int", "double", "if", 
+        "then", "else", "fi", "while", "do", "od", "print", "return", "or", "and", "not" };
 
     const std::string TK_END = "$";
     const std::string TK_MODULU = "%";

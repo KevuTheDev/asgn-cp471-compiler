@@ -17,7 +17,7 @@
 
 int main(int argc, char* argv[]) 
 {
-    std::string filename = "Test2";
+    std::string filename = "Test0";
     std::string outpath = "output/";
     std::string respath = "res/";
 

@@ -20,22 +20,9 @@ void Compiler::setupReservedWordsTable()
 
 void Compiler::addReservedWords()
 {
-	this->_reservedWords->addReservedWord("def");
-	this->_reservedWords->addReservedWord("fed");
-	this->_reservedWords->addReservedWord("int");
-	this->_reservedWords->addReservedWord("double");
-	this->_reservedWords->addReservedWord("if");
-	this->_reservedWords->addReservedWord("then");
-	this->_reservedWords->addReservedWord("else");
-	this->_reservedWords->addReservedWord("fi");
-	this->_reservedWords->addReservedWord("while");
-	this->_reservedWords->addReservedWord("do");
-	this->_reservedWords->addReservedWord("od");
-	this->_reservedWords->addReservedWord("print");
-	this->_reservedWords->addReservedWord("return");
-	this->_reservedWords->addReservedWord("or");
-	this->_reservedWords->addReservedWord("and");
-	this->_reservedWords->addReservedWord("not");
+	for (auto i : compiler::KEYWORDS) {
+		this->_reservedWords->addReservedWord(i);
+	}
 }
 
 void Compiler::setupSymbolTable()
