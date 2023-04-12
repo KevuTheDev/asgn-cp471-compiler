@@ -22,6 +22,7 @@ public:
 	void linkSymbolTable(std::shared_ptr<SymbolTable> table);
 
 	void run();
+	bool getError();
 
 private:
 	std::ifstream _is;
@@ -36,6 +37,8 @@ private:
 	uint16_t _doubleBufferCounter1;
 	uint16_t _doubleBufferCounter2;
 	bool _doubleBufferSwitch; // buffer1 - true, buffer2 - false
+
+	bool _error;
 
 	///
 	std::shared_ptr<LogFileBuffer> _logFileBuffer;
@@ -59,7 +62,7 @@ private:
 	void appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar);
 
 	//		-> Symbol Table Related
-	void appendToSymbolTable(std::string token, std::string lexeme, int lineNumber);
+	void appendToSymbolTable(std::string token, std::string lexeme);
 
 
 

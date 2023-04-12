@@ -26,7 +26,6 @@ FileBuffer::~FileBuffer()
 
 void FileBuffer::append(const std::string& value)
 {
-	std::cout << value << std::endl;
 	this->_buffer += value + "\n";
 	if (this->_buffer.length() >= this->_bufferSizeLimit) {
 		// write to the file

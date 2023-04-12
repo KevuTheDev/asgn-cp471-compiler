@@ -80,6 +80,14 @@ std::string Syntax::getPeek()
 	return this->_peek;
 }
 
+void Syntax::printSyntaxError(std::string code)
+{
+	SymbolRow sr = this->_symbolTable->getSymbolRowAtIndex(this->_position);
+	std::cout << "SYNTAX::ERROR::" + code + " on Line " + std::to_string(sr.lineNumber) + ":" + std::to_string(sr.charNumber);
+	std::cout << " " + sr.lexeme << std::endl;
+}
+
+
 void Syntax::start()
 {
 	bool hmm = PROGRAM();
@@ -112,8 +120,7 @@ bool Syntax::PROGRAM()
 			&& STATEMESEQ() && matchTokenNew(".");
 	}
 
-	std::cout << "ERROR::PROGRAM" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("PROGRAM");
 	return false;
 }
 
@@ -132,8 +139,7 @@ bool Syntax::FDECLS()
 		return FDECLS_EXT();
 	}
 
-	std::cout << "ERROR::FDECLS" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("FDECLS");
 	return false;
 }
 
@@ -151,8 +157,7 @@ bool Syntax::FDECLS_EXT()
 		return true;
 	}
 
-	std::cout << "ERROR::FDECLS_EXT" << std::endl;
-	std::cout << getPeek() << " :: " << readString << std::endl;
+	printSyntaxError("FDECLS_EXT");
 	return false;
 }
 
@@ -166,8 +171,7 @@ bool Syntax::FDEC()
 			&& matchTokenNew("fed");
 	}
 
-	std::cout << "ERROR::FDEC" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("FDEC");
 	return false;
 }
 
@@ -178,8 +182,7 @@ bool Syntax::PARAMS()
 			&& PARAMS_EXT();
 	}
 
-	std::cout << "ERROR::PARAMS" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("PARAMS");
 	return false;
 }
 
@@ -193,8 +196,7 @@ bool Syntax::PARAMS_EXT()
 		return true;
 	}
 
-	std::cout << "ERROR::PARAMS_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("PARAMS_EXT");
 	return false;
 }
 
@@ -204,8 +206,7 @@ bool Syntax::FNAME()
 		return matchTokenNew("ID");
 	}
 
-	std::cout << "ERROR::FNAME" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("FNAME");
 	return false;
 }
 
@@ -223,27 +224,25 @@ bool Syntax::DECLARATIONS()
 		return DECLARATIONS_EXT();
 	}
 
-	std::cout << "ERROR::DECLARATIONS" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("DECLARATIONS");
 	return false;
 }
 
 bool Syntax::DECLARATIONS_EXT()
 {
-		if (getPeek() == "double" || getPeek() == "int") {
-			return DECL() && matchTokenNew(";")
-				&& DECLARATIONS_EXT();
-		}
-		else if (getPeek() == "." || getPeek() == ";"
-			|| getPeek() == "ID" || getPeek() == "fed"
-			|| getPeek() == "if" || getPeek() == "print"
-			|| getPeek() == "return" || getPeek() == "while") {
-			// EPSILON
-			return true;
-		}
+	if (getPeek() == "double" || getPeek() == "int") {
+		return DECL() && matchTokenNew(";")
+			&& DECLARATIONS_EXT();
+	}
+	else if (getPeek() == "." || getPeek() == ";"
+		|| getPeek() == "ID" || getPeek() == "fed"
+		|| getPeek() == "if" || getPeek() == "print"
+		|| getPeek() == "return" || getPeek() == "while") {
+		// EPSILON
+		return true;
+	}
 
-	std::cout << "ERROR::DECLARATIONS_EXT" << std::endl;
-	std::cout << getPeek() << " :: " << readString << std::endl;
+	printSyntaxError("DECLARATIONS_EXT");
 	return false;
 }
 
@@ -253,8 +252,7 @@ bool Syntax::DECL()
 		return TYPE() && VARLIST();
 	}
 
-	std::cout << "ERROR::DECL" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("DECL");
 	return false;
 }
 
@@ -267,8 +265,7 @@ bool Syntax::TYPE()
 		return matchTokenNew("int");
 	}
 
-	std::cout << "ERROR::TYPE" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("TYPE");
 	return false;
 }
 
@@ -278,8 +275,7 @@ bool Syntax::VARLIST()
 		return VAR() && VARLIST_EXT();
 	}
 
-	std::cout << "ERROR::VARLIST" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("VARLIST");
 	return false;
 }
 
@@ -293,8 +289,7 @@ bool Syntax::VARLIST_EXT()
 		return true;
 	}
 
-	std::cout << "ERROR::VARLIST_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("VARLIST_EXT");
 	return false;
 }
 
@@ -312,8 +307,7 @@ bool Syntax::STATEMESEQ()
 		return STATEMENT() && STATEMESEQ_EXT();
 	}
 
-	std::cout << "ERROR::STATEMENTSEQ" << std::endl;
-	std::cout << getPeek() << " :: " << readString << std::endl;
+	printSyntaxError("STATEMENTSEQ");
 	return false;
 }
 
@@ -329,8 +323,7 @@ bool Syntax::STATEMESEQ_EXT()
 		return true;
 	}
 
-	std::cout << "ERROR::STATEMENTSEQ_EXT" << std::endl;
-	std::cout << getPeek() << " :: " << readString << std::endl;
+	printSyntaxError("STATEMENTSEQ_EXT");
 	return false;
 }
 
@@ -343,7 +336,7 @@ bool Syntax::STATEMENT()
 	else if (getPeek() == "if") {
 		return matchTokenNew("if") && BEXPR()
 			&& matchTokenNew("then") && STATEMESEQ()
-			&& STATEMEEXT();
+			&& STATEMENT_EXT();
 	}
 	else if (getPeek() == "print") {
 		return matchTokenNew("print") && EXPR();
@@ -362,12 +355,11 @@ bool Syntax::STATEMENT()
 		return true;
 	}
 
-	std::cout << "ERROR::STATEMENT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("STATEMENT");
 	return false;
 }
 
-bool Syntax::STATEMEEXT()
+bool Syntax::STATEMENT_EXT()
 {
 	if (getPeek() == "else") {
 		return matchTokenNew("else") && STATEMESEQ()
@@ -377,8 +369,7 @@ bool Syntax::STATEMEEXT()
 		return matchTokenNew("fi");
 	}
 
-	std::cout << "ERROR::STATEMEEXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("STATEMENT_EXT");
 	return false;
 }
 
@@ -389,8 +380,7 @@ bool Syntax::EXPR()
 		return TERM() && EXPR_EXT();
 	}
 
-	std::cout << "ERROR::EXPR" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("EXPR");
 	return false;
 }
 
@@ -416,8 +406,7 @@ bool Syntax::EXPR_EXT()
 		return true;
 	}
 
-	std::cout << "ERROR::EXPR_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("EXPR_EXT");
 	return false;
 }
 
@@ -428,8 +417,7 @@ bool Syntax::TERM()
 		return FACTOR() && TERM_EXT();
 	}
 
-	std::cout << "ERROR::TERM" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("TERM");
 	return false;
 }
 
@@ -461,8 +449,7 @@ bool Syntax::TERM_EXT()
 		return true;
 	}
 
-	std::cout << "ERROR::TERM_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("TERM_EXT");
 	return false;
 }
 
@@ -479,8 +466,7 @@ bool Syntax::FACTOR()
 		return matchTokenNew("ID") && FACTOR_EXT();
 	}
 
-	std::cout << "ERROR::FACTOR" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("FACTOR");
 	return false;
 }
 
@@ -502,8 +488,7 @@ bool Syntax::FACTOR_EXT()
 		return VAR_EXT();
 	}
 
-	std::cout << "ERROR::FACTOR_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("FACTOR_EXT");
 	return false;
 }
 
@@ -517,8 +502,7 @@ bool Syntax::EXPRSEQ()
 		return true;
 	}
 
-	std::cout << "ERROR::EXPRSEQ" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("EXPRSEQ");
 	return false;
 }
 
@@ -532,8 +516,7 @@ bool Syntax::EXPRSEQ_EXT()
 		return true;
 	}
 
-	std::cout << "ERROR::EXPRSEQ_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("EXPRSEQ_EXT");
 	return false;
 }
 
@@ -543,8 +526,7 @@ bool Syntax::BEXPR()
 		return BTERM() && BEXPR_EXT();
 	}
 
-	std::cout << "ERROR::BEXPR" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BEXPR");
 	return false;
 }
 
@@ -560,8 +542,7 @@ bool Syntax::BEXPR_EXT()
 		return true;
 	}
 
-	std::cout << "ERROR::BEXPR_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BEXPR_EXT");
 	return false;
 }
 
@@ -571,8 +552,7 @@ bool Syntax::BTERM()
 		return BFACTOR() && BTERM_EXT();
 	}
 
-	std::cout << "ERROR::BTERM" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BTERM");
 	return false;
 }
 
@@ -588,8 +568,7 @@ bool Syntax::BTERM_EXT()
 		return true;
 	}
 
-	std::cout << "ERROR::BTERM_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BTERM_EXT");
 	return false;
 }
 
@@ -603,8 +582,7 @@ bool Syntax::BFACTOR()
 		return matchTokenNew("not") && BFACTOR();
 	}
 
-	std::cout << "ERROR::BFACTOR" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BFACTOR");
 	return false;
 }
 
@@ -628,8 +606,7 @@ bool Syntax::BFACTOR_EXT()
 			&& EXPR();
 	}
 
-	std::cout << "ERROR::BFACTOR_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("BFACTOR_EXT");
 	return false;
 }
 
@@ -654,8 +631,7 @@ bool Syntax::COMP()
 		return matchTokenNew(">=");
 	}
 
-	std::cout << "ERROR::COMP" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("COMP");
 	return false;
 }
 
@@ -665,8 +641,7 @@ bool Syntax::VAR()
 		return matchTokenNew("ID") && VAR_EXT();
 	}
 
-	std::cout << "ERROR::VAR" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("VAR");
 	return false;
 }
 
@@ -690,8 +665,7 @@ bool Syntax::VAR_EXT()
 		return true;
 	}
 
-	std::cout << "ERROR::VAR_EXT" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("VAR_EXT");
 	return false;
 }
 
@@ -704,8 +678,7 @@ bool Syntax::NUMBER()
 		return matchTokenNew("INTEGER");
 	}
 
-	std::cout << "ERROR::NUMBER" << std::endl;
-	std::cout << getPeek() << " :: "<< readString << std::endl;
+	printSyntaxError("NUMBER");
 	return false;
 }
 

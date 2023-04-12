@@ -45,6 +45,7 @@ private:
 	std::shared_ptr<ReservedWords> _reservedWords;
 	std::shared_ptr<SymbolTable> _symbolTable;
 
+	void printSyntaxError(std::string code);
 
 	void start();
 
@@ -65,7 +66,7 @@ private:
 	bool STATEMESEQ();
 	bool STATEMESEQ_EXT();
 	bool STATEMENT();
-	bool STATEMEEXT();
+	bool STATEMENT_EXT();
 	bool EXPR();
 	bool EXPR_EXT();
 	bool TERM();
