@@ -23,20 +23,22 @@ public:
 	void linkSymbolTable(std::shared_ptr<SymbolTable> table);
 
 	void run();
+	bool getError();
 
 private:
-	std::string _peek;
+	compiler::TOKEN _peek;
 	int _position;
 	int _limit;
 
 
-	void matchToken(const std::string& token);
-	bool matchTokenNew(const std::string& token);
+	void matchToken(compiler::TOKEN token);
+	bool matchTokenNew(compiler::TOKEN token);
 	void getNextToken();
 
-	std::string getPeek();
+	compiler::TOKEN getPeek();
 
 	std::string readString = "";
+	bool _error;
 
 
 	std::shared_ptr<LogFileBuffer> _logFileBuffer;

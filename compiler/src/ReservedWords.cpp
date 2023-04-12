@@ -27,3 +27,10 @@ bool ReservedWords::findReservedWord(const std::string& word)
         return false;
     }
 }
+
+int ReservedWords::findReservedWordIndex(const std::string& word)
+{
+    auto it = std::find(this->_table.begin(), this->_table.end(), word);
+    
+    return it - this->_table.begin();
+}

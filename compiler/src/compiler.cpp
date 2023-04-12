@@ -30,6 +30,11 @@ void Compiler::setupSymbolTable()
 	this->_symbolTable->linkTokenFileBuffer(this->_tokenFileBuffer);
 }
 
+void Compiler::printSymbolTable()
+{
+	this->_symbolTable->printTable();
+}
+
 void Compiler::setupLexicalAnalysis()
 {
 	this->_lexical = std::make_unique<Lexical>(this->_respath + this->_filename + compiler::COMPILER_FILE_EXTENSION_MAIN);
@@ -70,14 +75,25 @@ void Compiler::run()
 	this->setupLexicalAnalysis();
 	this->runLexicalAnalysis();
 
+
+	this->printSymbolTable();
+
 	if (this->_lexical->getError()) {
 		std::cout << "LEXICAL ANALYSIS ERRORED" << std::endl;
 		std::cout << "Please look into the log file for more information" << std::endl;
 		std::cout << _outpath + _filename + compiler::COMPILER_FILE_EXTENSION_LOG << std::endl;
 		return;
 	}
+
 	// run syntax analysis
 	this->setupSyntaxAnalysis();
 	this->runSyntaxAnalysis();
+
+	if (this->_syntax->getError()) {
+		std::cout << "SYNTAX ANALYSIS ERRORED" << std::endl;
+		std::cout << "Please look into the log file for more information" << std::endl;
+		std::cout << _outpath + _filename + compiler::COMPILER_FILE_EXTENSION_LOG << std::endl;
+		return;
+	}
 
 }

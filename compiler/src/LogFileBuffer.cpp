@@ -22,12 +22,18 @@ bool LogFileBuffer::checkExtension(const std::string& filepath)
 	return true;
 }
 
-void LogFileBuffer::errorChar(int linenumber, int rownumber, const std::string& errorchar)
+void LogFileBuffer::logLexicalError(int linenumber, int rownumber, const std::string& errorchar)
 {
-	std::string e = "Error on line " + std::to_string(linenumber) +
+	std::string e = "ERROR::LEXICAL: Error on line " + std::to_string(linenumber) +
 		":" + std::to_string(rownumber) + " | Invalid character \'" + errorchar + "\'";
 	// Error on line 20: Invalid character
 	// void FileBuffer:append(~
 	//                     ~~~^
 	this->append(e);
+}
+
+void LogFileBuffer::logSyntaxError(int linenumber, int rownumber, const std::string& errorchar)
+{
+	std::string e = "ERROR::SYNTAX: Error on line " + std::to_string(linenumber) +
+		":" + std::to_string(rownumber) + " | Syntax error \'" + errorchar + "\'";
 }

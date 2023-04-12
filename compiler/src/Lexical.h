@@ -62,7 +62,7 @@ private:
 	void appendToLogFileBuffer(int linenumber, int rownumber, const std::string& errorchar);
 
 	//		-> Symbol Table Related
-	void appendToSymbolTable(std::string token, std::string lexeme);
+	void appendToSymbolTable(compiler::TOKEN token, std::string lexeme);
 
 
 

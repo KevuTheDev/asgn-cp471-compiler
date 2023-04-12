@@ -15,12 +15,12 @@ void SymbolTable::linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer)
     this->_tokenFileBuffer = buffer;
 }
 
-bool SymbolTable::append(std::string token, std::string lexeme, int lineNumber, int charNumber)
+bool SymbolTable::append(compiler::TOKEN token, std::string lexeme, int lineNumber, int charNumber)
 {
     SymbolRow yy = { token, lexeme, lineNumber, charNumber };
     _table.push_back(yy);
 
-    int tokenLength = token.length();
+    int tokenLength = compiler::ST_KEYWORDS[token].length();
     int lexemeLength = lexeme.length();
     int lineNumLength = std::to_string(lineNumber).length();
     int charNumLength = std::to_string(charNumber).length();
@@ -80,7 +80,7 @@ void SymbolTable::printTable()
 
     for (auto i : this->_table) {
         std::string rows = std::format("|{}{}{}|{}{}{}|{}{}{}|{}{}{}|",
-            padding, i.token, std::string(this->_printTokenLimit - i.token.length()
+            padding, compiler::ST_KEYWORDS[i.token], std::string(this->_printTokenLimit - compiler::ST_KEYWORDS[i.token].length()
                 + rightPadding, ' '),
             padding, i.lexeme, std::string(this->_printLexemeLimit - i.lexeme.length()
                 + rightPadding, ' '),
@@ -118,7 +118,7 @@ int SymbolTable::length()
     return this->_table.size();
 }
 
-std::string SymbolTable::getTokenAtIndex(int index)
+compiler::TOKEN SymbolTable::getTokenAtIndex(int index)
 {
     SymbolRow sr = this->_table.at(index);
     return sr.token;

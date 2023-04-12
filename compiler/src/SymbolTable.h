@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <fstream>
-#include <cstdio>
 #include <memory>
 #include <string>
 #include <vector>
@@ -10,7 +9,7 @@
 #include "TokenFileBuffer.h"
 
 struct SymbolRow {
-	std::string token;
+	compiler::TOKEN token;
 	std::string lexeme;
 	int lineNumber;
 	int charNumber;
@@ -25,11 +24,11 @@ public:
 
 	void linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer);
 
-	bool append(std::string token, std::string lexeme, int lineNumber, int charNumber);
+	bool append(compiler::TOKEN token, std::string lexeme, int lineNumber, int charNumber);
 	void printTable();
 
 	int length();
-	std::string getTokenAtIndex(int index);
+	compiler::TOKEN getTokenAtIndex(int index);
 	SymbolRow getSymbolRowAtIndex(int index);
 
 private:

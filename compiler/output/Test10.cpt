@@ -1,86 +1,86 @@
-==============================================
-| TOKEN        | LEXEME               | LINE |
-==============================================
-| def          | def                  | 1    |
-| int          | int                  | 1    |
-| ID           | gcd                  | 2    |
-| (            | (                    | 2    |
-| int          | int                  | 2    |
-| ID           | a                    | 2    |
-| ,            | ,                    | 2    |
-| int          | int                  | 2    |
-| ID           | b                    | 2    |
-| )            | )                    | 2    |
-| if           | if                   | 3    |
-| (            | (                    | 3    |
-| ID           | a                    | 3    |
-| ==           | ==                   | 3    |
-| ID           | b                    | 3    |
-| )            | )                    | 3    |
-| then         | then                 | 3    |
-| return       | return               | 3    |
-| (            | (                    | 3    |
-| ID           | a                    | 3    |
-| )            | )                    | 3    |
-| fi           | fi                   | 4    |
-| ;            | ;                    | 4    |
-| if           | if                   | 4    |
-| (            | (                    | 4    |
-| ID           | a                    | 4    |
-| >            | >                    | 4    |
-| ID           | b                    | 4    |
-| )            | )                    | 4    |
-| then         | then                 | 4    |
-| return       | return               | 5    |
-| (            | (                    | 5    |
-| ID           | gcd                  | 5    |
-| (            | (                    | 5    |
-| ID           | a                    | 5    |
-| -            | -                    | 5    |
-| ID           | b                    | 5    |
-| ,            | ,                    | 5    |
-| ID           | b                    | 5    |
-| )            | )                    | 5    |
-| )            | )                    | 5    |
-| else         | else                 | 5    |
-| return       | return               | 5    |
-| (            | (                    | 5    |
-| ID           | gcd                  | 5    |
-| (            | (                    | 5    |
-| ID           | a                    | 5    |
-| ,            | ,                    | 5    |
-| ID           | b                    | 5    |
-| -            | -                    | 5    |
-| ID           | a                    | 5    |
-| )            | )                    | 5    |
-| )            | )                    | 5    |
-| fi           | fi                   | 5    |
-| ;            | ;                    | 5    |
-| fed          | fed                  | 5    |
-| ;            | ;                    | 5    |
-| print        | print                | 5    |
-| ID           | gcd                  | 5    |
-| (            | (                    | 5    |
-| INTEGER      | 21                   | 5    |
-| ,            | ,                    | 5    |
-| INTEGER      | 15                   | 5    |
-| )            | )                    | 5    |
-| ;            | ;                    | 5    |
-| print        | print                | 6    |
-| INTEGER      | 45                   | 6    |
-| ;            | ;                    | 6    |
-| print        | print                | 6    |
-| INTEGER      | 2                    | 6    |
-| *            | *                    | 6    |
-| (            | (                    | 6    |
-| ID           | gcd                  | 6    |
-| (            | (                    | 6    |
-| INTEGER      | 21                   | 6    |
-| ,            | ,                    | 6    |
-| INTEGER      | 28                   | 6    |
-| )            | )                    | 6    |
-| +            | +                    | 6    |
-| INTEGER      | 6                    | 6    |
-| )            | )                    | 6    |
-| .            | .                    | 6    |
-==============================================
+===============================================================
+| TOKEN                | LEXEME        | LINE     | CHAR      |
+===============================================================
+| KW_DEF               | def           | 1        | 4         |
+| KW_INT               | int           | 1        | 8         |
+| ID                   | gcd           | 2        | 4         |
+| LEFT_PAREN           | (             | 2        | 4         |
+| KW_INT               | int           | 2        | 8         |
+| ID                   | a             | 2        | 10        |
+| COMMA                | ,             | 2        | 10        |
+| KW_INT               | int           | 2        | 15        |
+| ID                   | b             | 2        | 17        |
+| RIGHT_PAREN          | )             | 2        | 17        |
+| KW_IF                | if            | 3        | 3         |
+| LEFT_PAREN           | (             | 3        | 4         |
+| ID                   | a             | 3        | 6         |
+| COMP_EQUAL           | ==            | 3        | 7         |
+| ID                   | b             | 3        | 9         |
+| RIGHT_PAREN          | )             | 3        | 9         |
+| KW_THEN              | then          | 3        | 15        |
+| KW_RETURN            | return        | 3        | 22        |
+| LEFT_PAREN           | (             | 3        | 23        |
+| ID                   | a             | 3        | 25        |
+| RIGHT_PAREN          | )             | 3        | 25        |
+| KW_FI                | fi            | 4        | 3         |
+| SEMICOLON            | ;             | 4        | 3         |
+| KW_IF                | if            | 4        | 7         |
+| LEFT_PAREN           | (             | 4        | 8         |
+| ID                   | a             | 4        | 10        |
+| COMP_GTHAN           | >             | 4        | 10        |
+| ID                   | b             | 4        | 12        |
+| RIGHT_PAREN          | )             | 4        | 12        |
+| KW_THEN              | then          | 4        | 18        |
+| KW_RETURN            | return        | 5        | 7         |
+| LEFT_PAREN           | (             | 5        | 7         |
+| ID                   | gcd           | 5        | 11        |
+| LEFT_PAREN           | (             | 5        | 11        |
+| ID                   | a             | 5        | 13        |
+| MINUS                | -             | 5        | 13        |
+| ID                   | b             | 5        | 15        |
+| COMMA                | ,             | 5        | 15        |
+| ID                   | b             | 5        | 17        |
+| RIGHT_PAREN          | )             | 5        | 17        |
+| RIGHT_PAREN          | )             | 5        | 18        |
+| KW_ELSE              | else          | 5        | 24        |
+| KW_RETURN            | return        | 5        | 31        |
+| LEFT_PAREN           | (             | 5        | 31        |
+| ID                   | gcd           | 5        | 35        |
+| LEFT_PAREN           | (             | 5        | 35        |
+| ID                   | a             | 5        | 37        |
+| COMMA                | ,             | 5        | 37        |
+| ID                   | b             | 5        | 39        |
+| MINUS                | -             | 5        | 39        |
+| ID                   | a             | 5        | 41        |
+| RIGHT_PAREN          | )             | 5        | 41        |
+| RIGHT_PAREN          | )             | 5        | 42        |
+| KW_FI                | fi            | 5        | 46        |
+| SEMICOLON            | ;             | 5        | 46        |
+| KW_FED               | fed           | 5        | 51        |
+| SEMICOLON            | ;             | 5        | 51        |
+| KW_PRINT             | print         | 5        | 58        |
+| ID                   | gcd           | 5        | 62        |
+| LEFT_PAREN           | (             | 5        | 62        |
+| VALUE_INTEGER        | 21            | 5        | 65        |
+| COMMA                | ,             | 5        | 65        |
+| VALUE_INTEGER        | 15            | 5        | 68        |
+| RIGHT_PAREN          | )             | 5        | 68        |
+| SEMICOLON            | ;             | 5        | 69        |
+| KW_PRINT             | print         | 6        | 6         |
+| VALUE_INTEGER        | 45            | 6        | 9         |
+| SEMICOLON            | ;             | 6        | 9         |
+| KW_PRINT             | print         | 6        | 16        |
+| VALUE_INTEGER        | 2             | 6        | 18        |
+| MULTIPLY             | *             | 6        | 18        |
+| LEFT_PAREN           | (             | 6        | 19        |
+| ID                   | gcd           | 6        | 23        |
+| LEFT_PAREN           | (             | 6        | 23        |
+| VALUE_INTEGER        | 21            | 6        | 26        |
+| COMMA                | ,             | 6        | 26        |
+| VALUE_INTEGER        | 28            | 6        | 30        |
+| RIGHT_PAREN          | )             | 6        | 30        |
+| PLUS                 | +             | 6        | 32        |
+| VALUE_INTEGER        | 6             | 6        | 35        |
+| RIGHT_PAREN          | )             | 6        | 35        |
+| DOT                  | .             | 6        | 36        |
+===============================================================

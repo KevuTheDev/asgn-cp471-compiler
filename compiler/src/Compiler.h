@@ -43,6 +43,7 @@ private:
 
 	// Symbol Table
 	void setupSymbolTable();
+	void printSymbolTable();
 
 	// Lexical
 	void setupLexicalAnalysis();
