@@ -42,12 +42,14 @@
     <ClInclude Include="src\TokenFileBuffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="output\Test12.cpt" />
     <None Include="res\e1.cp" />
     <None Include="res\grammar.cpg" />
     <None Include="res\Test0.cp" />
     <None Include="res\Test1.cp" />
     <None Include="res\Test10.cp" />
     <None Include="res\Test11.cp" />
+    <None Include="res\Test12.cp" />
     <None Include="res\Test2.cp" />
     <None Include="res\Test3.cp" />
     <None Include="res\Test4.cp" />

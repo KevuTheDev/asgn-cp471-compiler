@@ -37,7 +37,6 @@ void Syntax::linkSymbolTable(std::shared_ptr<SymbolTable> table)
 {
 	this->_symbolTable = table;
 	this->_limit = this->_symbolTable->length();
-	std::cout << this->_limit << std::endl;
 	this->_peek = this->_symbolTable->getTokenAtIndex(this->_position);;
 }
 
@@ -98,6 +97,7 @@ void Syntax::start()
 	bool hmm = PROGRAM();
 
 	if (!hmm) {
+		this->_error = true;
 		std::cout << "INCOMPLETE" << std::endl;
 		std::cout << "INCOMPLETE" << std::endl;
 		std::cout << "INCOMPLETE" << std::endl;

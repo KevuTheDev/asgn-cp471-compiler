@@ -31,6 +31,8 @@ private:
 	char _peek;
 	uint32_t _lineNumber;
 	uint32_t _charNumber;
+	uint32_t _prevCharNumber;
+	std::string _currentLine;
 
 	char* _doubleBuffer1;
 	char* _doubleBuffer2;
@@ -54,6 +56,7 @@ private:
 	//		-> Lexical Related
 	bool checkExtension(const std::string& filepath);
 	void readFileToBuffer(std::ifstream& is, char* buf);
+	void resetPeek();
 
 	//		-> Token File Buffer Related
 	void sanitizeFileName(const std::string& filepath);

@@ -18,6 +18,7 @@ Lexical::Lexical(const std::string& filename)
 	this->_peek = ' ';
 	this->_lineNumber = 1;
 	this->_charNumber = 0;
+	this->_prevCharNumber = 0;
 	this->_doubleBufferSwitch = true;
 	this->_doubleBufferCounter1 = 0;
 	this->_doubleBufferCounter2 = 0;
@@ -108,6 +109,11 @@ void Lexical::readFileToBuffer(std::ifstream& is, char* buf)
 	return;
 }
 
+void Lexical::resetPeek()
+{
+	this->_peek = ' ';
+}
+
 void Lexical::sanitizeFileName(const std::string& filename)
 {
 	// This assumes that the given filename is already valid
@@ -116,7 +122,7 @@ void Lexical::sanitizeFileName(const std::string& filename)
 
 	
 	while (char_pos != std::string::npos) {
-		std::cout << this->_fileName << std::endl;
+		//std::cout << this->_fileName << std::endl;
 		this->_fileName = this->_fileName.substr(char_pos + 1);
 		char_pos = this->_fileName.find('/');
 	}
@@ -124,12 +130,13 @@ void Lexical::sanitizeFileName(const std::string& filename)
 
 void Lexical::appendToLogFileBuffer(const std::string& errorchar)
 {
-	this->_logFileBuffer->logLexicalError(this->_lineNumber, this->_charNumber, errorchar);
+	// this->_logFileBuffer->logLexicalError(this->_lineNumber, this->_prevCharNumber, errorchar);
+	this->_logFileBuffer->logLexicalErrorNew(this->_lineNumber, this->_prevCharNumber, errorchar, this->_currentLine);
 }
 
 void Lexical::appendToSymbolTable(compiler::TOKEN token, std::string lexeme)
 {
-	this->_symbolTable->append(token, lexeme, this->_lineNumber, this->_charNumber);
+	this->_symbolTable->append(token, lexeme, this->_lineNumber, this->_prevCharNumber);
 }
 
 bool Lexical::getNextToken()
@@ -141,7 +148,7 @@ bool Lexical::getNextToken()
 	for (;; this->readNextChar()) {
 
 		if (this->_peek == NULL) {
-			std::cout << "END OF FILE" << std::endl;
+			//std::cout << "END OF FILE" << std::endl;
 			return false;
 		}
 
@@ -149,8 +156,11 @@ bool Lexical::getNextToken()
 			continue;
 		else if (this->_peek == '\n')
 		{
+			this->_currentLine.pop_back();
 			this->_charNumber = 0;
 			this->_lineNumber += 1;
+			std::cout << this->_currentLine << std::endl;
+			this->_currentLine = "";
 		}
 		else
 			break;
@@ -159,114 +169,134 @@ bool Lexical::getNextToken()
 	// special characters involved, go here
 	switch (this->_peek) {
 	case ';':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::SEMICOLON, ";");
 		//std::cout << ";" << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case '(':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::LEFT_PAREN, "(");
 		//std::cout << "(" << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case ')':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::RIGHT_PAREN, ")");
 		//std::cout << ")" << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case '=':
 		if (readNextChar('=')) {
+			this->_prevCharNumber = this->_charNumber;
 			appendToSymbolTable(compiler::COMP_EQUAL, "==");
 			//std::cout << "==" << std::endl;
-			this->_peek = ' ';
+			this->resetPeek();
 			return true;
 		}
 		else {
+			this->_prevCharNumber = this->_charNumber;
 			appendToSymbolTable(compiler::EQUAL, "=");
 			//std::cout << "=" << std::endl;
-			this->_peek = ' ';
+			this->resetPeek();
 			return true;
 		}
 	case '<':
 		if (readNextChar('=')) {
+			this->_prevCharNumber = this->_charNumber;
 			appendToSymbolTable(compiler::COMP_LEQUAL, "<=");
 			//std::cout << "<=" << std::endl;
-			this->_peek = ' ';
+			this->resetPeek();
 			return true;
 		}
 		else if (readNextChar('>')) {
+			this->_prevCharNumber = this->_charNumber;
 			appendToSymbolTable(compiler::COMP_NOT, "<>");
 			//std::cout << "<>" << std::endl;
-			this->_peek = ' ';
+			this->resetPeek();
 			return true;
 		}
 		else {
+			this->_prevCharNumber = this->_charNumber;
 			appendToSymbolTable(compiler::COMP_LTHAN, "<");
 			//std::cout << "<" << std::endl;
-			this->_peek = ' ';
+			this->resetPeek();
 			return true;
 		}
 	case '>':
+		this->_prevCharNumber = this->_charNumber;
 		if (readNextChar('=')) {
 			appendToSymbolTable(compiler::COMP_GEQUAL, ">=");
 			//std::cout << ">=" << std::endl;
-			this->_peek = ' ';
+			this->resetPeek();
 			return true;
 		}
 		else {
 			appendToSymbolTable(compiler::COMP_GTHAN, ">");
 			//std::cout << ">" << std::endl;
-			this->_peek = ' ';
+			this->resetPeek();
 			return true;
 		}
 	case ',':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::COMMA, ",");
 		//std::cout << "," << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case '+':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::PLUS, "+");
 		//std::cout << "+" << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case '*':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::MULTIPLY, "*");
 		//std::cout << "*" << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case '-':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::MINUS, "-");
 		//std::cout << "-" << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case '%':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::MODULUS, "%");
 		//std::cout << "%" << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case '/':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::DIVIDE, "/");
 		//std::cout << "/" << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case '[':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::LEFT_BRACK, "[");
 		//std::cout << "[" << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case ']':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::RIGHT_BRACK, "]");
 		//std::cout << "]" << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 	case '.':
+		this->_prevCharNumber = this->_charNumber;
 		appendToSymbolTable(compiler::DOT, ".");
 		//std::cout << "." << std::endl;
-		this->_peek = ' ';
+		this->resetPeek();
 		return true;
 
 	}
 
+	// If Numeric Value
 	if (std::isdigit(this->_peek)) {
+		this->_prevCharNumber = this->_charNumber;
 		std::string v = "";
 		//std::cout << "std:::::" << this->_peek << " " << static_cast<int>(this->_peek) <<std::endl;
 		do {
@@ -314,7 +344,9 @@ bool Lexical::getNextToken()
 		return true;
 	}
 
+	// If ID or Keywords
 	if (std::isalpha(this->_peek)) {
+		this->_prevCharNumber = this->_charNumber;
 		std::string b = "";
 		do {
 			b += this->_peek;
@@ -332,13 +364,14 @@ bool Lexical::getNextToken()
 		return true;
 	}
 
+	this->_prevCharNumber = this->_charNumber;
 	std::string s(&this->_peek);
 	this->appendToLogFileBuffer(s);
 	this->_error = true;
 	//appendToSymbolTable("OTHER", s);
 	//appendToTokenFileBuffer("ERROR: " + s);
 	//std::cout << this->_peek << std::endl;
-	this->_peek = ' ';
+	this->resetPeek();
 	return true;
 }
 
@@ -349,12 +382,15 @@ void Lexical::readNextChar()
 		this->_peek = this->_doubleBuffer1[this->_doubleBufferCounter1];
 		this->_doubleBufferCounter1 += 1;
 		this->_charNumber += 1;
+		this->_currentLine += this->_peek;
 		
 		if (this->_doubleBufferCounter1 == compiler::COMPILER_BUFFER_SIZE) {
+			this->_currentLine.pop_back();
 			// Get the next char from buffer 2
 			this->_peek = this->_doubleBuffer2[this->_doubleBufferCounter2];
 			this->_doubleBufferCounter2 += 1;
 			this->_charNumber += 1;
+			this->_currentLine += this->_peek;
 
 			this->_doubleBufferSwitch = !this->_doubleBufferSwitch;
 
@@ -369,12 +405,15 @@ void Lexical::readNextChar()
 		this->_peek = this->_doubleBuffer2[this->_doubleBufferCounter2];
 		this->_doubleBufferCounter2 += 1;
 		this->_charNumber += 1;
+		this->_currentLine += this->_peek;
 
 		if (this->_doubleBufferCounter2 == compiler::COMPILER_BUFFER_SIZE) {
+			this->_currentLine.pop_back();
 			// Get the next char from buffer 1
 			this->_peek = this->_doubleBuffer1[this->_doubleBufferCounter1];
 			this->_doubleBufferCounter1 += 1;
 			this->_charNumber += 1;
+			this->_currentLine += this->_peek;
 
 			this->_doubleBufferSwitch = !this->_doubleBufferSwitch;
 
@@ -403,6 +442,6 @@ bool Lexical::readNextChar(char c)
 		return false;
 	}
 
-	this->_peek = ' ';
+	this->resetPeek();
 	return true;
 }

@@ -2,9 +2,11 @@
 
 Compiler::Compiler(const std::string& filename, const std::string& outpath, const std::string& respath)
 {
+	compiler::printConsoleInfo(compiler::COMPILER, "Starting compiler...");
 	this->_filename = filename;
 	this->_outpath = outpath;
 	this->_respath = respath;
+	compiler::printConsoleInfo(compiler::COMPILER, "Compiling " + this->_filename + compiler::COMPILER_FILE_EXTENSION_MAIN + "...");
 
 	this->_logFileBuffer = std::make_shared<LogFileBuffer>(outpath + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
 	this->_tokenFileBuffer = std::make_shared<TokenFileBuffer>(outpath + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
@@ -72,28 +74,38 @@ void Compiler::run()
 	this->setupSymbolTable();
 
 	// run lexical analysis
+	compiler::printConsoleInfo(compiler::COMPILER, "");
+	compiler::printConsoleError(compiler::LEXICAL, "Starting Lexical Analysis...");
 	this->setupLexicalAnalysis();
 	this->runLexicalAnalysis();
 
 
+	compiler::printConsoleInfo(compiler::SYMBOLTABLE, "Printing Symbol Table...");
 	this->printSymbolTable();
 
 	if (this->_lexical->getError()) {
-		std::cout << "LEXICAL ANALYSIS ERRORED" << std::endl;
-		std::cout << "Please look into the log file for more information" << std::endl;
-		std::cout << _outpath + _filename + compiler::COMPILER_FILE_EXTENSION_LOG << std::endl;
+		compiler::printConsoleError(compiler::LEXICAL, "An error has occured when reading the file.");
+		compiler::printConsoleError(compiler::LEXICAL, "Look into the log file for more information.");
+		compiler::printConsoleError(compiler::LEXICAL, _outpath + _filename + compiler::COMPILER_FILE_EXTENSION_LOG);
 		return;
 	}
+	else {
+		compiler::printConsoleInfo(compiler::LEXICAL, "Lexical Analysis Completed!");
+	}
+
 
 	// run syntax analysis
 	this->setupSyntaxAnalysis();
 	this->runSyntaxAnalysis();
 
 	if (this->_syntax->getError()) {
-		std::cout << "SYNTAX ANALYSIS ERRORED" << std::endl;
-		std::cout << "Please look into the log file for more information" << std::endl;
-		std::cout << _outpath + _filename + compiler::COMPILER_FILE_EXTENSION_LOG << std::endl;
+		compiler::printConsoleError(compiler::SYNTAX, "An error has occured when parsing.");
+		compiler::printConsoleError(compiler::SYNTAX, "Look into the log file for more information.");
+		compiler::printConsoleError(compiler::SYNTAX, _outpath + _filename + compiler::COMPILER_FILE_EXTENSION_LOG);
 		return;
+	}
+	else {
+		compiler::printConsoleInfo(compiler::SYNTAX, "Sytanx Analysis Completed!");
 	}
 
 }

@@ -38,7 +38,7 @@ void SymbolTable::printTable()
     int attributeNumber = 4; // Number of attribute placment
     int attributePadding = 1; // size of padding between word and vertical line
     int tableVerticalLines = attributeNumber + 1; // number of vertical lines 
-    int rightPadding = attributePadding + 7;
+    int rightPadding = attributePadding + 6;
 
     int tableHeadSize = attributeNumber * (attributePadding + rightPadding) + tableVerticalLines;
 
@@ -46,10 +46,10 @@ void SymbolTable::printTable()
         + this->_printLineNumLimit + this->_printCharNumLimit;
 
 
-    std::string headToken = "TOKEN";
-    std::string headLexeme = "LEXEME";
     std::string headLineNum = "LINE";
     std::string headCharNum = "CHAR";
+    std::string headToken = "TOKEN";
+    std::string headLexeme = "LEXEME";
 
 
     std::string tableHead = std::string(tableHeadSize, '=');
@@ -60,13 +60,13 @@ void SymbolTable::printTable()
     std::cout << tableHead << std::endl;
 
     std::string header = std::format("|{}{}{}|{}{}{}|{}{}{}|{}{}{}|",
-        padding, headToken, std::string(this->_printTokenLimit - headToken.length()
-            + rightPadding, ' '),
-        padding, headLexeme, std::string(this->_printLexemeLimit - headLexeme.length()
-            + rightPadding, ' '),
         padding, headLineNum, std::string(this->_printLineNumLimit - headLineNum.length()
             + rightPadding, ' '),
         padding, headCharNum, std::string(this->_printCharNumLimit - headCharNum.length()
+            + rightPadding, ' '),
+        padding, headToken, std::string(this->_printTokenLimit - headToken.length()
+            + rightPadding, ' '),
+        padding, headLexeme, std::string(this->_printLexemeLimit - headLexeme.length()
             + rightPadding, ' ')
     );
 
@@ -80,13 +80,13 @@ void SymbolTable::printTable()
 
     for (auto i : this->_table) {
         std::string rows = std::format("|{}{}{}|{}{}{}|{}{}{}|{}{}{}|",
-            padding, compiler::ST_KEYWORDS[i.token], std::string(this->_printTokenLimit - compiler::ST_KEYWORDS[i.token].length()
-                + rightPadding, ' '),
-            padding, i.lexeme, std::string(this->_printLexemeLimit - i.lexeme.length()
-                + rightPadding, ' '),
             padding, std::to_string(i.lineNumber), std::string(this->_printLineNumLimit - std::to_string(i.lineNumber).length()
                 + rightPadding, ' '),
             padding, std::to_string(i.charNumber), std::string(this->_printCharNumLimit - std::to_string(i.charNumber).length()
+                + rightPadding, ' '),
+            padding, compiler::ST_KEYWORDS[i.token], std::string(this->_printTokenLimit - compiler::ST_KEYWORDS[i.token].length()
+                + rightPadding, ' '),
+            padding, i.lexeme, std::string(this->_printLexemeLimit - i.lexeme.length()
                 + rightPadding, ' ')
         );
 

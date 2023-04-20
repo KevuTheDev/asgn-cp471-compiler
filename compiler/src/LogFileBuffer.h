@@ -10,7 +10,8 @@ public:
 	~LogFileBuffer();
 
 	bool checkExtension(const std::string& filepath);
-	void logLexicalError(int linenumber, int rownumber, const std::string& errorchar);
-	void logSyntaxError(int linenumber, int rownumber, const std::string& errorchar);
+	void logLexicalError(uint32_t linenumber, uint32_t rownumber, const std::string& errorchar);
+	void logLexicalErrorNew(uint32_t linenumber, uint32_t rownumber, const std::string& errorchar, const std::string& currentLine);
+	void logSyntaxError(uint32_t linenumber, uint32_t rownumber, const std::string& errorchar);
 };
 
