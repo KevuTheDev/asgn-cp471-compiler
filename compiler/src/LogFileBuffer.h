@@ -7,7 +7,7 @@ public:
 	using FileBuffer::FileBuffer;
 
 	bool checkExtension(const std::string& filepath);
-	void logLexicalError(uint64_t linenumb, uint64_t charposition, const std::string& error, const std::string& currentline);
-	void logSyntaxError(uint64_t linenumber, uint64_t charposition, const std::string& error);
+	void logLexicalError(uint32_t linenumb, uint32_t charposition, const std::string& error, const std::string& currentline);
+	void logSyntaxError(uint32_t linenumber, uint32_t charposition, const std::string& error);
 };
 

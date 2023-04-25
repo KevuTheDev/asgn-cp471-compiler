@@ -17,7 +17,7 @@ bool LogFileBuffer::checkExtension(const std::string& filepath)
 	return true;
 }
 
-void LogFileBuffer::logLexicalError(uint64_t linenumber, uint64_t charposition, const std::string& error, const std::string& currentline)
+void LogFileBuffer::logLexicalError(uint32_t linenumber, uint32_t charposition, const std::string& error, const std::string& currentline)
 {
 	std::string err = compiler::getConsoleError(compiler::LEXICAL, "Error on line " + std::to_string(linenumber) +
 		":" + std::to_string(charposition) + " | Invalid character \'" + error + "\'");
@@ -34,9 +34,9 @@ void LogFileBuffer::logLexicalError(uint64_t linenumber, uint64_t charposition, 
 	
 }
 
-void LogFileBuffer::logSyntaxError(uint64_t linenumber, uint64_t charposition, const std::string& error)
+void LogFileBuffer::logSyntaxError(uint32_t linenumber, uint32_t charposition, const std::string& error)
 {
-	std::string err = compiler::getConsoleError(compiler::LEXICAL, "Error on line " + std::to_string(linenumber) +
+	std::string err = compiler::getConsoleError(compiler::SYNTAX, "Error on line " + std::to_string(linenumber) +
 		":" + std::to_string(charposition) + " | Invalid character \'" + error + "\'");
 	this->writeToFile(err);
 }

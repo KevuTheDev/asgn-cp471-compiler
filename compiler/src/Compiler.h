@@ -26,6 +26,8 @@ public:
 
 
 private:
+	bool isFileValid();
+
 	// Reserved Words
 	void addReservedWords();
 	void setupReservedWordsTable();
@@ -62,7 +64,8 @@ private:
 
 
 private:
-	std::string _fileName;
+	std::string _fileNameMain;
+	std::string _fileNameRoot;
 	std::string _outPath;
 	std::string _resPath;
 

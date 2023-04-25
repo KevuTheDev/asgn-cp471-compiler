@@ -2,11 +2,14 @@
 
 Compiler::Compiler(const std::string& filename, const std::string& outpath, const std::string& respath)
 {
+	// TODO : filename will be actual file name
+	// this->_fileNameMain = filename; 
 	compiler::printConsoleInfo(compiler::COMPILER, "Starting compiler...");
-	this->_fileName = filename;
+	this->_fileNameRoot = filename; // TODO : WIll have to obtain the root of the file name
+	this->_fileNameMain = filename + compiler::COMPILER_FILE_EXTENSION_MAIN;
 	this->_outPath = outpath;
 	this->_resPath = respath;
-	compiler::printConsoleInfo(compiler::COMPILER, "Compiling " + this->_fileName + compiler::COMPILER_FILE_EXTENSION_MAIN + "...");
+	compiler::printConsoleInfo(compiler::COMPILER, "Compiling " + this->_fileNameRoot + compiler::COMPILER_FILE_EXTENSION_MAIN + "...");
 
 
 	this->_logFileBuffer = std::make_shared<LogFileBuffer>(outpath + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
@@ -42,7 +45,7 @@ void Compiler::run()
 	if (this->_lexical->getError()) {
 		compiler::printConsoleError(compiler::LEXICAL, "An error has occured when reading the file.");
 		compiler::printConsoleError(compiler::LEXICAL, "Look into the log file for more information.");
-		compiler::printConsoleError(compiler::LEXICAL, this->_outPath + this->_fileName + compiler::COMPILER_FILE_EXTENSION_LOG);
+		compiler::printConsoleError(compiler::LEXICAL, this->_outPath + this->_fileNameRoot + compiler::COMPILER_FILE_EXTENSION_LOG);
 	}
 
 	compiler::printConsoleInfo(compiler::LEXICAL, "Lexical anlaysis completed!");
@@ -58,7 +61,7 @@ void Compiler::run()
 	if (this->_syntax->getError()) {
 		compiler::printConsoleError(compiler::SYNTAX, "An error has occured when parsing.");
 		compiler::printConsoleError(compiler::SYNTAX, "Look into the log file for more information.");
-		compiler::printConsoleError(compiler::SYNTAX, this->_outPath + this->_fileName + compiler::COMPILER_FILE_EXTENSION_LOG);
+		compiler::printConsoleError(compiler::SYNTAX, this->_outPath + this->_fileNameRoot + compiler::COMPILER_FILE_EXTENSION_LOG);
 	}
 
 	compiler::printConsoleInfo(compiler::SYNTAX, "Syntax anlaysis completed!");
@@ -74,7 +77,7 @@ void Compiler::run()
 	if (this->_syntax->getError()) {
 		compiler::printConsoleError(compiler::SEMANTIC, "An error has occured when parsing.");
 		compiler::printConsoleError(compiler::SEMANTIC, "Look into the log file for more information.");
-		compiler::printConsoleError(compiler::SEMANTIC, this->_outPath + this->_fileName + compiler::COMPILER_FILE_EXTENSION_LOG);
+		compiler::printConsoleError(compiler::SEMANTIC, this->_outPath + this->_fileNameRoot + compiler::COMPILER_FILE_EXTENSION_LOG);
 	}
 
 	compiler::printConsoleInfo(compiler::SEMANTIC, "Semantic anlaysis completed!");
@@ -90,6 +93,25 @@ void Compiler::run()
 
 
 	compiler::printConsoleInfo(compiler::COMPILER, "Program C");
+}
+
+bool Compiler::isFileValid()
+{
+	std::string filepath = this->_fileNameMain;
+	if (filepath.length() < compiler::COMPILER_FILE_EXTENSION_MAIN_LEN + 1) {
+		compiler::getConsoleError(compiler::COMPILER, "Invalid file string specified: length size");
+		return false;
+	}
+
+	// check if directory or file
+
+	if (filepath.substr(filepath.length() - compiler::COMPILER_FILE_EXTENSION_MAIN_LEN)
+		!= compiler::COMPILER_FILE_EXTENSION_MAIN) {
+		compiler::getConsoleError(compiler::COMPILER, "Invalid file string specified: file extension");
+		return false;
+	}
+
+	return true;
 }
 
 void Compiler::addReservedWords()
@@ -136,7 +158,7 @@ void Compiler::printSymbolTable()
 
 void Compiler::setupLexicalAnalysis()
 {
-	this->_lexical = std::make_unique<Lexical>();
+	this->_lexical = std::make_unique<Lexical>(this->_resPath + this->_fileNameMain);
 	this->_lexical->linkLogFileBuffer(this->_logFileBuffer);
 	this->_lexical->linkReservedWords(this->_reservedWords);
 	this->_lexical->linkTokenList(this->_tokenList);

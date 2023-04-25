@@ -5,6 +5,8 @@
 #include <vector>
 #include <chrono>
 
+
+// default numeric should be uint32_t
 namespace compiler
 {
     const std::string COMPILER_FILE_EXTENSION_MAIN = ".cp";
@@ -126,8 +128,15 @@ namespace compiler
 
     };
 
-
     // Function methods
+
+    inline void readFileToBuffers(std::ifstream& is, char* buf)
+    {
+        if (is.is_open()) {
+            is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
+            return;
+        }
+    }
 
     inline std::string getCurrentTimestamp()
     {
