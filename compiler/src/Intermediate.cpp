@@ -2,6 +2,7 @@
 
 Intermediate::Intermediate()
 {
+	this->_error = false;
 }
 
 Intermediate::~Intermediate()

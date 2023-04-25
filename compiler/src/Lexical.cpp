@@ -2,6 +2,7 @@
 
 Lexical::Lexical()
 {
+	this->_error = false;
 }
 
 Lexical::~Lexical()

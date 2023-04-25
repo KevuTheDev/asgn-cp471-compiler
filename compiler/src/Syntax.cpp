@@ -2,6 +2,7 @@
 
 Syntax::Syntax()
 {
+	this->_error = false;
 }
 
 Syntax::~Syntax()

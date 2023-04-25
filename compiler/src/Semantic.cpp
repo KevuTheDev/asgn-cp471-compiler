@@ -2,6 +2,7 @@
 
 Semantic::Semantic()
 {
+	this->_error = false;
 }
 
 Semantic::~Semantic()
