@@ -20,6 +20,8 @@ void Syntax::linkLogFileBuffer(std::shared_ptr<LogFileBuffer> buffer)
 void Syntax::linkTokenList(std::shared_ptr<TokenList> list)
 {
 	this->_tokenList = list;
+	this->_tokenListLimit = this->_tokenList->getSize();
+	this->_currentToken = this->_tokenList->getToken(this->_tokenListIndex);
 }
 
 void Syntax::linkSyntaxTree(std::shared_ptr<SyntaxTree> tree)
@@ -29,6 +31,7 @@ void Syntax::linkSyntaxTree(std::shared_ptr<SyntaxTree> tree)
 
 void Syntax::run()
 {
+	this->start();
 }
 
 bool Syntax::getError()
@@ -75,22 +78,17 @@ void Syntax::reportError(const std::string& errorchar)
 
 void Syntax::start()
 {
+	std::shared_ptr<SyntaxNode> node = std::make_shared<SyntaxNode>(false, "PROGRAM");
+	this->_syntaxTree->connectNodeToHead(node);
+
 	bool hmm = PROGRAM();
 
 	if (!hmm) {
 		this->_error = true;
 		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
-		std::cout << "INCOMPLETE" << std::endl;
 		return;
 	}
 
-	std::cout << "COMPLETE" << std::endl;
-	std::cout << "COMPLETE" << std::endl;
-	std::cout << "COMPLETE" << std::endl;
-	std::cout << "COMPLETE" << std::endl;
 	std::cout << "COMPLETE" << std::endl;
 
 }

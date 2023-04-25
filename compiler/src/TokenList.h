@@ -19,6 +19,8 @@ public:
 	uint32_t getCharPosition(uint32_t index);
 	compiler::TOKEN getToken(uint32_t index);
 	std::string getLexeme(uint32_t index);
+
+	uint32_t getSize();
 	
 	void print();
 

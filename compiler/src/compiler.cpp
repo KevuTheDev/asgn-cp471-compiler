@@ -69,30 +69,30 @@ void Compiler::run()
 
 	this->_syntaxTree->print();
 
-	///////////////////////////////////////////////////////
-	// SEMANTIC ANALYSIS
-	this->setupSemanticAnalysis();
-	this->runSemanticAnalysis();
+	/////////////////////////////////////////////////////////
+	//// SEMANTIC ANALYSIS
+	//this->setupSemanticAnalysis();
+	//this->runSemanticAnalysis();
 
-	if (this->_syntax->getError()) {
-		compiler::printConsoleError(compiler::SEMANTIC, "An error has occured when parsing.");
-		compiler::printConsoleError(compiler::SEMANTIC, "Look into the log file for more information.");
-		compiler::printConsoleError(compiler::SEMANTIC, this->_outPath + this->_fileNameRoot + compiler::COMPILER_FILE_EXTENSION_LOG);
-	}
+	//if (this->_syntax->getError()) {
+	//	compiler::printConsoleError(compiler::SEMANTIC, "An error has occured when parsing.");
+	//	compiler::printConsoleError(compiler::SEMANTIC, "Look into the log file for more information.");
+	//	compiler::printConsoleError(compiler::SEMANTIC, this->_outPath + this->_fileNameRoot + compiler::COMPILER_FILE_EXTENSION_LOG);
+	//}
 
-	compiler::printConsoleInfo(compiler::SEMANTIC, "Semantic anlaysis completed!");
-	compiler::printConsoleInfo(compiler::COMPILER, "Printing symbol table...");
+	//compiler::printConsoleInfo(compiler::SEMANTIC, "Semantic anlaysis completed!");
+	//compiler::printConsoleInfo(compiler::COMPILER, "Printing symbol table...");
 
-	this->_symbolTable->print();
-
-
-	///////////////////////////////////////////////////////
-	// IR GENERATION
-	this->setupICRGeneration();
-	this->runICRGeneration();
+	//this->_symbolTable->print();
 
 
-	compiler::printConsoleInfo(compiler::COMPILER, "Program C");
+	/////////////////////////////////////////////////////////
+	//// IR GENERATION
+	//this->setupICRGeneration();
+	//this->runICRGeneration();
+
+
+	//compiler::printConsoleInfo(compiler::COMPILER, "Program Complete!");
 }
 
 bool Compiler::isFileValid()

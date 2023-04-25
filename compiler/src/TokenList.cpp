@@ -54,6 +54,11 @@ std::string TokenList::getLexeme(uint32_t index)
     return this->_tokenList[index].lexeme;
 }
 
+uint32_t TokenList::getSize()
+{
+    return this->_tokenList.size();
+}
+
 void TokenList::print()
 {
     uint8_t attributeNumber = 4; // Number of attribute placment
