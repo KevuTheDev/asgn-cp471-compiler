@@ -5,7 +5,7 @@ TokenList::TokenList()
     this->_printTokenLimit = 0;
     this->_printLexemeLimit = 0;
     this->_printLineNumLimit = 0;
-    this->_printCharNumLimit = 0;
+    this->_printCharPosLimit = 0;
 }
 
 TokenList::~TokenList()
@@ -30,8 +30,28 @@ void TokenList::append(uint32_t linenum, uint32_t charpos, compiler::TOKEN token
     this->_printTokenLimit = (tokenLength > this->_printTokenLimit) ? tokenLength : this->_printTokenLimit;
     this->_printLexemeLimit = (lexemeLength > this->_printLexemeLimit) ? lexemeLength : this->_printLexemeLimit;
     this->_printLineNumLimit = (lineNumLength > this->_printLineNumLimit) ? lineNumLength : this->_printLineNumLimit;
-    this->_printCharNumLimit = (charNumLength > this->_printCharNumLimit) ? charNumLength : this->_printCharNumLimit;
+    this->_printCharPosLimit = (charNumLength > this->_printCharPosLimit) ? charNumLength : this->_printCharPosLimit;
 
+}
+
+uint32_t TokenList::getLineNumber(uint32_t index)
+{
+    return this->_tokenList[index].lineNum;
+}
+
+uint32_t TokenList::getCharPosition(uint32_t index)
+{
+    return this->_tokenList[index].charPos;
+}
+
+compiler::TOKEN TokenList::getToken(uint32_t index)
+{
+    return this->_tokenList[index].token;
+}
+
+std::string TokenList::getLexeme(uint32_t index)
+{
+    return this->_tokenList[index].lexeme;
 }
 
 void TokenList::print()
@@ -44,7 +64,7 @@ void TokenList::print()
     uint8_t tableHeadSize = attributeNumber * (attributePadding + rightPadding) + tableVerticalLines;
 
     tableHeadSize += this->_printTokenLimit + this->_printLexemeLimit
-        + this->_printLineNumLimit + this->_printCharNumLimit;
+        + this->_printLineNumLimit + this->_printCharPosLimit;
 
 
     std::string headLineNum = "LINE";
@@ -63,7 +83,7 @@ void TokenList::print()
     std::string header = std::format("|{}{}{}|{}{}{}|{}{}{}|{}{}{}|",
         padding, headLineNum, std::string(this->_printLineNumLimit - headLineNum.length()
             + rightPadding, ' '),
-        padding, headCharNum, std::string(this->_printCharNumLimit - headCharNum.length()
+        padding, headCharNum, std::string(this->_printCharPosLimit - headCharNum.length()
             + rightPadding, ' '),
         padding, headToken, std::string(this->_printTokenLimit - headToken.length()
             + rightPadding, ' '),
@@ -83,7 +103,7 @@ void TokenList::print()
         std::string rows = std::format("|{}{}{}|{}{}{}|{}{}{}|{}{}{}|",
             padding, std::to_string(i.lineNum), std::string(this->_printLineNumLimit - std::to_string(i.lineNum).length()
                 + rightPadding, ' '),
-            padding, std::to_string(i.charPos), std::string(this->_printCharNumLimit - std::to_string(i.charPos).length()
+            padding, std::to_string(i.charPos), std::string(this->_printCharPosLimit - std::to_string(i.charPos).length()
                 + rightPadding, ' '),
             padding, compiler::ST_KEYWORDS[i.token], std::string(this->_printTokenLimit - compiler::ST_KEYWORDS[i.token].length()
                 + rightPadding, ' '),

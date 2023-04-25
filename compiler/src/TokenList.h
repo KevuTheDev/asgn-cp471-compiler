@@ -15,6 +15,11 @@ public:
 
 	void append(uint32_t linenum, uint32_t charpos, compiler::TOKEN token, std::string lexeme);
 
+	uint32_t getLineNumber(uint32_t index);
+	uint32_t getCharPosition(uint32_t index);
+	compiler::TOKEN getToken(uint32_t index);
+	std::string getLexeme(uint32_t index);
+	
 	void print();
 
 private:
@@ -30,9 +35,9 @@ private:
 
 	std::vector<TokenNode> _tokenList;
 
+	uint32_t _printLineNumLimit;
+	uint32_t _printCharPosLimit;
 	uint32_t _printTokenLimit;
 	uint32_t _printLexemeLimit;
-	uint32_t _printLineNumLimit;
-	uint32_t _printCharNumLimit;
 };
 

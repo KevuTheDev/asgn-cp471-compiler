@@ -1,4 +1,4 @@
-def int gcd(int a, int b)~
+def int gcd(int a, int b)
 if (a==b)
 then return (a)
 fi;
