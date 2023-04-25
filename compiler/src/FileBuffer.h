@@ -9,8 +9,7 @@ class FileBuffer
 {
 public:
 	FileBuffer(const std::string &filename);
-	FileBuffer();
-	virtual ~FileBuffer();
+	~FileBuffer();
 
 	void writeToFile(const std::string& value);
 	void writeToFile(const char* value);

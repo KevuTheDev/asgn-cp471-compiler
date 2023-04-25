@@ -15,10 +15,6 @@ FileBuffer::FileBuffer(const std::string& filename)
 	}
 }
 
-FileBuffer::FileBuffer()
-{
-}
-
 FileBuffer::~FileBuffer()
 {
 	this->close();
