@@ -128,21 +128,6 @@ namespace compiler
 
     // Function methods
 
-    inline void readFileToBuffers(std::ifstream& is, char* buf)
-    {
-        if (is.is_open()) {
-            is.read(buf, compiler::COMPILER_BUFFER_SIZE_NULL);
-            return;
-        }
-    }
-
-    inline void writeToFile(std::ofstream& os, std::string buffer)
-    {
-        if (os.is_open()) {
-            os << buffer;
-        }
-    }
-
     inline std::string getCurrentTimestamp()
     {
         auto tp = std::chrono::zoned_time{ std::chrono::current_zone(),
@@ -170,7 +155,6 @@ namespace compiler
 
     inline std::string getCompilerStageString(COMPILER_STAGE stage)
     {
-
         switch (stage)
         {
         case compiler::COMPILER:
@@ -199,7 +183,9 @@ namespace compiler
             break;
         default:
             break;
+            return "";
         }
+        return "";
     }
 
     inline std::string getConsoleError(COMPILER_STAGE stage, const std::string& errorMsg)
