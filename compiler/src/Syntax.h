@@ -29,7 +29,7 @@ private:
 	// Recursive Decent Functions
 	void start();
 
-	bool PROGRAM(std::shared_ptr<SyntaxNode> node);
+	bool PROGRAM();
 	bool FDECLS();
 	bool FDECLS_EXT();
 	bool FDEC();
