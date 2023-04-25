@@ -13,33 +13,27 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Resource Files\Output">
-      <UniqueIdentifier>{0b990755-c5f9-42f6-9772-22936d07f8d8}</UniqueIdentifier>
+    <Filter Include="Source Files\Stages">
+      <UniqueIdentifier>{b566c1e2-29a7-4b69-86d9-7972ef88853b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Stages">
+      <UniqueIdentifier>{f0986e04-4ef2-4a8f-85a9-a3749b7a53cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FileBuffer">
+      <UniqueIdentifier>{3a346547-37ea-483b-8af7-759c336bd0ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FileBuffer">
+      <UniqueIdentifier>{a1c5224a-a074-4b9b-a84c-e9e94164f7b3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Lexical.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SymbolTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TokenFileBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\globals.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LogFileBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FileBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syntax.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ReservedWords.cpp">
@@ -48,27 +42,27 @@
     <ClCompile Include="src\Compiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Syntax.cpp">
+      <Filter>Source Files\Stages</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lexical.cpp">
+      <Filter>Source Files\Stages</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TokenFileBuffer.cpp">
+      <Filter>Source Files\FileBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LogFileBuffer.cpp">
+      <Filter>Source Files\FileBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FileBuffer.cpp">
+      <Filter>Source Files\FileBuffer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Lexical.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SymbolTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\TokenFileBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LogFileBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FileBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Syntax.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ReservedWords.h">
@@ -76,6 +70,21 @@
     </ClInclude>
     <ClInclude Include="src\Compiler.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syntax.h">
+      <Filter>Header Files\Stages</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lexical.h">
+      <Filter>Header Files\Stages</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FileBuffer.h">
+      <Filter>Header Files\FileBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TokenFileBuffer.h">
+      <Filter>Header Files\FileBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LogFileBuffer.h">
+      <Filter>Header Files\FileBuffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -109,33 +118,6 @@
     <None Include="res\Test0.cp">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Test0.cpt">
-      <Filter>Resource Files\Output</Filter>
-    </None>
-    <None Include="Test2.cpt">
-      <Filter>Resource Files\Output</Filter>
-    </None>
-    <None Include="Test3.cpt">
-      <Filter>Resource Files\Output</Filter>
-    </None>
-    <None Include="Test4.cpt">
-      <Filter>Resource Files\Output</Filter>
-    </None>
-    <None Include="Test5.cpt">
-      <Filter>Resource Files\Output</Filter>
-    </None>
-    <None Include="Test6.cpt">
-      <Filter>Resource Files\Output</Filter>
-    </None>
-    <None Include="Test7.cpt">
-      <Filter>Resource Files\Output</Filter>
-    </None>
-    <None Include="Test8.cpt">
-      <Filter>Resource Files\Output</Filter>
-    </None>
-    <None Include="Test9.cpt">
-      <Filter>Resource Files\Output</Filter>
-    </None>
     <None Include="res\e1.cp">
       <Filter>Resource Files</Filter>
     </None>
@@ -150,9 +132,6 @@
     </None>
     <None Include="res\Test12.cp">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="output\Test12.cpt">
-      <Filter>Resource Files\Output</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
