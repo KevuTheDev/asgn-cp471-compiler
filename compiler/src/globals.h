@@ -78,6 +78,7 @@ namespace compiler
         SYMBOLTABLE,
         LOGFILEBUFFER,
         TOKENFILEBUFFER,
+        SYMBOLTABLEFILEBUFFER
     };
 
     enum TOKEN {
@@ -158,28 +159,31 @@ namespace compiler
         switch (stage)
         {
         case compiler::COMPILER:
-            return "____COMPILER";
+            return "__COMPILER__";
             break;
         case compiler::LEXICAL:
-            return "   LEXICAL  ";
+            return "___LEXICAL__";
             break;
         case compiler::SYNTAX:
-            return "   SYNTAX   ";
+            return "___SYNTAX___";
             break;
         case compiler::SEMANTIC:
-            return "  SEMANTIC  ";
+            return "__SEMANTIC__";
             break;
         case compiler::INTERMEDIATE:
-            return "INTERMEDIATE";
+            return "_IR_CODE_GEN";
             break;
         case compiler::SYMBOLTABLE:
-            return "SYMBOL TABLE";
+            return "__SYMB_TAB__";
             break;
         case compiler::LOGFILEBUFFER:
-            return " LOG BUFFER ";
+            return "_LOG_BUFFER_";
             break;
         case compiler::TOKENFILEBUFFER:
-            return "TOKEN BUFFER";
+            return "TOKEN_BUFFER";
+            break;
+        case compiler::SYMBOLTABLEFILEBUFFER:
+            return "SY_TB_BUFFER";
             break;
         default:
             break;

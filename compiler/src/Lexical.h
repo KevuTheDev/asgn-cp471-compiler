@@ -3,6 +3,8 @@
 class Lexical
 {
 public:
+	Lexical();
+	~Lexical();
 
 private:
 

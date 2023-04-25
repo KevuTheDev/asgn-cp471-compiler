@@ -11,13 +11,8 @@ public:
 
 	void run();
 
+
 private:
-	std::string _filename;
-	std::string _outpath;
-	std::string _respath;
-
-
-
 	// Reserved Words
 	void setupReservedWordsTable();
 	void addReservedWords();
@@ -26,13 +21,26 @@ private:
 	void setupSymbolTable();
 	void printSymbolTable();
 
-	// Lexical
+	// Lexical Analysis
 	void setupLexicalAnalysis();
 	void runLexicalAnalysis();
 
-	// Syntax
+	// Syntax Analysis
 	void setupSyntaxAnalysis();
 	void runSyntaxAnalysis();
 
+	// Semantic Analysis
+	void setupSemanticAnalysis();
+	void runSemanticAnalysis();
+
+	// Intermediate Code Representation Generation
+	void setupICRGeneration();
+	void runICRGeneration();
+
+
+private:
+	std::string _filename;
+	std::string _outpath;
+	std::string _respath;
 };
 

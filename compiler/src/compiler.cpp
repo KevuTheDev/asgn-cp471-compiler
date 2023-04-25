@@ -44,3 +44,19 @@ void Compiler::setupSyntaxAnalysis()
 void Compiler::runSyntaxAnalysis()
 {
 }
+
+void Compiler::setupSemanticAnalysis()
+{
+}
+
+void Compiler::runSemanticAnalysis()
+{
+}
+
+void Compiler::setupICRGeneration()
+{
+}
+
+void Compiler::runICRGeneration()
+{
+}
