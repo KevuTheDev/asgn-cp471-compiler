@@ -1,12 +1,11 @@
 #pragma once
-#include <iostream>
 #include "FileBuffer.h"
 
 class TokenFileBuffer: public FileBuffer
 {
 public:
 	using FileBuffer::FileBuffer;
-	~TokenFileBuffer();
+	using FileBuffer::~FileBuffer;
 
 	bool checkExtension(const std::string& filepath);
 };

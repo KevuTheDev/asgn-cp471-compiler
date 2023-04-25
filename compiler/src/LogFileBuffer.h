@@ -1,17 +1,14 @@
 #pragma once
-#include <iostream>
-#include <string>
 #include "FileBuffer.h"
 
 class LogFileBuffer : public FileBuffer
 {
 public:
 	using FileBuffer::FileBuffer;
-	~LogFileBuffer();
+	using FileBuffer::~FileBuffer;
 
 	bool checkExtension(const std::string& filepath);
-	void logLexicalError(uint32_t linenumber, uint32_t rownumber, const std::string& errorchar);
-	void logLexicalErrorNew(uint32_t linenumber, uint32_t rownumber, const std::string& errorchar, const std::string& currentLine);
-	void logSyntaxError(uint32_t linenumber, uint32_t rownumber, const std::string& errorchar);
+	void logLexicalError(uint64_t linenumb, uint64_t charposition, const std::string& error, const std::string& currentline);
+	void logSyntaxError(uint64_t linenumber, uint64_t charposition, const std::string& error);
 };
 

@@ -1,10 +1,5 @@
 #include "LogFileBuffer.h"
 
-LogFileBuffer::~LogFileBuffer()
-{
-	this->finish();
-}
-
 bool LogFileBuffer::checkExtension(const std::string& filepath)
 {
 	if (filepath.length() < compiler::COMPILER_FILE_EXTENSION_LOG_LEN + 1) {
@@ -22,36 +17,26 @@ bool LogFileBuffer::checkExtension(const std::string& filepath)
 	return true;
 }
 
-void LogFileBuffer::logLexicalError(uint32_t linenumber, uint32_t rownumber, const std::string& errorchar)
+void LogFileBuffer::logLexicalError(uint64_t linenumber, uint64_t charposition, const std::string& error, const std::string& currentline)
 {
 	std::string err = compiler::getConsoleError(compiler::LEXICAL, "Error on line " + std::to_string(linenumber) +
-		":" + std::to_string(rownumber) + " | Invalid character \'" + errorchar + "\'");
+		":" + std::to_string(charposition) + " | Invalid character \'" + error + "\'");
 	// Error on line 20: Invalid character
-	// void FileBuffer:append(~
+	// void FileBuffer:writeToFile(~
 	//                     ~~~^
-	this->append(err);
-}
+	this->writeToFile(err);
+	this->writeToFile(compiler::getConsoleError(compiler::LEXICAL, currentline));
 
-void LogFileBuffer::logLexicalErrorNew(uint32_t linenumber, uint32_t rownumber, const std::string& errorchar, const std::string& currentLine)
-{
-	std::string err = compiler::getConsoleError(compiler::LEXICAL, "Error on line " + std::to_string(linenumber) +
-		":" + std::to_string(rownumber) + " | Invalid character \'" + errorchar + "\'");
-	// Error on line 20: Invalid character
-	// void FileBuffer:append(~
-	//                     ~~~^
-	this->append(err);
-	this->append(compiler::getConsoleError(compiler::LEXICAL, currentLine));
+	std::string line(charposition - 1, '~');
 
-	std::string line(rownumber - 1, '~');
-
-	this->append(compiler::getConsoleError(compiler::LEXICAL, line + "^"));
+	this->writeToFile(compiler::getConsoleError(compiler::LEXICAL, line + "^"));
 
 	
 }
 
-void LogFileBuffer::logSyntaxError(uint32_t linenumber, uint32_t rownumber, const std::string& errorchar)
+void LogFileBuffer::logSyntaxError(uint64_t linenumber, uint64_t charposition, const std::string& error)
 {
 	std::string err = compiler::getConsoleError(compiler::LEXICAL, "Error on line " + std::to_string(linenumber) +
-		":" + std::to_string(rownumber) + " | Invalid character \'" + errorchar + "\'");
-	this->append(err);
+		":" + std::to_string(charposition) + " | Invalid character \'" + error + "\'");
+	this->writeToFile(err);
 }
