@@ -1,8 +1,21 @@
 #pragma once
-
-#include <string>
+#include <memory>
 
 #include "globals.h"
+
+#include "LogFileBuffer.h"
+#include "TokenFileBuffer.h"
+#include "SymbolTableFileBuffer.h"
+
+#include "ReservedWords.h"
+#include "TokenList.h"
+#include "SyntaxTree.h"
+#include "SymbolTable.h"
+
+#include "Lexical.h"
+#include "Syntax.h"
+#include "Semantic.h"
+#include "Intermediate.h"
 
 class Compiler
 {
@@ -14,12 +27,22 @@ public:
 
 private:
 	// Reserved Words
-	void setupReservedWordsTable();
 	void addReservedWords();
+	void setupReservedWordsTable();
+
+	// Token List
+	void setupTokenList();
+	void printTokenList();
+
+	// Syntax Tree
+	void setupSyntaxTree();
+	void printSyntaxTree();
 
 	// Symbol Table
 	void setupSymbolTable();
 	void printSymbolTable();
+
+	///////////////////////////////////
 
 	// Lexical Analysis
 	void setupLexicalAnalysis();
@@ -39,8 +62,23 @@ private:
 
 
 private:
-	std::string _filename;
-	std::string _outpath;
-	std::string _respath;
+	std::string _fileName;
+	std::string _outPath;
+	std::string _resPath;
+
+	std::shared_ptr<LogFileBuffer> _logFileBuffer;
+	std::shared_ptr<TokenFileBuffer> _tokenFileBuffer;
+	std::shared_ptr<SymbolTableFileBuffer> _symbolTableFileBuffer;
+
+	std::shared_ptr<ReservedWords> _reservedWords;
+	std::shared_ptr<TokenList> _tokenList;
+	std::shared_ptr<SyntaxTree> _syntaxTree;
+	std::shared_ptr<SymbolTable> _symbolTable;
+
+	std::unique_ptr<Lexical> _lexical;
+	std::unique_ptr<Syntax> _syntax;
+	std::unique_ptr<Semantic> _semantic;
+	std::unique_ptr<Intermediate> _intermediate;
+
 };
 

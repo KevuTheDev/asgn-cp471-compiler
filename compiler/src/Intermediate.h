@@ -5,7 +5,9 @@ public:
 	Intermediate();
 	~Intermediate();
 
-private:
+	bool getError();
 
+private:
+	bool _error;
 };
 

@@ -25,21 +25,15 @@
     <Filter Include="Header Files\FileBuffer">
       <UniqueIdentifier>{a1c5224a-a074-4b9b-a84c-e9e94164f7b3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Token">
-      <UniqueIdentifier>{97fec973-813e-41a6-a60b-619949943089}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Token">
+    <Filter Include="Header Files\Storage">
       <UniqueIdentifier>{28f5299e-9dd0-40d7-b973-cfd5a651a974}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Storage">
+      <UniqueIdentifier>{97fec973-813e-41a6-a60b-619949943089}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SymbolTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ReservedWords.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Compiler.cpp">
@@ -70,17 +64,20 @@
       <Filter>Source Files\FileBuffer</Filter>
     </ClCompile>
     <ClCompile Include="src\TokenList.cpp">
-      <Filter>Source Files\Token</Filter>
+      <Filter>Source Files\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SymbolTable.cpp">
+      <Filter>Source Files\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ReservedWords.cpp">
+      <Filter>Source Files\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SyntaxTree.cpp">
+      <Filter>Source Files\Storage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SymbolTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ReservedWords.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Compiler.h">
@@ -111,7 +108,16 @@
       <Filter>Header Files\FileBuffer</Filter>
     </ClInclude>
     <ClInclude Include="src\TokenList.h">
-      <Filter>Header Files\Token</Filter>
+      <Filter>Header Files\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SymbolTable.h">
+      <Filter>Header Files\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ReservedWords.h">
+      <Filter>Header Files\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SyntaxTree.h">
+      <Filter>Header Files\Storage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -159,7 +159,7 @@ namespace compiler
         switch (stage)
         {
         case compiler::COMPILER:
-            return "__COMPILER__";
+            return "COMPILER";
             break;
         case compiler::LEXICAL:
             return "___LEXICAL__";

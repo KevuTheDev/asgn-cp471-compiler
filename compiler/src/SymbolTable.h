@@ -6,40 +6,40 @@
 #include <vector>
 #include <format>
 
-#include "TokenFileBuffer.h"
+#include "SymbolTableFileBuffer.h"
 
-struct SymbolRow {
-	compiler::TOKEN token;
-	std::string lexeme;
-	int lineNumber;
-	int charNumber;
-};
 
 
 class SymbolTable
 {
+private:
+	struct SymbolRow {
+		compiler::TOKEN token;
+		std::string lexeme;
+		int lineNumber;
+		int charNumber;
+	};
+
 public:
 	SymbolTable();
 	~SymbolTable();
 
-	void linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer);
+	void linkSymbolTableFileBuffer(std::shared_ptr<SymbolTableFileBuffer> buffer);
 
-	bool append(compiler::TOKEN token, std::string lexeme, int lineNumber, int charNumber);
-	void printTable();
+	void print();
 
-	int length();
-	compiler::TOKEN getTokenAtIndex(int index);
-	SymbolRow getSymbolRowAtIndex(int index);
 
 private:
+	std::shared_ptr<SymbolTableFileBuffer> _symbolTableFileBuffer;
+	std::vector <SymbolRow> _table;
+
+
 	// token, lexeme, line number, char number limits
 	int _printTokenLimit;
 	int _printLexemeLimit;
 	int _printLineNumLimit;
 	int _printCharNumLimit;
 
-	std::vector <SymbolRow> _table;
-	std::shared_ptr<TokenFileBuffer> _tokenFileBuffer;
 
 };
 
