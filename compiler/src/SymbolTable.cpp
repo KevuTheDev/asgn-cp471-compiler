@@ -1,11 +1,17 @@
 #include "SymbolTable.h"
 
-SymbolTable::SymbolTable()
+// token, lexeme, line number, char number limits
+uint32_t SymbolTable::_printLineNumLimit = 0;
+uint32_t SymbolTable::_printCharPosLimit = 0;
+uint32_t SymbolTable::_printTokenLimit = 0;
+uint32_t SymbolTable::_printLexemeLimit = 0;
+uint32_t SymbolTable::_printScopeLimit = 0;
+uint32_t SymbolTable::_printTypeLimit = 0;
+uint32_t SymbolTable::_printCategoryLimit = 0;
+
+SymbolTable::SymbolTable(std::string tablename)
 {
-	this->_printTokenLimit = 0;
-	this->_printLexemeLimit = 0;
-	this->_printLineNumLimit = 0;
-	this->_printCharNumLimit = 0;
+	this->_tableName = tablename;
 }
 
 SymbolTable::~SymbolTable()

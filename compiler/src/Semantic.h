@@ -51,6 +51,12 @@ private:
 
 	bool isIdentifierInTable(std::string id);
 
+	void pushCategoryStack(std::string category);
+	void popCategoryStackTop();
+
+	void pushScopeStack(std::string scope);
+	void popScopeStackTop();
+
 
 	// Recursive Decent Functions
 	void start();
@@ -113,3 +119,15 @@ private:
 
 };
 
+/*
+	Category Stack
+	methods:
+	- start()	      : global
+	- FDEC()	      : function
+	- PARAMS()	      : param
+	- DECL()		  : decl
+	- STATEMENT()	  : if, print, return, while
+	- STATEMENT_EXT() : else
+	- FACTOR()		  : factor
+
+*/

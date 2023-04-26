@@ -91,8 +91,7 @@ bool Semantic::matchToken(compiler::TOKEN token)
 					this->myNode->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
 					this->myNode->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
 
-					this->_scopeStack.push(this->myNode->lexeme);
-
+					pushScopeStack(this->myNode->lexeme);
 					this->_nodes.push_back(myNode);
 				}
 				else {
@@ -159,7 +158,6 @@ bool Semantic::matchToken(compiler::TOKEN token)
 					compiler::printConsoleError(compiler::SEMANTIC, "Variable " + id + " was already defined...");
 					this->_error = true;
 				}
-
 			}
 		}
 	}
@@ -177,13 +175,6 @@ bool Semantic::matchToken(compiler::TOKEN token)
 		}
 	}
 
-
-
-
-	//std::string ff = std::string(this->_categoryStack.size() * 2, ' ');
-	//std::cout << ff << this->_categoryStack.top() << " : " << this->_tokenList->getLexeme(this->_tokenListIndex)<< std::endl;
-
-
 	getNextToken();
 	return true;
 }
@@ -199,10 +190,30 @@ bool Semantic::isIdentifierInTable(std::string id)
 	return false;
 }
 
+void Semantic::pushCategoryStack(std::string category)
+{
+	this->_categoryStack.push(category);
+}
+
+void Semantic::popCategoryStackTop()
+{
+	this->_categoryStack.pop();
+}
+
+void Semantic::pushScopeStack(std::string scope)
+{
+	this->_scopeStack.push(scope);
+}
+
+void Semantic::popScopeStackTop()
+{
+	this->_scopeStack.pop();
+}
+
 void Semantic::start()
 {
-	this->_categoryStack.push("global");
-	this->_scopeStack.push("global");
+	pushCategoryStack("global");
+	pushScopeStack("global");
 
 	bool hmm = PROGRAM();
 
@@ -214,7 +225,6 @@ void Semantic::start()
 
 	std::cout << "COMPLETE" << std::endl;
 	return;
-
 }
 
 bool Semantic::PROGRAM()
@@ -273,15 +283,18 @@ bool Semantic::FDECLS_EXT()
 bool Semantic::FDEC()
 {
 	if (getPeek() == compiler::KW_DEF) {
-		this->_categoryStack.push("function");
+		pushCategoryStack("function");
 		this->myNode = std::make_shared<SNode>();
+
+
 		bool out = matchToken(compiler::KW_DEF) && TYPE()
 			&& FNAME() && matchToken(compiler::LEFT_PAREN)
 			&& PARAMS() && matchToken(compiler::RIGHT_PAREN)
 			&& DECLARATIONS() && STATEMESEQ()
 			&& matchToken(compiler::KW_FED);
-		this->_categoryStack.pop();
-		this->_scopeStack.pop();
+
+		popCategoryStackTop();
+		popScopeStackTop();
 		return out;
 	}
 
@@ -292,11 +305,13 @@ bool Semantic::FDEC()
 bool Semantic::PARAMS()
 {
 	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
-		this->_categoryStack.push("param");
+		pushCategoryStack("param");
+
 		this->myNode = std::make_shared<SNode>();
 		bool out = TYPE() && VAR()
 			&& PARAMS_EXT();
-		this->_categoryStack.pop();
+
+		popCategoryStackTop();
 		return out;
 	}
 
@@ -367,11 +382,13 @@ bool Semantic::DECLARATIONS_EXT()
 bool Semantic::DECL()
 {
 	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
-		this->_categoryStack.push("decl");
+		pushCategoryStack("decl");
+
 		this->myNode = std::make_shared<SNode>();
 		bool out = TYPE() && VARLIST();
 		this->myNode = nullptr;
-		this->_categoryStack.pop();
+
+		popCategoryStackTop();
 		return out;
 	}
 
@@ -457,31 +474,39 @@ bool Semantic::STATEMENT()
 			&& EXPR();
 	}
 	else if (getPeek() == compiler::KW_IF) {
-		this->_categoryStack.push("if");
+		pushCategoryStack("if");
+
 		bool out = matchToken(compiler::KW_IF) && BEXPR()
 			&& matchToken(compiler::KW_THEN) && STATEMESEQ()
 			&& STATEMENT_EXT();
-		this->_categoryStack.pop();
+
+		popCategoryStackTop();
 		return out;
 	}
 	else if (getPeek() == compiler::KW_PRINT) {
-		this->_categoryStack.push("print");
+		pushCategoryStack("print");
+
 		bool out = matchToken(compiler::KW_PRINT) && EXPR();
-		this->_categoryStack.pop();
+
+		popCategoryStackTop();
 		return out;
 	}
 	else if (getPeek() == compiler::KW_RETURN) {
-		this->_categoryStack.push("return");
+		pushCategoryStack("return");
+
 		bool out = matchToken(compiler::KW_RETURN) && EXPR();
-		this->_categoryStack.pop();
+
+		popCategoryStackTop();
 		return out;
 	}
 	else if (getPeek() == compiler::KW_WHILE) {
-		this->_categoryStack.push("while");
+		pushCategoryStack("while");
+
 		bool out = matchToken(compiler::KW_WHILE) && BEXPR()
 			&& matchToken(compiler::KW_DO) && STATEMESEQ()
 			&& matchToken(compiler::KW_OD);
-		this->_categoryStack.pop();
+		
+		popCategoryStackTop();
 		return out;
 	}
 	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
@@ -497,10 +522,12 @@ bool Semantic::STATEMENT()
 bool Semantic::STATEMENT_EXT()
 {
 	if (getPeek() == compiler::KW_ELSE) {
-		this->_categoryStack.push("else");
+		pushCategoryStack("else");
+
 		bool out = matchToken(compiler::KW_ELSE) && STATEMESEQ()
 			&& matchToken(compiler::KW_FI);
-		this->_categoryStack.pop();
+
+		popCategoryStackTop();
 		return out;
 	}
 	else if (getPeek() == compiler::KW_FI) {
@@ -601,9 +628,11 @@ bool Semantic::FACTOR()
 		return NUMBER();
 	}
 	else if (getPeek() == compiler::ID) {
-		this->_categoryStack.push("factor");
+		pushCategoryStack("factor");
+
 		bool out = matchToken(compiler::ID) && FACTOR_EXT();
-		this->_categoryStack.pop();
+
+		popCategoryStackTop();
 		return out;
 	}
 

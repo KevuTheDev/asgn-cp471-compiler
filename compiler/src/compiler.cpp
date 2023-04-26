@@ -20,7 +20,7 @@ Compiler::Compiler(const std::string& filename, const std::string& outpath, cons
 	this->_reservedWords = std::make_shared<ReservedWords>();
 	this->_tokenList = std::make_shared<TokenList>();
 	this->_syntaxTree = std::make_shared<SyntaxTree>();
-	this->_symbolTable = std::make_shared<SymbolTable>();
+	this->_symbolTable = std::make_shared<SymbolTable>("global");
 }
 
 void Compiler::run()
