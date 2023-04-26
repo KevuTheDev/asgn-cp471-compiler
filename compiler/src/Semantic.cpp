@@ -70,10 +70,6 @@ bool Semantic::matchToken(compiler::TOKEN token)
 		return false;
 	}
 
-	// functions are:
-	// - IN FDEC non-terminal function
-	// - node.type is defined
-
 	if (myNode.get() != nullptr) {
 		if (this->_categoryStack.top() == "function") { // FDEC (function declarations)
 			if (getPeek() == compiler::KW_DEF) {
@@ -89,13 +85,20 @@ bool Semantic::matchToken(compiler::TOKEN token)
 				this->myNode->type = "double";
 			}
 			else if (getPeek() == compiler::ID) {
-				this->myNode->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
-				this->myNode->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
-				this->myNode->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
+				std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
+				if (!isIdentifierInTable(id)) {
+					this->myNode->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
+					this->myNode->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
+					this->myNode->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
 
-				this->_scopeStack.push(this->myNode->lexeme);
+					this->_scopeStack.push(this->myNode->lexeme);
 
-				this->_nodes.push_back(myNode);
+					this->_nodes.push_back(myNode);
+				}
+				else {
+					compiler::printConsoleError(compiler::SEMANTIC, "Function " + id + " was already defined...");
+					this->_error = true;
+				}
 				this->myNode = nullptr;
 			}
 		}
@@ -111,10 +114,17 @@ bool Semantic::matchToken(compiler::TOKEN token)
 					this->myNode->type = "double";
 				}
 			} else if (getPeek() == compiler::ID) {
-				this->myNode->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
-				this->myNode->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
-				this->myNode->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
-				this->_nodes.push_back(myNode);
+				std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
+				if (!isIdentifierInTable(id)) {
+					this->myNode->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
+					this->myNode->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
+					this->myNode->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
+					this->_nodes.push_back(myNode);
+				}
+				else {
+					compiler::printConsoleError(compiler::SEMANTIC, "Variable " + id + " was already defined...");
+					this->_error = true;
+				}
 				this->myNode = nullptr;
 			}
 		}
@@ -132,16 +142,24 @@ bool Semantic::matchToken(compiler::TOKEN token)
 				}
 			}
 			else if (getPeek() == compiler::ID) {
-				std::shared_ptr<SNode> nn = std::make_shared<SNode>();
-				nn->category = this->myNode->category;
-				nn->scope = this->myNode->scope;
-				nn->token = this->myNode->token;
-				nn->type = this->myNode->type;
+				std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
+				if (!isIdentifierInTable(id)) {
+					std::shared_ptr<SNode> nn = std::make_shared<SNode>();
+					nn->category = this->myNode->category;
+					nn->scope = this->myNode->scope;
+					nn->token = this->myNode->token;
+					nn->type = this->myNode->type;
 
-				nn->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
-				nn->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
-				nn->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
-				this->_nodes.push_back(nn);
+					nn->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
+					nn->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
+					nn->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
+					this->_nodes.push_back(nn);
+				}
+				else {
+					compiler::printConsoleError(compiler::SEMANTIC, "Variable " + id + " was already defined...");
+					this->_error = true;
+				}
+
 			}
 		}
 	}
@@ -149,11 +167,11 @@ bool Semantic::matchToken(compiler::TOKEN token)
 		if (this->_categoryStack.top() == "factor") {
 			if (getPeek() == compiler::ID) {
 				std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
-				
-				bool result = isIdentifierInTable(id);
-
-				if (!result) {
-					compiler::printConsoleError(compiler::SEMANTIC, id + " not declared...");
+				if (!isIdentifierInTable(id)) {
+					compiler::printConsoleError(compiler::SEMANTIC, "Variable " + id + " not defined...");
+					this->_error = true;
+					// must report error
+					// TODO : Must build semantic error handling here. Must print to log file
 				}
 			}
 		}
@@ -178,10 +196,6 @@ bool Semantic::isIdentifierInTable(std::string id)
 		}
 	}
 
-
-	this->_error = true;
-	// must report error
-	// TODO : Must build semantic error handling here. Must print to log file
 	return false;
 }
 
@@ -200,6 +214,7 @@ void Semantic::start()
 
 	std::cout << "COMPLETE" << std::endl;
 	return;
+
 }
 
 bool Semantic::PROGRAM()
