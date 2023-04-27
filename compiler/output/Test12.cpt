@@ -65,29 +65,4 @@
 | 11       | 12       | COMMA               | ,            |
 | 11       | 14       | ID                  | x            |
 | 11       | 15       | SEMICOLON           | ;            |
-| 14       | 1        | KW_PRINT            | print        |
-| 14       | 7        | ID                  | gcd          |
-| 14       | 10       | LEFT_PAREN          | (            |
-| 14       | 11       | VALUE_INTEGER       | 21           |
-| 14       | 13       | COMMA               | ,            |
-| 14       | 14       | VALUE_INTEGER       | 15           |
-| 14       | 16       | RIGHT_PAREN         | )            |
-| 14       | 17       | SEMICOLON           | ;            |
-| 15       | 1        | KW_PRINT            | print        |
-| 15       | 7        | VALUE_INTEGER       | 45           |
-| 15       | 9        | SEMICOLON           | ;            |
-| 16       | 1        | KW_PRINT            | print        |
-| 16       | 7        | VALUE_INTEGER       | 2            |
-| 16       | 8        | MULTIPLY            | *            |
-| 16       | 9        | LEFT_PAREN          | (            |
-| 16       | 10       | ID                  | gcd          |
-| 16       | 13       | LEFT_PAREN          | (            |
-| 16       | 14       | VALUE_INTEGER       | 21           |
-| 16       | 16       | COMMA               | ,            |
-| 16       | 18       | VALUE_INTEGER       | 28           |
-| 16       | 20       | RIGHT_PAREN         | )            |
-| 16       | 22       | PLUS                | +            |
-| 16       | 24       | VALUE_INTEGER       | 6            |
-| 16       | 25       | RIGHT_PAREN         | )            |
-| 16       | 26       | DOT                 | .            |
-============================================================
+| 14     

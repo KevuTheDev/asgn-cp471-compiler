@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Storage">
       <UniqueIdentifier>{97fec973-813e-41a6-a60b-619949943089}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Manager">
+      <UniqueIdentifier>{156a3cd2-fd68-4b48-95a2-dad7d688d81f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Manager">
+      <UniqueIdentifier>{04b3fedc-d4ce-4371-96ff-bbf5cc8fd1ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -75,14 +81,14 @@
     <ClCompile Include="src\SyntaxTree.cpp">
       <Filter>Source Files\Storage</Filter>
     </ClCompile>
-    <ClCompile Include="src\SyntaxNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SymbolTableManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\TypeCheck.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SyntaxNode.cpp">
+      <Filter>Source Files\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SymbolTableManager.cpp">
+      <Filter>Source Files\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -128,14 +134,14 @@
     <ClInclude Include="src\SyntaxTree.h">
       <Filter>Header Files\Storage</Filter>
     </ClInclude>
-    <ClInclude Include="src\SyntaxNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SymbolTableManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\TypeCheck.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SyntaxNode.h">
+      <Filter>Header Files\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SymbolTableManager.h">
+      <Filter>Header Files\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

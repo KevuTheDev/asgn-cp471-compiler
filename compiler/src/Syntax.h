@@ -21,7 +21,7 @@ public:
 private:
 	compiler::TOKEN getPeek();
 	void getNextToken();
-	bool matchToken(compiler::TOKEN token);
+	bool matchToken(compiler::TOKEN token, std::shared_ptr<SyntaxNode> node);
 
 	// Error Handling
 	void reportError(const std::string& errorchar);
@@ -30,40 +30,40 @@ private:
 	void start();
 
 	bool PROGRAM();
-	bool FDECLS();
-	bool FDECLS_EXT();
-	bool FDEC();
-	bool PARAMS();
-	bool PARAMS_EXT();
-	bool FNAME();
-	bool DECLARATIONS();
-	bool DECLARATIONS_EXT();
-	bool DECL();
-	bool TYPE();
-	bool VARLIST();
-	bool VARLIST_EXT();
-	bool STATEMESEQ();
-	bool STATEMESEQ_EXT();
-	bool STATEMENT();
-	bool STATEMENT_EXT();
-	bool EXPR();
-	bool EXPR_EXT();
-	bool TERM();
-	bool TERM_EXT();
-	bool FACTOR();
-	bool FACTOR_EXT();
-	bool EXPRSEQ();
-	bool EXPRSEQ_EXT();
-	bool BEXPR();
-	bool BEXPR_EXT();
-	bool BTERM();
-	bool BTERM_EXT();
-	bool BFACTOR();
-	bool BFACTOR_EXT();
-	bool COMP();
-	bool VAR();
-	bool VAR_EXT();
-	bool NUMBER();
+	bool FDECLS(std::shared_ptr<SyntaxNode> node);
+	bool FDECLS_EXT(std::shared_ptr<SyntaxNode> node);
+	bool FDEC(std::shared_ptr<SyntaxNode> node);
+	bool PARAMS(std::shared_ptr<SyntaxNode> node);
+	bool PARAMS_EXT(std::shared_ptr<SyntaxNode> node);
+	bool FNAME(std::shared_ptr<SyntaxNode> node);
+	bool DECLARATIONS(std::shared_ptr<SyntaxNode> node);
+	bool DECLARATIONS_EXT(std::shared_ptr<SyntaxNode> node);
+	bool DECL(std::shared_ptr<SyntaxNode> node);
+	bool TYPE(std::shared_ptr<SyntaxNode> node);
+	bool VARLIST(std::shared_ptr<SyntaxNode> node);
+	bool VARLIST_EXT(std::shared_ptr<SyntaxNode> node);
+	bool STATEMENTSEQ(std::shared_ptr<SyntaxNode> node);
+	bool STATEMENTSEQ_EXT(std::shared_ptr<SyntaxNode> node);
+	bool STATEMENT(std::shared_ptr<SyntaxNode> node);
+	bool STATEMENT_EXT(std::shared_ptr<SyntaxNode> node);
+	bool EXPR(std::shared_ptr<SyntaxNode> node);
+	bool EXPR_EXT(std::shared_ptr<SyntaxNode> node);
+	bool TERM(std::shared_ptr<SyntaxNode> node);
+	bool TERM_EXT(std::shared_ptr<SyntaxNode> node);
+	bool FACTOR(std::shared_ptr<SyntaxNode> node);
+	bool FACTOR_EXT(std::shared_ptr<SyntaxNode> node);
+	bool EXPRSEQ(std::shared_ptr<SyntaxNode> node);
+	bool EXPRSEQ_EXT(std::shared_ptr<SyntaxNode> node);
+	bool BEXPR(std::shared_ptr<SyntaxNode> node);
+	bool BEXPR_EXT(std::shared_ptr<SyntaxNode> node);
+	bool BTERM(std::shared_ptr<SyntaxNode> node);
+	bool BTERM_EXT(std::shared_ptr<SyntaxNode> node);
+	bool BFACTOR(std::shared_ptr<SyntaxNode> node);
+	bool BFACTOR_EXT(std::shared_ptr<SyntaxNode> node);
+	bool COMP(std::shared_ptr<SyntaxNode> node);
+	bool VAR(std::shared_ptr<SyntaxNode> node);
+	bool VAR_EXT(std::shared_ptr<SyntaxNode> node);
+	bool NUMBER(std::shared_ptr<SyntaxNode> node);
 
 private:
 	std::shared_ptr<LogFileBuffer> _logFileBuffer;
