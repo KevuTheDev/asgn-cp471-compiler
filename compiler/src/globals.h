@@ -171,28 +171,28 @@ namespace compiler
             return "COMPILER";
             break;
         case compiler::LEXICAL:
-            return "___LEXICAL__";
+            return "LEXICAL.";
             break;
         case compiler::SYNTAX:
-            return "___SYNTAX___";
+            return "SYNTAX..";
             break;
         case compiler::SEMANTIC:
-            return "__SEMANTIC__";
+            return "SEMANTIC";
             break;
         case compiler::INTERMEDIATE:
-            return "_IR_CODE_GEN";
+            return "IRCODEGE";
             break;
         case compiler::SYMBOLTABLE:
-            return "__SYMB_TAB__";
+            return "SYMBTABL";
             break;
         case compiler::LOGFILEBUFFER:
-            return "_LOG_BUFFER_";
+            return "LOGBUFFE";
             break;
         case compiler::TOKENFILEBUFFER:
-            return "TOKEN_BUFFER";
+            return "TOKENBUF";
             break;
         case compiler::SYMBOLTABLEFILEBUFFER:
-            return "SY_TB_BUFFER";
+            return "SYMBUFER";
             break;
         default:
             break;

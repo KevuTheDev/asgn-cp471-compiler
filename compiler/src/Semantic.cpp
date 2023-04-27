@@ -32,9 +32,9 @@ void Semantic::linkSyntaxTree(std::shared_ptr<SyntaxTree> tree)
 	this->_syntaxTree = tree;
 }
 
-void Semantic::linkSymbolTable(std::shared_ptr<SymbolTable> table)
+void Semantic::linkSymbolTableManager(std::shared_ptr<SymbolTableManager> table)
 {
-	this->_symbolTable = table;
+	this->_symbolTableManager = table;
 }
 
 void Semantic::run()
@@ -44,7 +44,7 @@ void Semantic::run()
 
 bool Semantic::getError()
 {
-	return false;
+	return this->_error;
 }
 
 compiler::TOKEN Semantic::getPeek()
@@ -70,89 +70,90 @@ bool Semantic::matchToken(compiler::TOKEN token)
 		return false;
 	}
 
-	if (myNode.get() != nullptr) {
+	if (this->_myRow.get() != nullptr) {
 		if (this->_categoryStack.top() == "function") { // FDEC (function declarations)
 			if (getPeek() == compiler::KW_DEF) {
-				this->myNode->category = this->_categoryStack.top();
-				this->myNode->scope = this->_scopeStack.top();
+				this->_myRow->category = this->_categoryStack.top();
+				this->_myRow->scope = this->_scopeStack.top();
 			}
 			else if (getPeek() == compiler::KW_INT) {
-				this->myNode->token = compiler::KW_INT;
-				this->myNode->type = "int";
+				this->_myRow->token = compiler::KW_INT;
+				this->_myRow->type = "int";
 			}
 			else if (getPeek() == compiler::KW_DOUBLE) {
-				this->myNode->token = compiler::KW_DOUBLE;
-				this->myNode->type = "double";
+				this->_myRow->token = compiler::KW_DOUBLE;
+				this->_myRow->type = "double";
 			}
 			else if (getPeek() == compiler::ID) {
 				std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
-				if (!isIdentifierInTable(id)) {
-					this->myNode->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
-					this->myNode->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
-					this->myNode->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
+				if (!this->_symbolTableManager->isIdentifierInCurrentScope(id)) {
+					this->_myRow->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
+					this->_myRow->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
+					this->_myRow->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
 
-					pushScopeStack(this->myNode->lexeme);
-					this->_nodes.push_back(myNode);
+					this->_symbolTableManager->appendRow(this->_myRow);
+					pushScopeStack(this->_myRow->lexeme);
 				}
 				else {
 					compiler::printConsoleError(compiler::SEMANTIC, "Function " + id + " was already defined...");
 					this->_error = true;
+					pushScopeStack(id);
 				}
-				this->myNode = nullptr;
+				this->_myRow = nullptr;
 			}
 		}
 		else if (this->_categoryStack.top() == "param") { // PARAMS (parameter declarations)
 			if (getPeek() == compiler::KW_INT || getPeek() == compiler::KW_DOUBLE) {
-				this->myNode->category = this->_categoryStack.top();
-				this->myNode->scope = this->_scopeStack.top();
+				this->_myRow->category = this->_categoryStack.top();
+				this->_myRow->scope = this->_scopeStack.top();
 				if (getPeek() == compiler::KW_INT) {
-					this->myNode->token = compiler::KW_INT;
-					this->myNode->type = "int";
+					this->_myRow->token = compiler::KW_INT;
+					this->_myRow->type = "int";
 				} else if (getPeek() == compiler::KW_DOUBLE) {
-					this->myNode->token = compiler::KW_DOUBLE;
-					this->myNode->type = "double";
+					this->_myRow->token = compiler::KW_DOUBLE;
+					this->_myRow->type = "double";
 				}
 			} else if (getPeek() == compiler::ID) {
 				std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
-				if (!isIdentifierInTable(id)) {
-					this->myNode->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
-					this->myNode->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
-					this->myNode->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
-					this->_nodes.push_back(myNode);
+				if (!this->_symbolTableManager->isIdentifierInCurrentScope(id)) {
+					this->_myRow->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
+					this->_myRow->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
+					this->_myRow->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
+					this->_symbolTableManager->appendRow(this->_myRow);
 				}
 				else {
 					compiler::printConsoleError(compiler::SEMANTIC, "Variable " + id + " was already defined...");
 					this->_error = true;
 				}
-				this->myNode = nullptr;
+				this->_myRow = nullptr;
 			}
 		}
 		else if (this->_categoryStack.top() == "decl") { // DECL (declarations)
 			if (getPeek() == compiler::KW_INT || getPeek() == compiler::KW_DOUBLE) {
-				this->myNode->category = this->_categoryStack.top();
-				this->myNode->scope = this->_scopeStack.top();
+				this->_myRow->category = this->_categoryStack.top();
+				this->_myRow->scope = this->_scopeStack.top();
 				if (getPeek() == compiler::KW_INT) {
-					this->myNode->token = compiler::KW_INT;
-					this->myNode->type = "int";
+					this->_myRow->token = compiler::KW_INT;
+					this->_myRow->type = "int";
 				}
 				else if (getPeek() == compiler::KW_DOUBLE) {
-					this->myNode->token = compiler::KW_DOUBLE;
-					this->myNode->type = "double";
+					this->_myRow->token = compiler::KW_DOUBLE;
+					this->_myRow->type = "double";
 				}
 			}
 			else if (getPeek() == compiler::ID) {
 				std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
-				if (!isIdentifierInTable(id)) {
-					std::shared_ptr<SNode> nn = std::make_shared<SNode>();
-					nn->category = this->myNode->category;
-					nn->scope = this->myNode->scope;
-					nn->token = this->myNode->token;
-					nn->type = this->myNode->type;
+				if (!this->_symbolTableManager->isIdentifierInCurrentScope(id)) {
+					auto nn = std::make_shared<SymbolTable::SymbolTableRow>();
+					nn->category = this->_myRow->category;
+					nn->scope = this->_myRow->scope;
+					nn->token = this->_myRow->token;
+					nn->type = this->_myRow->type;
 
 					nn->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
 					nn->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
 					nn->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
-					this->_nodes.push_back(nn);
+					this->_symbolTableManager->appendRow(nn);
 				}
 				else {
 					compiler::printConsoleError(compiler::SEMANTIC, "Variable " + id + " was already defined...");
@@ -165,7 +166,7 @@ bool Semantic::matchToken(compiler::TOKEN token)
 		if (this->_categoryStack.top() == "factor") {
 			if (getPeek() == compiler::ID) {
 				std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
-				if (!isIdentifierInTable(id)) {
+				if (!this->_symbolTableManager->isIdentifierInCurrentScope(id)) {
 					compiler::printConsoleError(compiler::SEMANTIC, "Variable " + id + " not defined...");
 					this->_error = true;
 					// must report error
@@ -177,17 +178,6 @@ bool Semantic::matchToken(compiler::TOKEN token)
 
 	getNextToken();
 	return true;
-}
-
-bool Semantic::isIdentifierInTable(std::string id)
-{
-	for (auto i : this->_nodes) {
-		if (i->lexeme == id) {
-			return true;
-		}
-	}
-
-	return false;
 }
 
 void Semantic::pushCategoryStack(std::string category)
@@ -203,11 +193,13 @@ void Semantic::popCategoryStackTop()
 void Semantic::pushScopeStack(std::string scope)
 {
 	this->_scopeStack.push(scope);
+	this->_symbolTableManager->enterScope(scope);
 }
 
 void Semantic::popScopeStackTop()
 {
 	this->_scopeStack.pop();
+	this->_symbolTableManager->exitScope();
 }
 
 void Semantic::start()
@@ -284,7 +276,7 @@ bool Semantic::FDEC()
 {
 	if (getPeek() == compiler::KW_DEF) {
 		pushCategoryStack("function");
-		this->myNode = std::make_shared<SNode>();
+		this->_myRow = std::make_shared<SymbolTable::SymbolTableRow>();
 
 
 		bool out = matchToken(compiler::KW_DEF) && TYPE()
@@ -307,7 +299,7 @@ bool Semantic::PARAMS()
 	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
 		pushCategoryStack("param");
 
-		this->myNode = std::make_shared<SNode>();
+		this->_myRow = std::make_shared<SymbolTable::SymbolTableRow>();
 		bool out = TYPE() && VAR()
 			&& PARAMS_EXT();
 
@@ -384,9 +376,9 @@ bool Semantic::DECL()
 	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
 		pushCategoryStack("decl");
 
-		this->myNode = std::make_shared<SNode>();
+		this->_myRow = std::make_shared<SymbolTable::SymbolTableRow>();
 		bool out = TYPE() && VARLIST();
-		this->myNode = nullptr;
+		this->_myRow = nullptr;
 
 		popCategoryStackTop();
 		return out;

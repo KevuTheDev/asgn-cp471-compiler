@@ -1,5 +1,4 @@
 def int gcd(int a, int b)
-double e;
 if (a==b)
 then return (a)
 fi;

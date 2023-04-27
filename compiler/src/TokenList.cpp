@@ -56,7 +56,7 @@ std::string TokenList::getLexeme(uint32_t index)
 
 uint32_t TokenList::getSize()
 {
-    return this->_tokenList.size();
+    return (uint32_t) this->_tokenList.size();
 }
 
 void TokenList::print()

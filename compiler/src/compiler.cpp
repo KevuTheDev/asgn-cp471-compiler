@@ -20,7 +20,7 @@ Compiler::Compiler(const std::string& filename, const std::string& outpath, cons
 	this->_reservedWords = std::make_shared<ReservedWords>();
 	this->_tokenList = std::make_shared<TokenList>();
 	this->_syntaxTree = std::make_shared<SyntaxTree>();
-	this->_symbolTable = std::make_shared<SymbolTable>("global");
+	this->_symbolTable = std::make_shared<SymbolTableManager>();
 }
 
 void Compiler::run()
@@ -46,15 +46,18 @@ void Compiler::run()
 		compiler::printConsoleError(compiler::LEXICAL, "An error has occured when reading the file.");
 		compiler::printConsoleError(compiler::LEXICAL, "Look into the log file for more information.");
 		compiler::printConsoleError(compiler::LEXICAL, this->_outPath + this->_fileNameRoot + compiler::COMPILER_FILE_EXTENSION_LOG);
+		return;
 	}
 
-	compiler::printConsoleInfo(compiler::LEXICAL, "Lexical anlaysis completed!");
+	compiler::printConsoleInfo(compiler::LEXICAL, "Lexical analysis completed!");
 	compiler::printConsoleInfo(compiler::COMPILER, "Printing token list...");
 
 	this->printTokenList();
 
 	///////////////////////////////////////////////////////
 	// SYNTAX
+	compiler::printConsoleInfo(compiler::COMPILER, "");
+	compiler::printConsoleInfo(compiler::COMPILER, "Starting syntax analysis...");
 	this->setupSyntaxAnalysis();
 	this->runSyntaxAnalysis();
 
@@ -62,28 +65,32 @@ void Compiler::run()
 		compiler::printConsoleError(compiler::SYNTAX, "An error has occured when parsing.");
 		compiler::printConsoleError(compiler::SYNTAX, "Look into the log file for more information.");
 		compiler::printConsoleError(compiler::SYNTAX, this->_outPath + this->_fileNameRoot + compiler::COMPILER_FILE_EXTENSION_LOG);
+		return;
 	}
 
-	compiler::printConsoleInfo(compiler::SYNTAX, "Syntax anlaysis completed!");
-	compiler::printConsoleInfo(compiler::COMPILER, "Printing syntax tree...");
+	compiler::printConsoleInfo(compiler::SYNTAX, "Syntax analysis completed!");
+	//compiler::printConsoleInfo(compiler::COMPILER, "Printing syntax tree...");
 
 	this->_syntaxTree->print();
 
 	///////////////////////////////////////////////////////
 	// SEMANTIC ANALYSIS
+	compiler::printConsoleInfo(compiler::COMPILER, "");
+	compiler::printConsoleInfo(compiler::COMPILER, "Starting semantic analysis...");
 	this->setupSemanticAnalysis();
 	this->runSemanticAnalysis();
 
-	if (this->_syntax->getError()) {
+	if (this->_semantic->getError()) {
 		compiler::printConsoleError(compiler::SEMANTIC, "An error has occured when parsing.");
 		compiler::printConsoleError(compiler::SEMANTIC, "Look into the log file for more information.");
 		compiler::printConsoleError(compiler::SEMANTIC, this->_outPath + this->_fileNameRoot + compiler::COMPILER_FILE_EXTENSION_LOG);
+		return;
 	}
 
-	compiler::printConsoleInfo(compiler::SEMANTIC, "Semantic anlaysis completed!");
-	//compiler::printConsoleInfo(compiler::COMPILER, "Printing symbol table...");
+	compiler::printConsoleInfo(compiler::SEMANTIC, "Semantic analysis completed!");
+	compiler::printConsoleInfo(compiler::COMPILER, "Printing symbol table...");
 
-	//this->_symbolTable->print();
+	this->_symbolTable->print();
 
 
 	/////////////////////////////////////////////////////////
@@ -187,7 +194,7 @@ void Compiler::setupSemanticAnalysis()
 	this->_semantic = std::make_unique<Semantic>();
 	this->_semantic->linkLogFileBuffer(this->_logFileBuffer);
 	this->_semantic->linkTokenList(this->_tokenList);
-	this->_semantic->linkSymbolTable(this->_symbolTable);
+	this->_semantic->linkSymbolTableManager(this->_symbolTable);
 	this->_semantic->linkSyntaxTree(this->_syntaxTree);
 }
 

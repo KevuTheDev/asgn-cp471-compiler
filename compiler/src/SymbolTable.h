@@ -8,17 +8,29 @@
 
 #include "SymbolTableFileBuffer.h"
 
-
-
 class SymbolTable
 {
 public:
+	struct SymbolTableRow {
+		uint32_t lineNum;
+		uint32_t charPos;
+		compiler::TOKEN token; // so questionable, do i need it?
+		std::string lexeme;
+		std::string scope;
+		std::string type;
+		std::string category;
+		std::shared_ptr<SymbolTable> childrenScope = nullptr;
+	};
+
 	SymbolTable(std::string tablename);
 	~SymbolTable();
 
-	void linkSymbolTableFileBuffer(std::shared_ptr<SymbolTableFileBuffer> buffer);
+	void append(std::shared_ptr<SymbolTableRow> row);
 
-	void print();
+	std::vector <std::shared_ptr<SymbolTable::SymbolTableRow>> getSymbolTable() const;
+
+	uint32_t getSize();
+
 public:
 	// token, lexeme, line number, char number limits
 	static uint32_t _printLineNumLimit;
@@ -30,25 +42,10 @@ public:
 	static uint32_t _printCategoryLimit;
 
 private:
-	struct SymbolTableRow {
-		uint32_t lineNum;
-		uint32_t charPos;
-		compiler::TOKEN token;
-		std::string lexeme;
-		std::string scope;
-		std::string type;
-		std::string category;
-		std::shared_ptr<SymbolTable> parentScope;
-		std::shared_ptr<SymbolTable> childrenScope;
-	};
 
 private:
-	std::shared_ptr<SymbolTableFileBuffer> _symbolTableFileBuffer;
-	std::vector <std::shared_ptr<SymbolTableRow>> _symbolTable;
-
 	std::string _tableName;
 
-
-
+	std::vector <std::shared_ptr<SymbolTableRow>> _symbolTable;
 
 };

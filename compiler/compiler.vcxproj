@@ -29,6 +29,7 @@
     <ClCompile Include="src\SymbolTable.cpp" />
     <ClCompile Include="src\FileBuffer.cpp" />
     <ClCompile Include="src\SymbolTableFileBuffer.cpp" />
+    <ClCompile Include="src\SymbolTableManager.cpp" />
     <ClCompile Include="src\Syntax.cpp" />
     <ClCompile Include="src\SyntaxNode.cpp" />
     <ClCompile Include="src\SyntaxTree.cpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="src\SymbolTable.h" />
     <ClInclude Include="src\FileBuffer.h" />
     <ClInclude Include="src\SymbolTableFileBuffer.h" />
+    <ClInclude Include="src\SymbolTableManager.h" />
     <ClInclude Include="src\Syntax.h" />
     <ClInclude Include="src\SyntaxNode.h" />
     <ClInclude Include="src\SyntaxTree.h" />

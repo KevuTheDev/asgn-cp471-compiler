@@ -78,6 +78,9 @@
     <ClCompile Include="src\SyntaxNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\SymbolTableManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\globals.h">
@@ -123,6 +126,9 @@
       <Filter>Header Files\Storage</Filter>
     </ClInclude>
     <ClInclude Include="src\SyntaxNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SymbolTableManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

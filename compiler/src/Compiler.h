@@ -10,7 +10,7 @@
 #include "ReservedWords.h"
 #include "TokenList.h"
 #include "SyntaxTree.h"
-#include "SymbolTable.h"
+#include "SymbolTableManager.h"
 
 #include "Lexical.h"
 #include "Syntax.h"
@@ -76,7 +76,7 @@ private:
 	std::shared_ptr<ReservedWords> _reservedWords;
 	std::shared_ptr<TokenList> _tokenList;
 	std::shared_ptr<SyntaxTree> _syntaxTree;
-	std::shared_ptr<SymbolTable> _symbolTable;
+	std::shared_ptr<SymbolTableManager> _symbolTable;
 
 	std::unique_ptr<Lexical> _lexical;
 	std::unique_ptr<Syntax> _syntax;

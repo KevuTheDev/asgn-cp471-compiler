@@ -4,24 +4,12 @@
 #include "LogFileBuffer.h"
 #include "TokenList.h"
 #include "SyntaxTree.h"
-#include "SymbolTable.h"
+#include "SymbolTableManager.h"
 #include <stack>
 
 class Semantic
 {
 public:
-	Semantic();
-	~Semantic();
-
-	void linkLogFileBuffer(std::shared_ptr<LogFileBuffer> buffer);
-	void linkTokenList(std::shared_ptr<TokenList> list);
-	void linkSyntaxTree(std::shared_ptr<SyntaxTree> tree);
-	void linkSymbolTable(std::shared_ptr<SymbolTable> table);
-
-	void run();
-
-	bool getError();
-private:
 	struct SNode {
 		// lexeme, type, scope, line, char, category, function params
 		uint32_t lineNum;
@@ -31,8 +19,20 @@ private:
 		std::string scope;
 		std::string type;
 		std::string category;
-			
 	};
+
+	Semantic();
+	~Semantic();
+
+	void linkLogFileBuffer(std::shared_ptr<LogFileBuffer> buffer);
+	void linkTokenList(std::shared_ptr<TokenList> list);
+	void linkSyntaxTree(std::shared_ptr<SyntaxTree> tree);
+	void linkSymbolTableManager(std::shared_ptr<SymbolTableManager> table);
+
+	void run();
+
+	bool getError();
+private:
 
 	enum CATEGORY {
 		GLOBAL,
@@ -48,8 +48,6 @@ private:
 	compiler::TOKEN getPeek();
 	void getNextToken();
 	bool matchToken(compiler::TOKEN token);
-
-	bool isIdentifierInTable(std::string id);
 
 	void pushCategoryStack(std::string category);
 	void popCategoryStackTop();
@@ -102,7 +100,7 @@ private:
 	std::shared_ptr<LogFileBuffer> _logFileBuffer;
 	std::shared_ptr<TokenList> _tokenList;
 	std::shared_ptr<SyntaxTree> _syntaxTree;
-	std::shared_ptr<SymbolTable> _symbolTable;
+	std::shared_ptr<SymbolTableManager> _symbolTableManager;
 
 	bool _error;
 
@@ -113,9 +111,8 @@ private:
 	std::stack<std::string> _categoryStack;
 	std::stack<std::string> _scopeStack;
 
-	std::vector<std::shared_ptr<SNode>> _nodes;
 
-	std::shared_ptr<SNode> myNode;
+	std::shared_ptr<SymbolTable::SymbolTableRow> _myRow;
 
 };
 
