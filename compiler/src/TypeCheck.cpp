@@ -69,22 +69,31 @@ bool TypeCheck::matchToken(compiler::TOKEN token)
 		return false;
 	}
 
-	if (this->_myRow.get() != nullptr) {
-		if (this->_categoryStack.top() == "function") { // FDEC (function declarations)
-
+	if (this->_categoryStack.size() != 0) {
+		if (this->_categoryStack.top() == "factor") { // EXPR
+			std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
+			std::cout << "HELLO" << std::endl;
+			std::string type = this->_symbolTableManager->getIdentifierType(id);
+			queue.push_back(type);
 		}
-		else if (this->_categoryStack.top() == "param") { // PARAMS (parameter declarations)
-
-
+		else if (this->_categoryStack.top() == "comp") {
+			std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
+			queue.push_back(id);
 		}
-		else if (this->_categoryStack.top() == "decl") { // DECL (declarations)
+		else if (this->_categoryStack.top() == "term_ext") {
+			std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
+			queue.push_back(id);
+		}
+		else if (this->_categoryStack.top() == "expr_ext") {
+			std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
+			queue.push_back(id);
+		}
+		else if (this->_categoryStack.top() == "number") {
+			std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
+			queue.push_back(id);
 		}
 	}
-	else {
-		if (this->_categoryStack.top() == "factor") {
 
-		}
-	}
 
 	getNextToken();
 	return true;
@@ -98,6 +107,13 @@ void TypeCheck::pushCategoryStack(std::string category)
 void TypeCheck::popCategoryStackTop()
 {
 	this->_categoryStack.pop();
+	if (this->_categoryStack.size() == 0) {
+		std::cout << "==================POP=================" << std::endl;
+		for (auto i : queue) {
+			std::cout << i << std::endl;
+		}
+		queue.clear();
+	}
 }
 
 void TypeCheck::start()
@@ -401,12 +417,18 @@ bool TypeCheck::EXPR()
 bool TypeCheck::EXPR_EXT()
 {
 	if (getPeek() == compiler::PLUS) {
-		return matchToken(compiler::PLUS) && TERM()
+		pushCategoryStack("expr_ext");
+		bool out = matchToken(compiler::PLUS) && TERM()
 			&& EXPR_EXT();
+		popCategoryStackTop();
+		return out;
 	}
 	else if (getPeek() == compiler::MINUS) {
-		return matchToken(compiler::MINUS) && TERM()
+		pushCategoryStack("expr_ext");
+		bool out = matchToken(compiler::MINUS) && TERM()
 			&& EXPR_EXT();
+		popCategoryStackTop();
+		return out;
 	}
 	else if (getPeek() == compiler::RIGHT_PAREN || getPeek() == compiler::LEFT_BRACK
 		|| getPeek() == compiler::COMMA || getPeek() == compiler::DOT
@@ -438,16 +460,25 @@ bool TypeCheck::TERM()
 bool TypeCheck::TERM_EXT()
 {
 	if (getPeek() == compiler::MODULUS) {
-		return matchToken(compiler::MODULUS) && FACTOR()
+		pushCategoryStack("term_ext");
+		bool out = matchToken(compiler::MODULUS) && FACTOR()
 			&& TERM_EXT();
+		popCategoryStackTop();
+		return out;
 	}
 	else if (getPeek() == compiler::MULTIPLY) {
-		return matchToken(compiler::MULTIPLY) && FACTOR()
+		pushCategoryStack("term_ext");
+		bool out = matchToken(compiler::MULTIPLY) && FACTOR()
 			&& TERM_EXT();
+		popCategoryStackTop();
+		return out;
 	}
 	else if (getPeek() == compiler::DIVIDE) {
-		return matchToken(compiler::DIVIDE) && FACTOR()
+		pushCategoryStack("term_ext");
+		bool out = matchToken(compiler::DIVIDE) && FACTOR()
 			&& TERM_EXT();
+		popCategoryStackTop();
+		return out;
 	}
 	else if (
 		getPeek() == compiler::RIGHT_PAREN || getPeek() == compiler::LEFT_BRACK
@@ -477,7 +508,11 @@ bool TypeCheck::FACTOR()
 		return NUMBER();
 	}
 	else if (getPeek() == compiler::ID) {
-		return matchToken(compiler::ID) && FACTOR_EXT();
+		pushCategoryStack("factor");
+		bool out = matchToken(compiler::ID) && FACTOR_EXT();
+		popCategoryStackTop();
+
+		return out;
 	}
 
 	//reportError("FACTOR");
@@ -537,7 +572,10 @@ bool TypeCheck::EXPRSEQ_EXT()
 bool TypeCheck::BEXPR()
 {
 	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::KW_NOT) {
-		return BTERM() && BEXPR_EXT();
+		pushCategoryStack("bexpr");
+		bool out = BTERM() && BEXPR_EXT();
+		popCategoryStackTop();
+		return out;
 	}
 
 	//reportError("BEXPR");
@@ -627,23 +665,41 @@ bool TypeCheck::BFACTOR_EXT()
 bool TypeCheck::COMP()
 {
 	if (getPeek() == compiler::COMP_LTHAN) {
-		return matchToken(compiler::COMP_LTHAN);
+		pushCategoryStack("comp");
+		bool out = matchToken(compiler::COMP_LTHAN);
+		popCategoryStackTop();
+		return out;
 	}
 	else if (getPeek() == compiler::COMP_LEQUAL) {
-		return matchToken(compiler::COMP_LEQUAL);
+		pushCategoryStack("comp");
+		bool out = matchToken(compiler::COMP_LEQUAL);
+		popCategoryStackTop();
+		return out;
 	}
 	else if (getPeek() == compiler::COMP_NOT) {
-		return matchToken(compiler::COMP_NOT);
+		pushCategoryStack("comp");
+		bool out = matchToken(compiler::COMP_NOT);
+		popCategoryStackTop();
+		return out;
 	}
 	else if (getPeek() == compiler::COMP_EQUAL) {
-		return matchToken(compiler::COMP_EQUAL);
+		pushCategoryStack("comp");
+		bool out = matchToken(compiler::COMP_EQUAL);
+		popCategoryStackTop();
+		return out;
 	}
 	else if (getPeek() == compiler::COMP_GTHAN) {
-		return matchToken(compiler::COMP_GTHAN);
+		pushCategoryStack("comp");
+		bool out = matchToken(compiler::COMP_GTHAN);
+		popCategoryStackTop();
+		return out;
 
 	}
 	else if (getPeek() == compiler::COMP_GEQUAL) {
-		return matchToken(compiler::COMP_GEQUAL);
+		pushCategoryStack("comp");
+		bool out = matchToken(compiler::COMP_GEQUAL);
+		popCategoryStackTop();
+		return out;
 	}
 
 	//reportError("COMP");
@@ -687,10 +743,16 @@ bool TypeCheck::VAR_EXT()
 bool TypeCheck::NUMBER()
 {
 	if (getPeek() == compiler::VALUE_DOUBLE) {
-		return matchToken(compiler::VALUE_DOUBLE);
+		pushCategoryStack("number");
+		bool out = matchToken(compiler::VALUE_DOUBLE);
+		popCategoryStackTop();
+		return out;
 	}
 	else if (getPeek() == compiler::VALUE_INTEGER) {
-		return matchToken(compiler::VALUE_INTEGER);
+		pushCategoryStack("factor");
+		bool out = matchToken(compiler::VALUE_INTEGER);
+		popCategoryStackTop();
+		return out;
 	}
 
 	//reportError("NUMBER");

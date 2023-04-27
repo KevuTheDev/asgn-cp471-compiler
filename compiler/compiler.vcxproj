@@ -35,6 +35,7 @@
     <ClCompile Include="src\SyntaxTree.cpp" />
     <ClCompile Include="src\TokenFileBuffer.cpp" />
     <ClCompile Include="src\TokenList.cpp" />
+    <ClCompile Include="src\TypeCheck.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Compiler.h" />
@@ -53,6 +54,7 @@
     <ClInclude Include="src\SyntaxTree.h" />
     <ClInclude Include="src\TokenFileBuffer.h" />
     <ClInclude Include="src\TokenList.h" />
+    <ClInclude Include="src\TypeCheck.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\e1.cp" />

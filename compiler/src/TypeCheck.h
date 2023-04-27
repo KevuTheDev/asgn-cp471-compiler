@@ -103,6 +103,7 @@ private:
 
 	bool _error;
 
+	compiler::TOKEN _prevToken;
 	compiler::TOKEN _currentToken;
 	uint32_t _tokenListIndex;  // this->_position
 	uint32_t _tokenListLimit;  // this->_limit
@@ -114,17 +115,19 @@ private:
 
 	std::vector<std::string> queue;
 
+
+
 };
 
 /*
 	Category Stack
 	methods:
-	- start()	      : global
-	- FDEC()	      : function
-	- PARAMS()	      : param
-	- DECL()		  : decl
-	- STATEMENT()	  : if, print, return, while
-	- STATEMENT_EXT() : else
-	- FACTOR()		  : factor
+	- bexpr		= BEXPR()
+	- expr		= EXPR()
+	- factor	= FACTOR()
+	- comp		= COMP()
+	- term_ext  = TERM_EXT()
+	- expr_ext  = EXPR_EXT()
+	- number	= NUMBER()
 
 */
