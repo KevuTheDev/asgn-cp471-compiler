@@ -8,7 +8,6 @@ Semantic::Semantic()
 	this->_tokenListLimit = 0;
 	this->_scopeStack = std::stack<std::string>();
 	this->_categoryStack = std::stack<std::string>();
-
 }
 
 Semantic::~Semantic()
@@ -119,6 +118,9 @@ bool Semantic::matchToken(compiler::TOKEN token)
 					this->_myRow->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
 					this->_myRow->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
 					this->_myRow->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
+
+					this->_symbolTableManager->getCurrentRow()->addParamType(this->_myRow->type);
+
 					this->_symbolTableManager->appendRow(this->_myRow);
 				}
 				else {
@@ -159,6 +161,19 @@ bool Semantic::matchToken(compiler::TOKEN token)
 					compiler::printConsoleError(compiler::SEMANTIC, "Variable " + id + " was already defined...");
 					this->_error = true;
 				}
+			}
+		}
+		else if (this->_categoryStack.top() == "factor") {
+			if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::VALUE_INTEGER) {
+				this->_myRow->category = this->_categoryStack.top();
+				this->_myRow->scope = this->_scopeStack.top();
+				this->_myRow->token = getPeek();
+				this->_myRow->type = "literal";
+				this->_myRow->lexeme = this->_tokenList->getLexeme(this->_tokenListIndex);
+				this->_myRow->lineNum = this->_tokenList->getLineNumber(this->_tokenListIndex);
+				this->_myRow->charPos = this->_tokenList->getCharPosition(this->_tokenListIndex);
+				this->_symbolTableManager->appendRow(this->_myRow);
+				this->_myRow = nullptr;
 			}
 		}
 	}
@@ -617,7 +632,14 @@ bool Semantic::FACTOR()
 			&& matchToken(compiler::RIGHT_PAREN);
 	}
 	else if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::VALUE_INTEGER) {
-		return NUMBER();
+		pushCategoryStack("factor");
+		this->_myRow = std::make_shared<SymbolTable::SymbolTableRow>();
+
+		bool out = NUMBER();
+
+		this->_myRow = nullptr;
+		popCategoryStackTop();
+		return out;
 	}
 	else if (getPeek() == compiler::ID) {
 		pushCategoryStack("factor");

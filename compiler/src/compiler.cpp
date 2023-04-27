@@ -93,17 +93,17 @@ void Compiler::run()
 	this->_symbolTable->print();
 
 	/////////////////////////////////////////////////////////
-	compiler::printConsoleInfo(compiler::COMPILER, "");
-	compiler::printConsoleInfo(compiler::COMPILER, "Starting type checking...");
-	this->_typecheck = std::make_unique<TypeCheck>();
-	this->_typecheck->linkLogFileBuffer(this->_logFileBuffer);
-	this->_typecheck->linkTokenList(this->_tokenList);
-	this->_typecheck->linkSymbolTableManager(this->_symbolTable);
-	this->_typecheck->linkSyntaxTree(this->_syntaxTree);
+	//compiler::printConsoleInfo(compiler::COMPILER, "");
+	//compiler::printConsoleInfo(compiler::COMPILER, "Starting type checking...");
+	//this->_typecheck = std::make_unique<TypeCheck>();
+	//this->_typecheck->linkLogFileBuffer(this->_logFileBuffer);
+	//this->_typecheck->linkTokenList(this->_tokenList);
+	//this->_typecheck->linkSymbolTableManager(this->_symbolTable);
+	//this->_typecheck->linkSyntaxTree(this->_syntaxTree);
 
-	this->_typecheck->run();
+	//this->_typecheck->run();
 
-	compiler::printConsoleInfo(compiler::SEMANTIC, "typ check completed!");
+	//compiler::printConsoleInfo(compiler::SEMANTIC, "typ check completed!");
 
 
 	/////////////////////////////////////////////////////////

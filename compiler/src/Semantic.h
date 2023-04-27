@@ -19,6 +19,11 @@ public:
 		std::string scope;
 		std::string type;
 		std::string category;
+		std::vector<std::string> params;
+
+		void addParamType(std::string type) {
+			this->params.push_back(type);
+		};
 	};
 
 	Semantic();

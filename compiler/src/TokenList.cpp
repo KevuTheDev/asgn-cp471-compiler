@@ -31,7 +31,6 @@ void TokenList::append(uint32_t linenum, uint32_t charpos, compiler::TOKEN token
     this->_printLexemeLimit = (lexemeLength > this->_printLexemeLimit) ? lexemeLength : this->_printLexemeLimit;
     this->_printLineNumLimit = (lineNumLength > this->_printLineNumLimit) ? lineNumLength : this->_printLineNumLimit;
     this->_printCharPosLimit = (charNumLength > this->_printCharPosLimit) ? charNumLength : this->_printCharPosLimit;
-
 }
 
 uint32_t TokenList::getLineNumber(uint32_t index)

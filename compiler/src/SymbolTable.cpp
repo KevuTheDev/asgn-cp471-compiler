@@ -8,6 +8,7 @@ uint32_t SymbolTable::_printLexemeLimit = 0;
 uint32_t SymbolTable::_printScopeLimit = 0;
 uint32_t SymbolTable::_printTypeLimit = 0;
 uint32_t SymbolTable::_printCategoryLimit = 0;
+uint32_t SymbolTable::_printParamsLimit = 0;
 
 SymbolTable::SymbolTable(std::string tablename)
 {

@@ -124,6 +124,15 @@ std::string SymbolTableManager::getIdentifierType(std::string id)
 	return "";
 }
 
+std::shared_ptr<SymbolTable::SymbolTableRow> SymbolTableManager::getCurrentRow()
+{
+	return this->_currentRow;
+}
+
+void SymbolTableManager::finalLimitCalculation()
+{
+}
+
 void SymbolTableManager::print()
 {
 	uint16_t attributeNumber = 6; // Number of attribute placment

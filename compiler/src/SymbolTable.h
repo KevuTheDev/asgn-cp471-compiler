@@ -20,6 +20,11 @@ public:
 		std::string type;
 		std::string category;
 		std::shared_ptr<SymbolTable> childrenScope = nullptr;
+		std::vector<std::string> params;
+
+		void addParamType(std::string type) {
+			this->params.push_back(type);
+		};
 	};
 
 	SymbolTable(std::string tablename);
@@ -40,6 +45,7 @@ public:
 	static uint32_t _printScopeLimit;
 	static uint32_t _printTypeLimit;
 	static uint32_t _printCategoryLimit;
+	static uint32_t _printParamsLimit;
 
 private:
 

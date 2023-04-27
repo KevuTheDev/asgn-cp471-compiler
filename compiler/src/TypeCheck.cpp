@@ -72,9 +72,7 @@ bool TypeCheck::matchToken(compiler::TOKEN token)
 	if (this->_categoryStack.size() != 0) {
 		if (this->_categoryStack.top() == "factor") { // EXPR
 			std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);
-			std::cout << "HELLO" << std::endl;
-			std::string type = this->_symbolTableManager->getIdentifierType(id);
-			queue.push_back(type);
+			queue.push_back(id);
 		}
 		else if (this->_categoryStack.top() == "comp") {
 			std::string id = this->_tokenList->getLexeme(this->_tokenListIndex);

@@ -22,6 +22,9 @@ public:
 	bool isIdentifierInCurrentScope(std::string id);
 	std::string getIdentifierType(std::string id);
 
+	std::shared_ptr<SymbolTable::SymbolTableRow> getCurrentRow();
+
+	void finalLimitCalculation();
 
 	void print();
 

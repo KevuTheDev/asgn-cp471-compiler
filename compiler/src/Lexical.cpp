@@ -67,11 +67,13 @@ void Lexical::run()
 	while (loop) {
 		loop = this->getNextToken();
 	}
+
+	this->_is.close();
 }
 
 bool Lexical::getError()
 {
-	return false;
+	return this->_error;
 }
 
 bool Lexical::checkExtension(const std::string& filepath)
@@ -246,7 +248,6 @@ bool Lexical::getNextToken()
 		appendToTokenList(compiler::DOT, ".");
 		this->resetPeek();
 		return true;
-
 	}
 
 	// If Numeric Value
@@ -296,6 +297,7 @@ bool Lexical::getNextToken()
 		return true;
 	}
 
+	std::cout << this->_peek << std::endl;
 	// If ID or Keywords
 	if (std::isalpha(this->_peek)) {
 		this->_prevCharPosition = this->_charPosition;
@@ -316,6 +318,7 @@ bool Lexical::getNextToken()
 		return true;
 	}
 
+	std::cout << this->_peek << std::endl;
 	this->_prevCharPosition = this->_charPosition;
 	std::string s(&this->_peek);
 	this->reportError(s);
