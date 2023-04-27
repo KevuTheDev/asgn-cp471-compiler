@@ -69,6 +69,10 @@ bool SymbolTableManager::isIdentifierInCurrentScope(std::string id)
 
 	// Any of these options work, but I have to mention it
 
+	// FINAL
+	// THIS CAN ONLY HANDLE UNIQUE ID VALUES
+	// THEREFORE VARIABLES AND FUNCTION NAMES SHOULD NOT BE THE SAME
+
 	std::shared_ptr<SymbolTable> table = nullptr;
 
 	table = this->_head;
@@ -91,6 +95,33 @@ bool SymbolTableManager::isIdentifierInCurrentScope(std::string id)
 
 	//std::cout << "OH NO" << std::endl;
 	return false;
+}
+
+std::string SymbolTableManager::getIdentifierType(std::string id)
+{
+
+	std::shared_ptr<SymbolTable> table = nullptr;
+
+	table = this->_head;
+
+	std::shared_ptr<SymbolTable::SymbolTableRow> row = nullptr;
+
+	while (table != nullptr) {
+		row = nullptr;
+
+		auto iter = table->getSymbolTable();
+		for (auto i : iter) {
+			if (i->lexeme == id) {
+				return i->type;
+			}
+			row = i;
+		}
+
+		table = (row == nullptr) ? nullptr : row->childrenScope;
+	}
+
+	//std::cout << "OH NO" << std::endl;
+	return "";
 }
 
 void SymbolTableManager::print()

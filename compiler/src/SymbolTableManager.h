@@ -20,6 +20,7 @@ public:
 	void appendRow(std::shared_ptr<SymbolTable::SymbolTableRow>); // TODO: params, and add nodes 
 
 	bool isIdentifierInCurrentScope(std::string id);
+	std::string getIdentifierType(std::string id);
 
 
 	void print();
