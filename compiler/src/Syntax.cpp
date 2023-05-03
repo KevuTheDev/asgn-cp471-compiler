@@ -56,11 +56,15 @@ void Syntax::getNextToken()
 	}
 }
 
-bool Syntax::matchToken(compiler::TOKEN token)
+bool Syntax::matchToken(compiler::TOKEN token, std::shared_ptr<SyntaxNode> node, std::string scope)
 {
 	if (getPeek() != token) {
 		return false;
 	}
+
+	auto newNode = createAndConnectNode(node, scope);
+	// change newNode token data value
+	newNode->setData(this->_tokenList->getLexeme(this->_tokenListIndex));
 
 	getNextToken();
 	return true;
@@ -76,12 +80,21 @@ void Syntax::reportError(const std::string& errorchar)
 	this->_logFileBuffer->logSyntaxError(linenum, charpos, lexeme);
 }
 
+std::shared_ptr<SyntaxNode> Syntax::createAndConnectNode(std::shared_ptr<SyntaxNode> dst, std::string scope)
+{
+	std::shared_ptr<SyntaxNode> newNode = std::make_shared<SyntaxNode>(scope);
+	dst->append(newNode);
+	return newNode;
+}
+
+
+
 void Syntax::start()
 {
-	std::shared_ptr<SyntaxNode> node = std::make_shared<SyntaxNode>(false, "PROGRAM");
-	this->_syntaxTree->connectNodeToHead(node);
+	std::shared_ptr<SyntaxNode> newNode = std::make_shared<SyntaxNode>("PROGRAM");
+	this->_syntaxTree->connectNodeToHead(newNode);
 
-	bool hmm = PROGRAM();
+	bool hmm = PROGRAM(newNode);
 
 	if (!hmm) {
 		this->_error = true;
@@ -90,10 +103,9 @@ void Syntax::start()
 	}
 
 	std::cout << "COMPLETE" << std::endl;
-
 }
 
-bool Syntax::PROGRAM()
+bool Syntax::PROGRAM(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::DOLLAR_SIGN || getPeek() == compiler::DOT
 		|| getPeek() == compiler::SEMICOLON || getPeek() == compiler::ID
@@ -101,19 +113,20 @@ bool Syntax::PROGRAM()
 		|| getPeek() == compiler::KW_IF || getPeek() == compiler::KW_INT
 		|| getPeek() == compiler::KW_PRINT || getPeek() == compiler::KW_RETURN
 		|| getPeek() == compiler::KW_WHILE) {
-		return FDECLS() && DECLARATIONS()
-			&& STATEMESEQ() && matchToken(compiler::DOT);
+		return FDECLS(node) && DECLARATIONS(node)
+			&& STATEMENTSEQ(node) && matchToken(compiler::DOT, node, "PROGRAM");
 	}
 
 	reportError("PROGRAM");
 	return false;
 }
 
-bool Syntax::FDECLS()
+bool Syntax::FDECLS(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_DEF) {
-		return FDEC() && matchToken(compiler::SEMICOLON)
-			&& FDECLS_EXT();
+		auto newNode = createAndConnectNode(node, "FDECLS");
+		return FDEC(newNode) && matchToken(compiler::SEMICOLON, newNode, "FDECLS")
+			&& FDECLS_EXT(newNode);
 	}
 	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
 		|| getPeek() == compiler::ID || getPeek() == compiler::KW_DEF
@@ -121,17 +134,19 @@ bool Syntax::FDECLS()
 		|| getPeek() == compiler::KW_INT || getPeek() == compiler::KW_PRINT
 		|| getPeek() == compiler::KW_RETURN || getPeek() == compiler::KW_WHILE) {
 		// EPSILON
-		return FDECLS_EXT();
+		auto newNode = createAndConnectNode(node, "FDECLS");
+		return FDECLS_EXT(newNode);
 	}
 
 	reportError("FDECLS");
 	return false;
 }
 
-bool Syntax::FDECLS_EXT()
+bool Syntax::FDECLS_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_DEF) {
-		return FDEC() && matchToken(compiler::SEMICOLON) && FDECLS_EXT();
+		auto newNode = createAndConnectNode(node, "FDECLS_EXT");
+		return FDEC(newNode) && matchToken(compiler::SEMICOLON, newNode, "FDECLS_EXT") && FDECLS_EXT(newNode);
 	}
 	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
 		|| getPeek() == compiler::ID || getPeek() == compiler::KW_DOUBLE
@@ -146,35 +161,38 @@ bool Syntax::FDECLS_EXT()
 	return false;
 }
 
-bool Syntax::FDEC()
+bool Syntax::FDEC(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_DEF) {
-		return matchToken(compiler::KW_DEF) && TYPE()
-			&& FNAME() && matchToken(compiler::LEFT_PAREN)
-			&& PARAMS() && matchToken(compiler::RIGHT_PAREN)
-			&& DECLARATIONS() && STATEMESEQ()
-			&& matchToken(compiler::KW_FED);
+		auto newNode = createAndConnectNode(node, "FDEC");
+		return matchToken(compiler::KW_DEF, newNode, "FDEC") && TYPE(newNode)
+			&& FNAME(newNode) && matchToken(compiler::LEFT_PAREN, newNode, "FDEC")
+			&& PARAMS(newNode) && matchToken(compiler::RIGHT_PAREN, newNode, "FDEC")
+			&& DECLARATIONS(newNode) && STATEMENTSEQ(newNode)
+			&& matchToken(compiler::KW_FED, newNode, "FDEC");
 	}
 
 	reportError("FDEC");
 	return false;
 }
 
-bool Syntax::PARAMS()
+bool Syntax::PARAMS(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
-		return TYPE() && VAR()
-			&& PARAMS_EXT();
+		auto newNode = createAndConnectNode(node, "PARAMS");
+		return TYPE(newNode) && VAR(newNode)
+			&& PARAMS_EXT(newNode);
 	}
 
 	reportError("PARAMS");
 	return false;
 }
 
-bool Syntax::PARAMS_EXT()
+bool Syntax::PARAMS_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::COMMA) {
-		return matchToken(compiler::COMMA) && PARAMS();
+		auto newNode = createAndConnectNode(node, "PARAMS_EXT");
+		return matchToken(compiler::COMMA, newNode, "PARAMS_EXT") && PARAMS(newNode);
 	}
 	else if (getPeek() == compiler::RIGHT_PAREN) {
 		// EPSILON
@@ -185,39 +203,43 @@ bool Syntax::PARAMS_EXT()
 	return false;
 }
 
-bool Syntax::FNAME()
+bool Syntax::FNAME(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::ID) {
-		return matchToken(compiler::ID);
+		auto newNode = createAndConnectNode(node, "FNAME");
+		return matchToken(compiler::ID, newNode, "FNAME");
 	}
 
 	reportError("FNAME");
 	return false;
 }
 
-bool Syntax::DECLARATIONS()
+bool Syntax::DECLARATIONS(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
-		return DECL() && matchToken(compiler::SEMICOLON)
-			&& DECLARATIONS_EXT();
+		auto newNode = createAndConnectNode(node, "DECLARATIONS");
+		return DECL(newNode) && matchToken(compiler::SEMICOLON, newNode, "DECLARATIONS")
+			&& DECLARATIONS_EXT(newNode);
 	}
 	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
 		|| getPeek() == compiler::ID || getPeek() == compiler::KW_FED
 		|| getPeek() == compiler::KW_IF || getPeek() == compiler::KW_PRINT
 		|| getPeek() == compiler::KW_RETURN || getPeek() == compiler::KW_WHILE) {
 		// EPSILON
-		return DECLARATIONS_EXT();
+		auto newNode = createAndConnectNode(node, "DECLARATIONS");
+		return DECLARATIONS_EXT(newNode);
 	}
 
 	reportError("DECLARATIONS");
 	return false;
 }
 
-bool Syntax::DECLARATIONS_EXT()
+bool Syntax::DECLARATIONS_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
-		return DECL() && matchToken(compiler::SEMICOLON)
-			&& DECLARATIONS_EXT();
+		auto newNode = createAndConnectNode(node, "DECLARATIONS_EXT");
+		return DECL(newNode) && matchToken(compiler::SEMICOLON, newNode, "DECLARATIONS_EXT")
+			&& DECLARATIONS_EXT(newNode);
 	}
 	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
 		|| getPeek() == compiler::ID || getPeek() == compiler::KW_FED
@@ -231,43 +253,48 @@ bool Syntax::DECLARATIONS_EXT()
 	return false;
 }
 
-bool Syntax::DECL()
+bool Syntax::DECL(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_DOUBLE || getPeek() == compiler::KW_INT) {
-		return TYPE() && VARLIST();
+		auto newNode = createAndConnectNode(node, "DECL");
+		return TYPE(newNode) && VARLIST(newNode);
 	}
 
 	reportError("DECL");
 	return false;
 }
 
-bool Syntax::TYPE()
+bool Syntax::TYPE(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_DOUBLE) {
-		return matchToken(compiler::KW_DOUBLE);
+		auto newNode = createAndConnectNode(node, "TYPE");
+		return matchToken(compiler::KW_DOUBLE, newNode, "TYPE");
 	}
 	else if (getPeek() == compiler::KW_INT) {
-		return matchToken(compiler::KW_INT);
+		auto newNode = createAndConnectNode(node, "TYPE");
+		return matchToken(compiler::KW_INT, newNode, "TYPE");
 	}
 
 	reportError("TYPE");
 	return false;
 }
 
-bool Syntax::VARLIST()
+bool Syntax::VARLIST(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::ID) {
-		return VAR() && VARLIST_EXT();
+		auto newNode = createAndConnectNode(node, "VARLIST");
+		return VAR(newNode) && VARLIST_EXT(newNode);
 	}
 
 	reportError("VARLIST");
 	return false;
 }
 
-bool Syntax::VARLIST_EXT()
+bool Syntax::VARLIST_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::COMMA) {
-		return matchToken(compiler::COMMA) && VARLIST();
+		auto newNode = createAndConnectNode(node, "VARLIST_EXT");
+		return matchToken(compiler::COMMA, newNode, "VARLIST_EXT") && VARLIST(newNode);
 	}
 	else if (getPeek() == compiler::SEMICOLON) {
 		// EPSILON
@@ -278,28 +305,31 @@ bool Syntax::VARLIST_EXT()
 	return false;
 }
 
-bool Syntax::STATEMESEQ()
+bool Syntax::STATEMENTSEQ(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::SEMICOLON || getPeek() == compiler::ID
 		|| getPeek() == compiler::KW_IF || getPeek() == compiler::KW_PRINT
 		|| getPeek() == compiler::KW_RETURN || getPeek() == compiler::KW_WHILE) {
-		return STATEMENT() && STATEMESEQ_EXT();
+		auto newNode = createAndConnectNode(node, "STATEMENTSEQ");
+		return STATEMENT(newNode) && STATEMENTSEQ_EXT(newNode);
 	}
 	else if (getPeek() == compiler::DOT || getPeek() == compiler::KW_ELSE
 		|| getPeek() == compiler::KW_FED || getPeek() == compiler::KW_FI
 		|| getPeek() == compiler::KW_OD) {
 		// EPISLON
-		return STATEMENT() && STATEMESEQ_EXT();
+		auto newNode = createAndConnectNode(node, "STATEMENTSEQ");
+		return STATEMENT(newNode) && STATEMENTSEQ_EXT(newNode);
 	}
 
 	reportError("STATEMENTSEQ");
 	return false;
 }
 
-bool Syntax::STATEMESEQ_EXT()
+bool Syntax::STATEMENTSEQ_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::SEMICOLON) {
-		return matchToken(compiler::SEMICOLON) && STATEMESEQ();
+		auto newNode = createAndConnectNode(node, "STATEMENTSEQ_EXT");
+		return matchToken(compiler::SEMICOLON, newNode, "STATEMENTSEQ_EXT") && STATEMENTSEQ(newNode);
 	}
 	else if (getPeek() == compiler::DOT || getPeek() == compiler::KW_ELSE
 		|| getPeek() == compiler::KW_FED || getPeek() == compiler::KW_FI
@@ -312,27 +342,32 @@ bool Syntax::STATEMESEQ_EXT()
 	return false;
 }
 
-bool Syntax::STATEMENT()
+bool Syntax::STATEMENT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::ID) {
-		return VAR() && matchToken(compiler::EQUAL)
-			&& EXPR();
+		auto newNode = createAndConnectNode(node, "STATEMENT");
+		return VAR(newNode) && matchToken(compiler::EQUAL, node, "STATEMENT")
+			&& EXPR(newNode);
 	}
 	else if (getPeek() == compiler::KW_IF) {
-		return matchToken(compiler::KW_IF) && BEXPR()
-			&& matchToken(compiler::KW_THEN) && STATEMESEQ()
-			&& STATEMENT_EXT();
+		auto newNode = createAndConnectNode(node, "STATEMENT");
+		return matchToken(compiler::KW_IF, newNode, "STATEMENT") && BEXPR(newNode)
+			&& matchToken(compiler::KW_THEN, newNode, "STATEMENT") && STATEMENTSEQ(newNode)
+			&& STATEMENT_EXT(newNode);
 	}
 	else if (getPeek() == compiler::KW_PRINT) {
-		return matchToken(compiler::KW_PRINT) && EXPR();
+		auto newNode = createAndConnectNode(node, "STATEMENT");
+		return matchToken(compiler::KW_PRINT, newNode, "STATEMENT") && EXPR(newNode);
 	}
 	else if (getPeek() == compiler::KW_RETURN) {
-		return matchToken(compiler::KW_RETURN) && EXPR();
+		auto newNode = createAndConnectNode(node, "STATEMENT");
+		return matchToken(compiler::KW_RETURN, newNode, "STATEMENT") && EXPR(newNode);
 	}
 	else if (getPeek() == compiler::KW_WHILE) {
-		return matchToken(compiler::KW_WHILE) && BEXPR()
-			&& matchToken(compiler::KW_DO) && STATEMESEQ()
-			&& matchToken(compiler::KW_OD);
+		auto newNode = createAndConnectNode(node, "STATEMENT");
+		return matchToken(compiler::KW_WHILE, newNode, "STATEMENT") && BEXPR(newNode)
+			&& matchToken(compiler::KW_DO, newNode, "STATEMENT") && STATEMENTSEQ(newNode)
+			&& matchToken(compiler::KW_OD, newNode, "STATEMENT");
 	}
 	else if (getPeek() == compiler::DOT || getPeek() == compiler::SEMICOLON
 		|| getPeek() == compiler::KW_ELSE || getPeek() == compiler::KW_FED
@@ -344,40 +379,45 @@ bool Syntax::STATEMENT()
 	return false;
 }
 
-bool Syntax::STATEMENT_EXT()
+bool Syntax::STATEMENT_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_ELSE) {
-		return matchToken(compiler::KW_ELSE) && STATEMESEQ()
-			&& matchToken(compiler::KW_FI);
+		auto newNode = createAndConnectNode(node, "STATEMENT_EXT");
+		return matchToken(compiler::KW_ELSE, newNode, "STATEMENT_EXT") && STATEMENTSEQ(newNode)
+			&& matchToken(compiler::KW_FI, newNode, "STATEMENT_EXT");
 	}
 	else if (getPeek() == compiler::KW_FI) {
-		return matchToken(compiler::KW_FI);
+		auto newNode = createAndConnectNode(node, "STATEMENT_EXT");
+		return matchToken(compiler::KW_FI, newNode, "STATEMENT_EXT");
 	}
 
 	reportError("STATEMENT_EXT");
 	return false;
 }
 
-bool Syntax::EXPR()
+bool Syntax::EXPR(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::VALUE_DOUBLE
 		|| getPeek() == compiler::ID || getPeek() == compiler::VALUE_INTEGER) {
-		return TERM() && EXPR_EXT();
+		auto newNode = createAndConnectNode(node, "EXPR");
+		return TERM(newNode) && EXPR_EXT(newNode);
 	}
 
 	reportError("EXPR");
 	return false;
 }
 
-bool Syntax::EXPR_EXT()
+bool Syntax::EXPR_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::PLUS) {
-		return matchToken(compiler::PLUS) && TERM()
-			&& EXPR_EXT();
+		auto newNode = createAndConnectNode(node, "EXPR_EXT");
+		return matchToken(compiler::PLUS, newNode, "EXPR_EXT") && TERM(newNode)
+			&& EXPR_EXT(newNode);
 	}
 	else if (getPeek() == compiler::MINUS) {
-		return matchToken(compiler::MINUS) && TERM()
-			&& EXPR_EXT();
+		auto newNode = createAndConnectNode(node, "EXPR_EXT");
+		return matchToken(compiler::MINUS, newNode, "EXPR_EXT") && TERM(newNode)
+			&& EXPR_EXT(newNode);
 	}
 	else if (getPeek() == compiler::RIGHT_PAREN || getPeek() == compiler::LEFT_BRACK
 		|| getPeek() == compiler::COMMA || getPeek() == compiler::DOT
@@ -395,30 +435,34 @@ bool Syntax::EXPR_EXT()
 	return false;
 }
 
-bool Syntax::TERM()
+bool Syntax::TERM(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::VALUE_DOUBLE
 		|| getPeek() == compiler::ID || getPeek() == compiler::VALUE_INTEGER) {
-		return FACTOR() && TERM_EXT();
+		auto newNode = createAndConnectNode(node, "TERM");
+		return FACTOR(newNode) && TERM_EXT(newNode);
 	}
 
 	reportError("TERM");
 	return false;
 }
 
-bool Syntax::TERM_EXT()
+bool Syntax::TERM_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::MODULUS) {
-		return matchToken(compiler::MODULUS) && FACTOR()
-			&& TERM_EXT();
+		auto newNode = createAndConnectNode(node, "TERM_EXT");
+		return matchToken(compiler::MODULUS, newNode, "TERM_EXT") && FACTOR(newNode)
+			&& TERM_EXT(newNode);
 	}
 	else if (getPeek() == compiler::MULTIPLY) {
-		return matchToken(compiler::MULTIPLY) && FACTOR()
-			&& TERM_EXT();
+		auto newNode = createAndConnectNode(node, "TERM_EXT");
+		return matchToken(compiler::MULTIPLY, newNode, "TERM_EXT") && FACTOR(newNode)
+			&& TERM_EXT(newNode);
 	}
 	else if (getPeek() == compiler::DIVIDE) {
-		return matchToken(compiler::DIVIDE) && FACTOR()
-			&& TERM_EXT();
+		auto newNode = createAndConnectNode(node, "TERM_EXT");
+		return matchToken(compiler::DIVIDE, newNode, "TERM_EXT") && FACTOR(newNode)
+			&& TERM_EXT(newNode);
 	}
 	else if (
 		getPeek() == compiler::RIGHT_PAREN || getPeek() == compiler::LEFT_BRACK
@@ -438,27 +482,32 @@ bool Syntax::TERM_EXT()
 	return false;
 }
 
-bool Syntax::FACTOR()
+bool Syntax::FACTOR(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::LEFT_PAREN) {
-		return matchToken(compiler::LEFT_PAREN) && EXPR()
-			&& matchToken(compiler::RIGHT_PAREN);
+		auto newNode = createAndConnectNode(node, "FACTOR");
+		return matchToken(compiler::LEFT_PAREN, newNode, "FACTOR") && EXPR(newNode)
+			&& matchToken(compiler::RIGHT_PAREN, newNode, "FACTOR");
 	}
 	else if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::VALUE_INTEGER) {
-		return NUMBER();
+		auto newNode = createAndConnectNode(node, "FACTOR");
+		return NUMBER(newNode);
 	}
 	else if (getPeek() == compiler::ID) {
-		return matchToken(compiler::ID) && FACTOR_EXT();
+		auto newNode = createAndConnectNode(node, "FACTOR");
+		return matchToken(compiler::ID, newNode, "FACTOR") && FACTOR_EXT(newNode);
 	}
 
 	reportError("FACTOR");
 	return false;
 }
 
-bool Syntax::FACTOR_EXT()
+bool Syntax::FACTOR_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::LEFT_PAREN) {
-		return matchToken(compiler::LEFT_PAREN) && EXPRSEQ() && matchToken(compiler::RIGHT_PAREN);
+		auto newNode = createAndConnectNode(node, "FACTOR_EXT");
+		return matchToken(compiler::LEFT_PAREN, newNode, "FACTOR_EXT")
+			 && EXPRSEQ(newNode) && matchToken(compiler::RIGHT_PAREN, newNode, "FACTOR_EXT");
 	}
 	else if (getPeek() == compiler::MODULUS || getPeek() == compiler::RIGHT_PAREN
 		|| getPeek() == compiler::LEFT_BRACK || getPeek() == compiler::MULTIPLY
@@ -470,18 +519,25 @@ bool Syntax::FACTOR_EXT()
 		|| getPeek() == compiler::COMP_GTHAN || getPeek() == compiler::COMP_GEQUAL
 		|| getPeek() == compiler::KW_ELSE || getPeek() == compiler::KW_FED
 		|| getPeek() == compiler::KW_FI || getPeek() == compiler::KW_OD) {
-		return VAR_EXT();
+		auto newNode = createAndConnectNode(node, "FACTOR_EXT");
+		bool out = VAR_EXT(newNode);
+		if (newNode->hasNoChildren()) {
+			node->removeLastNode();
+		}
+		
+		return out;
 	}
 
 	reportError("FACTOR_EXT");
 	return false;
 }
 
-bool Syntax::EXPRSEQ()
+bool Syntax::EXPRSEQ(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::VALUE_DOUBLE
 		|| getPeek() == compiler::ID || getPeek() == compiler::VALUE_INTEGER) {
-		return EXPR() && EXPRSEQ_EXT();
+		auto newNode = createAndConnectNode(node, "EXPRSEQ");
+		return EXPR(newNode) && EXPRSEQ_EXT(newNode);
 	}
 	else if (getPeek() == compiler::RIGHT_PAREN) {
 		return true;
@@ -491,10 +547,11 @@ bool Syntax::EXPRSEQ()
 	return false;
 }
 
-bool Syntax::EXPRSEQ_EXT()
+bool Syntax::EXPRSEQ_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::COMMA) {
-		return matchToken(compiler::COMMA) && EXPRSEQ();
+		auto newNode = createAndConnectNode(node, "EXPRSEQ_EXT");
+		return matchToken(compiler::COMMA, newNode, "EXPRSEQ_EXT") && EXPRSEQ(newNode);
 	}
 	else if (getPeek() == compiler::RIGHT_PAREN) {
 		// EPSILON
@@ -505,21 +562,23 @@ bool Syntax::EXPRSEQ_EXT()
 	return false;
 }
 
-bool Syntax::BEXPR()
+bool Syntax::BEXPR(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::KW_NOT) {
-		return BTERM() && BEXPR_EXT();
+		auto newNode = createAndConnectNode(node, "BEXPR");
+		return BTERM(newNode) && BEXPR_EXT(newNode);
 	}
 
 	reportError("BEXPR");
 	return false;
 }
 
-bool Syntax::BEXPR_EXT()
+bool Syntax::BEXPR_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_OR) {
-		return matchToken(compiler::KW_OR) && BTERM()
-			&& BEXPR_EXT();
+		auto newNode = createAndConnectNode(node, "BEXPR_EXT");
+		return matchToken(compiler::KW_OR, newNode, "BEXPR_EXT") && BTERM(newNode)
+			&& BEXPR_EXT(newNode);
 	}
 	else if (getPeek() == compiler::RIGHT_PAREN || getPeek() == compiler::KW_DO
 		|| getPeek() == compiler::KW_THEN) {
@@ -531,21 +590,23 @@ bool Syntax::BEXPR_EXT()
 	return false;
 }
 
-bool Syntax::BTERM()
+bool Syntax::BTERM(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::LEFT_PAREN || getPeek() == compiler::KW_NOT) {
-		return BFACTOR() && BTERM_EXT();
+		auto newNode = createAndConnectNode(node, "BTERM");
+		return BFACTOR(newNode) && BTERM_EXT(newNode);
 	}
 
 	reportError("BTERM");
 	return false;
 }
 
-bool Syntax::BTERM_EXT()
+bool Syntax::BTERM_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::KW_AND) {
-		return matchToken(compiler::KW_AND) && BFACTOR()
-			&& BTERM_EXT();
+		auto newNode = createAndConnectNode(node, "BTERM_EXT");
+		return matchToken(compiler::KW_AND, newNode, "BTERM_EXT") && BFACTOR(newNode)
+			&& BTERM_EXT(newNode);
 	}
 	else if (getPeek() == compiler::RIGHT_PAREN || getPeek() == compiler::KW_DO
 		|| getPeek() == compiler::KW_OR || getPeek() == compiler::KW_THEN) {
@@ -557,85 +618,97 @@ bool Syntax::BTERM_EXT()
 	return false;
 }
 
-bool Syntax::BFACTOR()
+bool Syntax::BFACTOR(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::LEFT_PAREN) {
-		return matchToken(compiler::LEFT_PAREN) && BFACTOR_EXT()
-			&& matchToken(compiler::RIGHT_PAREN);
+		auto newNode = createAndConnectNode(node, "BFACTOR");
+		return matchToken(compiler::LEFT_PAREN, newNode, "BFACTOR") && BFACTOR_EXT(newNode)
+			&& matchToken(compiler::RIGHT_PAREN, newNode, "BFACTOR");
 	}
 	else if (getPeek() == compiler::KW_NOT) {
-		return matchToken(compiler::KW_NOT) && BFACTOR();
+		auto newNode = createAndConnectNode(node, "BFACTOR");
+		return matchToken(compiler::KW_NOT, newNode, "BFACTOR") && BFACTOR(newNode);
 	}
 
 	reportError("BFACTOR");
 	return false;
 }
 
-bool Syntax::BFACTOR_EXT()
+bool Syntax::BFACTOR_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::LEFT_PAREN) {
-		if (BEXPR()) {
+		auto newNode = createAndConnectNode(node, "BFACTOR_EXT");
+		if (BEXPR(newNode)) {
 			return true;
 		}
 
-		if (EXPR()) {
+		if (EXPR(newNode)) {
 			return true;
 		}
 	}
 	else if (getPeek() == compiler::KW_NOT) {
-		return BEXPR();
+		auto newNode = createAndConnectNode(node, "BFACTOR_EXT");
+		return BEXPR(newNode);
 	}
 	else if (getPeek() == compiler::VALUE_DOUBLE || getPeek() == compiler::ID
 		|| getPeek() == compiler::VALUE_INTEGER) {
-		return EXPR() && COMP()
-			&& EXPR();
+		auto newNode = createAndConnectNode(node, "BFACTOR_EXT");
+		return EXPR(newNode) && COMP(newNode)
+			&& EXPR(newNode);
 	}
 
 	reportError("BFACTOR_EXT");
 	return false;
 }
 
-bool Syntax::COMP()
+bool Syntax::COMP(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::COMP_LTHAN) {
-		return matchToken(compiler::COMP_LTHAN);
+		auto newNode = createAndConnectNode(node, "COMP");
+		return matchToken(compiler::COMP_LTHAN, newNode, "COMP");
 	}
 	else if (getPeek() == compiler::COMP_LEQUAL) {
-		return matchToken(compiler::COMP_LEQUAL);
+		auto newNode = createAndConnectNode(node, "COMP");
+		return matchToken(compiler::COMP_LEQUAL, newNode, "COMP");
 	}
 	else if (getPeek() == compiler::COMP_NOT) {
-		return matchToken(compiler::COMP_NOT);
+		auto newNode = createAndConnectNode(node, "COMP");
+		return matchToken(compiler::COMP_NOT, newNode, "COMP");
 	}
 	else if (getPeek() == compiler::COMP_EQUAL) {
-		return matchToken(compiler::COMP_EQUAL);
+		auto newNode = createAndConnectNode(node, "COMP");
+		return matchToken(compiler::COMP_EQUAL, newNode, "COMP");
 	}
 	else if (getPeek() == compiler::COMP_GTHAN) {
-		return matchToken(compiler::COMP_GTHAN);
-
+		auto newNode = createAndConnectNode(node, "COMP");
+		return matchToken(compiler::COMP_GTHAN, newNode, "COMP");
 	}
 	else if (getPeek() == compiler::COMP_GEQUAL) {
-		return matchToken(compiler::COMP_GEQUAL);
+		auto newNode = createAndConnectNode(node, "COMP");
+		return matchToken(compiler::COMP_GEQUAL, newNode, "COMP");
 	}
 
 	reportError("COMP");
 	return false;
 }
 
-bool Syntax::VAR()
+bool Syntax::VAR(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::ID) {
-		return matchToken(compiler::ID) && VAR_EXT();
+		auto newNode = createAndConnectNode(node, "VAR");
+		return matchToken(compiler::ID, newNode, "VAR") && VAR_EXT(newNode);
 	}
 
 	reportError("VAR");
 	return false;
 }
 
-bool Syntax::VAR_EXT()
+bool Syntax::VAR_EXT(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::LEFT_BRACK) {
-		return matchToken(compiler::LEFT_BRACK) && EXPR()
-			&& matchToken(compiler::LEFT_BRACK);
+		auto newNode = createAndConnectNode(node, "VAR_EXT");
+		return matchToken(compiler::LEFT_BRACK, newNode, "VAR_EXT") && EXPR(newNode)
+			&& matchToken(compiler::LEFT_BRACK, newNode, "VAR_EXT");
 	}
 	else if (getPeek() == compiler::MODULUS || getPeek() == compiler::RIGHT_PAREN || getPeek() == compiler::LEFT_BRACK
 		|| getPeek() == compiler::MULTIPLY || getPeek() == compiler::DIVIDE
@@ -655,13 +728,15 @@ bool Syntax::VAR_EXT()
 	return false;
 }
 
-bool Syntax::NUMBER()
+bool Syntax::NUMBER(std::shared_ptr<SyntaxNode> node)
 {
 	if (getPeek() == compiler::VALUE_DOUBLE) {
-		return matchToken(compiler::VALUE_DOUBLE);
+		auto newNode = createAndConnectNode(node, "NUMBER");
+		return matchToken(compiler::VALUE_DOUBLE, newNode, "NUMBER");
 	}
 	else if (getPeek() == compiler::VALUE_INTEGER) {
-		return matchToken(compiler::VALUE_INTEGER);
+		auto newNode = createAndConnectNode(node, "NUMBER");
+		return matchToken(compiler::VALUE_INTEGER, newNode, "NUMBER");
 	}
 
 	reportError("NUMBER");

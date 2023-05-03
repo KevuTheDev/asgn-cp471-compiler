@@ -81,9 +81,6 @@
     <ClCompile Include="src\SymbolTableManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TypeCheck.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\globals.h">
@@ -132,9 +129,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SymbolTableManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\TypeCheck.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

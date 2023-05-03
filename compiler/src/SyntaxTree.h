@@ -12,6 +12,8 @@ public:
 
 	void print();
 
+	void print_aux(std::shared_ptr<SyntaxNode> node, uint16_t count);
+
 private:
 
 private:

@@ -69,7 +69,7 @@ void Compiler::run()
 	}
 
 	compiler::printConsoleInfo(compiler::SYNTAX, "Syntax analysis completed!");
-	//compiler::printConsoleInfo(compiler::COMPILER, "Printing syntax tree...");
+	compiler::printConsoleInfo(compiler::COMPILER, "Printing syntax tree...");
 
 	this->_syntaxTree->print();
 

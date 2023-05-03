@@ -1,15 +1,10 @@
 #include "SyntaxNode.h"
 
-SyntaxNode::SyntaxNode(bool isterminalnode, std::string value)
+SyntaxNode::SyntaxNode(std::string scope)
 {
-	this->_isTerminalNode = isterminalnode;
-	
-	if (this->_isTerminalNode) {
-		this->_lexeme = value;
-	}
-	else {
-		this->_nonTerminalValue = value;
-	}
+	this->_scope = scope;
+	this->_data = "";
+	this->_type = "";
 }
 
 SyntaxNode::~SyntaxNode()
@@ -33,7 +28,27 @@ bool SyntaxNode::hasNoChildren()
 	return this->_children.size() == 0;
 }
 
+std::vector<std::shared_ptr<SyntaxNode>> SyntaxNode::getChildren()
+{
+	return this->_children;
+}
+
 bool SyntaxNode::isTerminalNode()
 {
-	return this->_isTerminalNode;
+	return this->_data.size() != 0;
+}
+
+void SyntaxNode::setData(std::string data)
+{
+	this->_data = data;
+}
+
+std::string SyntaxNode::getData()
+{
+	return this->_data;
+}
+
+std::string SyntaxNode::getScope()
+{
+	return this->_scope;
 }

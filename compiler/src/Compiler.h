@@ -17,7 +17,6 @@
 #include "Semantic.h"
 #include "Intermediate.h"
 
-#include "TypeCheck.h"
 
 class Compiler
 {
@@ -84,8 +83,6 @@ private:
 	std::unique_ptr<Syntax> _syntax;
 	std::unique_ptr<Semantic> _semantic;
 	std::unique_ptr<Intermediate> _intermediate;
-
-	std::unique_ptr<TypeCheck> _typecheck;
 
 };
 

@@ -297,7 +297,7 @@ bool Lexical::getNextToken()
 		return true;
 	}
 
-	std::cout << this->_peek << std::endl;
+	//std::cout << this->_peek << std::endl;
 	// If ID or Keywords
 	if (std::isalpha(this->_peek)) {
 		this->_prevCharPosition = this->_charPosition;
@@ -318,7 +318,7 @@ bool Lexical::getNextToken()
 		return true;
 	}
 
-	std::cout << this->_peek << std::endl;
+	//std::cout << this->_peek << std::endl;
 	this->_prevCharPosition = this->_charPosition;
 	std::string s(&this->_peek);
 	this->reportError(s);

@@ -9,26 +9,35 @@
 class SyntaxNode
 {
 public:
-	SyntaxNode(bool isTerminalNode, std::string value);
+	SyntaxNode(std::string scope);
 	~SyntaxNode();
 
 	void append(std::shared_ptr<SyntaxNode> node);
 	void removeLastNode();
 
 	bool hasNoChildren();
+	std::vector<std::shared_ptr<SyntaxNode>> getChildren();
 
 	bool isTerminalNode();
+
+
+	void setData(std::string data);
+	std::string getData();
+
+	std::string getScope();
+
 
 private:
 
 private:
 	std::vector<std::shared_ptr<SyntaxNode>> _children;
 
-	bool _isTerminalNode; // non-terminal = false or terminal = true
+	std::string _scope;
 
-	std::string _nonTerminalValue;
-	std::string _lexeme;
-	compiler::TOKEN _token;
+	std::string _data; // empty is non-terminal, non-empty is terminal
+	
+	std::string _type;
+
 
 	// maybe type, or scope inserted for semantic analysis
 
