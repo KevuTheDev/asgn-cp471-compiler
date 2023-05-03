@@ -21,7 +21,7 @@ public:
 private:
 	compiler::TOKEN getPeek();
 	void getNextToken();
-	bool matchToken(compiler::TOKEN token, std::shared_ptr<SyntaxNode> node, std::string scope);
+	bool matchToken(compiler::TOKEN token, std::shared_ptr<SyntaxNode> node);
 
 	// Error Handling
 	void reportError(const std::string& errorchar);
