@@ -88,9 +88,9 @@ void Compiler::run()
 	}
 
 	compiler::printConsoleInfo(compiler::SEMANTIC, "Semantic analysis completed!");
-	compiler::printConsoleInfo(compiler::COMPILER, "Printing symbol table...");
+	//compiler::printConsoleInfo(compiler::COMPILER, "Printing symbol table...");
 
-	this->_symbolTable->print();
+	//this->_symbolTable->print();
 
 	/////////////////////////////////////////////////////////
 	//compiler::printConsoleInfo(compiler::COMPILER, "");

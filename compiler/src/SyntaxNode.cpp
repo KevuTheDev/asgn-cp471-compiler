@@ -1,8 +1,8 @@
 #include "SyntaxNode.h"
 
-SyntaxNode::SyntaxNode(std::string scope)
+SyntaxNode::SyntaxNode(std::string category)
 {
-	this->_scope = scope;
+	this->_category = category;
 	this->_data = "";
 	this->_type = "";
 }
@@ -48,7 +48,7 @@ std::string SyntaxNode::getData()
 	return this->_data;
 }
 
-std::string SyntaxNode::getScope()
+std::string SyntaxNode::getCategory()
 {
-	return this->_scope;
+	return this->_category;
 }
