@@ -19,7 +19,7 @@ void TokenList::linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer)
 
 void TokenList::append(uint32_t linenum, uint32_t charpos, std::string lexeme, compiler::TOKEN token)
 {
-	TokenNode node = TokenNode(linenum, charpos, lexeme, token);
+	std::shared_ptr<TokenNode> node = std::make_shared<TokenNode>(linenum, charpos, lexeme, token);
 	this->_tokenList.push_back(node);
 
     uint32_t tokenLength = (uint32_t) compiler::ST_KEYWORDS[token].length();
@@ -35,22 +35,27 @@ void TokenList::append(uint32_t linenum, uint32_t charpos, std::string lexeme, c
 
 uint32_t TokenList::getLineNumber(uint32_t index)
 {
-    return this->_tokenList[index].getLineNum();
+    return this->_tokenList[index]->getLineNum();
 }
 
 uint32_t TokenList::getCharPosition(uint32_t index)
 {
-    return this->_tokenList[index].getCharPos();
+    return this->_tokenList[index]->getCharPos();
 }
 
 compiler::TOKEN TokenList::getToken(uint32_t index)
 {
-    return this->_tokenList[index].getToken();
+    return this->_tokenList[index]->getToken();
 }
 
 std::string TokenList::getLexeme(uint32_t index)
 {
-    return this->_tokenList[index].getLexeme();
+    return this->_tokenList[index]->getLexeme();
+}
+
+std::shared_ptr<TokenNode> TokenList::getTokenNode(uint32_t index)
+{
+    return this->_tokenList[index];
 }
 
 uint32_t TokenList::getSize()
@@ -104,17 +109,17 @@ void TokenList::print()
 
 
     for (auto i : this->_tokenList) {
-        std::string linenum = std::to_string(i.getLineNum());
-        std::string charpos = std::to_string(i.getCharPos());
+        std::string linenum = std::to_string(i->getLineNum());
+        std::string charpos = std::to_string(i->getCharPos());
 
         std::string rows = std::format("|{}{}{}|{}{}{}|{}{}{}|{}{}{}|",
             padding, linenum, std::string(this->_printLineNumLimit - linenum.length()
                 + rightPadding, ' '),
             padding, charpos, std::string(this->_printCharPosLimit - charpos.length()
                 + rightPadding, ' '),
-            padding, i.getLexeme(), std::string(this->_printLexemeLimit - i.getLexeme().length()
+            padding, i->getLexeme(), std::string(this->_printLexemeLimit - i->getLexeme().length()
                 + rightPadding, ' '),
-            padding, compiler::ST_KEYWORDS[i.getToken()], std::string(this->_printTokenLimit - compiler::ST_KEYWORDS[i.getToken()].length()
+            padding, compiler::ST_KEYWORDS[i->getToken()], std::string(this->_printTokenLimit - compiler::ST_KEYWORDS[i->getToken()].length()
                 + rightPadding, ' ')
         );
 

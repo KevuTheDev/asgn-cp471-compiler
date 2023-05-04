@@ -38,9 +38,10 @@ bool SyntaxNode::isTerminalNode()
 	return this->_data.size() != 0;
 }
 
-void SyntaxNode::setData(std::string data)
+void SyntaxNode::setData(std::string data, std::shared_ptr<TokenNode> node)
 {
 	this->_data = data;
+	this->_tokenNode = node;
 }
 
 std::string SyntaxNode::getData()

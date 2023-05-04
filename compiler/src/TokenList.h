@@ -21,6 +21,8 @@ public:
 	compiler::TOKEN getToken(uint32_t index);
 	std::string getLexeme(uint32_t index);
 
+	std::shared_ptr<TokenNode> getTokenNode(uint32_t index);
+
 	uint32_t getSize();
 	
 	void print();
@@ -30,7 +32,7 @@ private:
 private:
 	std::shared_ptr<TokenFileBuffer> _tokenFileBuffer;
 
-	std::vector<TokenNode> _tokenList;
+	std::vector<std::shared_ptr<TokenNode>> _tokenList;
 
 	uint32_t _printLineNumLimit;
 	uint32_t _printCharPosLimit;

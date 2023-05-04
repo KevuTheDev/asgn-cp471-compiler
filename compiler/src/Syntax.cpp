@@ -64,7 +64,8 @@ bool Syntax::matchToken(compiler::TOKEN token, std::shared_ptr<SyntaxNode> node)
 
 	auto newNode = createAndConnectNode(node, "");
 	// change newNode token data value
-	newNode->setData(this->_tokenList->getLexeme(this->_tokenListIndex));
+	newNode->setData(this->_tokenList->getLexeme(this->_tokenListIndex), 
+		this->_tokenList->getTokenNode(this->_tokenListIndex));
 
 
 	getNextToken();

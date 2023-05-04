@@ -76,6 +76,8 @@ std::string Semantic::getTopScope()
 
 void Semantic::start()
 {
+	pushScopeStack("global");
+
 	auto node = this->_syntaxTree->getHead();
 	start_aux(node);
 }
@@ -92,11 +94,7 @@ void Semantic::start_aux(std::shared_ptr<SyntaxNode> node)
 	}
 	else {
 		if (getTopCategory() == "FDEC") {
-			if (node->getData() == "def") {
-				std::cout << node->getData() << std::endl;
-				this->_myRow->category = this->_categoryStack.top();
 
-			}
 		}
 	}
 

@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "TokenNode.h"
+
 
 #include "globals.h"
 
@@ -21,7 +23,7 @@ public:
 	bool isTerminalNode();
 
 
-	void setData(std::string data);
+	void setData(std::string data, std::shared_ptr<TokenNode> node);
 	std::string getData();
 
 	std::string getCategory();
@@ -33,11 +35,13 @@ private:
 	std::vector<std::shared_ptr<SyntaxNode>> _children;
 
 	std::string _category;
-
 	std::string _data; // empty is non-terminal, non-empty is terminal
+	std::string _type;
+
+	std::shared_ptr<TokenNode> _tokenNode;
+
 
 	
-	std::string _type;
 
 
 	// maybe type, or scope inserted for semantic analysis
