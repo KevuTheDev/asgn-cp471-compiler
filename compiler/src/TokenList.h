@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "TokenFileBuffer.h"
+#include "TokenNode.h"
 
 class TokenList
 {
@@ -13,7 +14,7 @@ public:
 
 	void linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer);
 
-	void append(uint32_t linenum, uint32_t charpos, compiler::TOKEN token, std::string lexeme);
+	void append(uint32_t linenum, uint32_t charpos, std::string lexeme, compiler::TOKEN token);
 
 	uint32_t getLineNumber(uint32_t index);
 	uint32_t getCharPosition(uint32_t index);
@@ -25,12 +26,6 @@ public:
 	void print();
 
 private:
-	struct TokenNode {
-		uint32_t lineNum;
-		uint32_t charPos;
-		compiler::TOKEN token;
-		std::string lexeme;
-	};
 
 private:
 	std::shared_ptr<TokenFileBuffer> _tokenFileBuffer;

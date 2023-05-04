@@ -107,7 +107,7 @@ void Lexical::reportError(const std::string& errorchar)
 
 void Lexical::appendToTokenList(compiler::TOKEN token, std::string lexeme)
 {
-	this->_tokenList->append(this->_lineNumber, this->_prevCharPosition, token, lexeme);
+	this->_tokenList->append(this->_lineNumber, this->_prevCharPosition, lexeme, token);
 }
 
 void Lexical::resetPeek()
