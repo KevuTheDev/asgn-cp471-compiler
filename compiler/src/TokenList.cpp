@@ -17,9 +17,9 @@ void TokenList::linkTokenFileBuffer(std::shared_ptr<TokenFileBuffer> buffer)
 	this->_tokenFileBuffer = buffer;
 }
 
-void TokenList::append(uint32_t linenum, uint32_t charpos, std::string lexeme, compiler::TOKEN token)
+void TokenList::append(uint32_t linenum, uint32_t charpos, compiler::TOKEN token, std::string lexeme)
 {
-	TokenNode node = TokenNode(linenum, charpos, lexeme, token);
+	TokenNode node = { linenum, charpos, token, lexeme };
 	this->_tokenList.push_back(node);
 
     uint32_t tokenLength = (uint32_t) compiler::ST_KEYWORDS[token].length();
@@ -35,22 +35,22 @@ void TokenList::append(uint32_t linenum, uint32_t charpos, std::string lexeme, c
 
 uint32_t TokenList::getLineNumber(uint32_t index)
 {
-    return this->_tokenList[index].getLineNum();
+    return this->_tokenList[index].lineNum;
 }
 
 uint32_t TokenList::getCharPosition(uint32_t index)
 {
-    return this->_tokenList[index].getCharPos();
+    return this->_tokenList[index].charPos;
 }
 
 compiler::TOKEN TokenList::getToken(uint32_t index)
 {
-    return this->_tokenList[index].getToken();
+    return this->_tokenList[index].token;
 }
 
 std::string TokenList::getLexeme(uint32_t index)
 {
-    return this->_tokenList[index].getLexeme();
+    return this->_tokenList[index].lexeme;
 }
 
 uint32_t TokenList::getSize()
@@ -73,8 +73,8 @@ void TokenList::print()
 
     std::string headLineNum = "LINE";
     std::string headCharNum = "CHAR";
-    std::string headLexeme = "LEXEME";
     std::string headToken = "TOKEN";
+    std::string headLexeme = "LEXEME";
 
 
     std::string tableHead = std::string(tableHeadSize, '=');
@@ -89,9 +89,9 @@ void TokenList::print()
             + rightPadding, ' '),
         padding, headCharNum, std::string(this->_printCharPosLimit - headCharNum.length()
             + rightPadding, ' '),
-        padding, headLexeme, std::string(this->_printLexemeLimit - headLexeme.length()
-            + rightPadding, ' '),
         padding, headToken, std::string(this->_printTokenLimit - headToken.length()
+            + rightPadding, ' '),
+        padding, headLexeme, std::string(this->_printLexemeLimit - headLexeme.length()
             + rightPadding, ' ')
     );
 
@@ -104,17 +104,14 @@ void TokenList::print()
 
 
     for (auto i : this->_tokenList) {
-        std::string linenum = std::to_string(i.getLineNum());
-        std::string charpos = std::to_string(i.getCharPos());
-
         std::string rows = std::format("|{}{}{}|{}{}{}|{}{}{}|{}{}{}|",
-            padding, linenum, std::string(this->_printLineNumLimit - linenum.length()
+            padding, std::to_string(i.lineNum), std::string(this->_printLineNumLimit - std::to_string(i.lineNum).length()
                 + rightPadding, ' '),
-            padding, charpos, std::string(this->_printCharPosLimit - charpos.length()
+            padding, std::to_string(i.charPos), std::string(this->_printCharPosLimit - std::to_string(i.charPos).length()
                 + rightPadding, ' '),
-            padding, i.getLexeme(), std::string(this->_printLexemeLimit - i.getLexeme().length()
+            padding, compiler::ST_KEYWORDS[i.token], std::string(this->_printTokenLimit - compiler::ST_KEYWORDS[i.token].length()
                 + rightPadding, ' '),
-            padding, compiler::ST_KEYWORDS[i.getToken()], std::string(this->_printTokenLimit - compiler::ST_KEYWORDS[i.getToken()].length()
+            padding, i.lexeme, std::string(this->_printLexemeLimit - i.lexeme.length()
                 + rightPadding, ' ')
         );
 

@@ -9,7 +9,7 @@
 class SyntaxNode
 {
 public:
-	SyntaxNode(std::string category);
+	SyntaxNode(std::string scope);
 	~SyntaxNode();
 
 	void append(std::shared_ptr<SyntaxNode> node);
@@ -24,7 +24,7 @@ public:
 	void setData(std::string data);
 	std::string getData();
 
-	std::string getCategory();
+	std::string getScope();
 
 
 private:
@@ -32,10 +32,9 @@ private:
 private:
 	std::vector<std::shared_ptr<SyntaxNode>> _children;
 
-	std::string _category;
+	std::string _scope;
 
 	std::string _data; // empty is non-terminal, non-empty is terminal
-
 	
 	std::string _type;
 

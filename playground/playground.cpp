@@ -1,28 +1,48 @@
-﻿#include <iostream>
-#include <unordered_map>
+﻿
+#pragma warning(disable : 4996)
+#include <chrono>
+#include <iostream>
 #include <string>
 
 int main()
 {
-	auto mapp = std::unordered_map<std::string, int>();
 
-	mapp["hello"] = 123;
-	mapp["world"] = 456;
-	mapp["ice"] = 1234;
-	mapp["hello3"] = 123;
-	mapp["worl4d"] = 456;
-	mapp["ic2e"] = 1234;
+    for (auto www = 0; www < 1000000; www++) {
 
-	mapp["hel3lo"] = 123;
-	mapp["wor2ld"] = 456;
-	mapp["ic2e"] = 1234;
-	mapp["he5llo3"] = 123;
-	mapp["wor2l4d"] = 456;
-	mapp["ic42e"] = 1234;
+    namespace S = std;
+    using namespace S::chrono;
+    auto tp = zoned_time{ current_zone(), system_clock::now() }.get_local_time();
+    auto dp = floor<days>(tp);
+    year_month_day ymd{ dp };
+    hh_mm_ss time{ floor<milliseconds>(tp - dp) };
+    auto y = ymd.year();
+    auto m = ymd.month();
+    auto d = ymd.day();
+    auto h = time.hours();
+    auto M = time.minutes();
+    auto s = time.seconds();
+    auto ms = time.subseconds();
 
-	int* mappping = &(mapp["hello"]);
-	auto nn = mapp.find("hello");
 
-	return 0;
+    //S::cout << "year        = " << ymd.year() << '\n';
+    //S::cout << "month       = " << ymd.month() << '\n';
+    //S::cout << "day         = " << ymd.day() << '\n';
+    //S::cout << "hour        = " << time.hours().count() << "h\n";
+    //S::cout << "minute      = " << time.minutes().count() << "min\n";
+    //S::cout << "second      = " << time.seconds().count() << "s\n";
+    //S::cout << "millisecond = " << time.subseconds().count() << "ms\n";
 
+    std::string hh = S::to_string(h.count());
+    hh = (hh.length() != 2) ? "0" + hh : hh;
+
+    std::string MM = S::to_string(M.count());
+    MM = (MM.length() != 2) ? "0" + MM : MM;
+
+    std::string ss = S::to_string(s.count());
+    ss = (ss.length() != 2) ? "0" + ss : ss;
+
+
+    S::cout << "[" + hh + ":" \
+        + MM + ":" + ss + "]" << S::endl;
+    }
 }
