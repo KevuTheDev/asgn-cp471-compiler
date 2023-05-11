@@ -9,15 +9,8 @@
 
 #include "ReservedWords.h"
 #include "TokenList.h"
-#include "SyntaxTree.h"
-#include "SymbolTableManager.h"
 
 #include "Lexical.h"
-#include "Syntax.h"
-#include "Semantic.h"
-#include "Intermediate.h"
-
-#include "TypeCheck.h"
 
 class Compiler
 {
@@ -37,32 +30,11 @@ private:
 	// Token List
 	void setupTokenList();
 	void printTokenList();
-
-	// Syntax Tree
-	void setupSyntaxTree();
-	void printSyntaxTree();
-
-	// Symbol Table
-	void setupSymbolTable();
-	void printSymbolTable();
-
 	///////////////////////////////////
 
 	// Lexical Analysis
 	void setupLexicalAnalysis();
 	void runLexicalAnalysis();
-
-	// Syntax Analysis
-	void setupSyntaxAnalysis();
-	void runSyntaxAnalysis();
-
-	// Semantic Analysis
-	void setupSemanticAnalysis();
-	void runSemanticAnalysis();
-
-	// Intermediate Code Representation Generation
-	void setupICRGeneration();
-	void runICRGeneration();
 
 
 private:
@@ -77,15 +49,7 @@ private:
 
 	std::shared_ptr<ReservedWords> _reservedWords;
 	std::shared_ptr<TokenList> _tokenList;
-	std::shared_ptr<SyntaxTree> _syntaxTree;
-	std::shared_ptr<SymbolTableManager> _symbolTable;
 
 	std::unique_ptr<Lexical> _lexical;
-	std::unique_ptr<Syntax> _syntax;
-	std::unique_ptr<Semantic> _semantic;
-	std::unique_ptr<Intermediate> _intermediate;
-
-	std::unique_ptr<TypeCheck> _typecheck;
-
 };
 

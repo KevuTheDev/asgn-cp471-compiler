@@ -39,9 +39,6 @@
     <ClCompile Include="src\Compiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Syntax.cpp">
-      <Filter>Source Files\Stages</Filter>
-    </ClCompile>
     <ClCompile Include="src\Lexical.cpp">
       <Filter>Source Files\Stages</Filter>
     </ClCompile>
@@ -53,12 +50,6 @@
     </ClCompile>
     <ClCompile Include="src\FileBuffer.cpp">
       <Filter>Source Files\FileBuffer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Intermediate.cpp">
-      <Filter>Source Files\Stages</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Semantic.cpp">
-      <Filter>Source Files\Stages</Filter>
     </ClCompile>
     <ClCompile Include="src\SymbolTableFileBuffer.cpp">
       <Filter>Source Files\FileBuffer</Filter>
@@ -75,15 +66,6 @@
     <ClCompile Include="src\SyntaxTree.cpp">
       <Filter>Source Files\Storage</Filter>
     </ClCompile>
-    <ClCompile Include="src\SyntaxNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SymbolTableManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\TypeCheck.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\globals.h">
@@ -91,9 +73,6 @@
     </ClInclude>
     <ClInclude Include="src\Compiler.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Syntax.h">
-      <Filter>Header Files\Stages</Filter>
     </ClInclude>
     <ClInclude Include="src\Lexical.h">
       <Filter>Header Files\Stages</Filter>
@@ -106,12 +85,6 @@
     </ClInclude>
     <ClInclude Include="src\LogFileBuffer.h">
       <Filter>Header Files\FileBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Intermediate.h">
-      <Filter>Header Files\Stages</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Semantic.h">
-      <Filter>Header Files\Stages</Filter>
     </ClInclude>
     <ClInclude Include="src\SymbolTableFileBuffer.h">
       <Filter>Header Files\FileBuffer</Filter>
@@ -127,15 +100,6 @@
     </ClInclude>
     <ClInclude Include="src\SyntaxTree.h">
       <Filter>Header Files\Storage</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SyntaxNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SymbolTableManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\TypeCheck.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

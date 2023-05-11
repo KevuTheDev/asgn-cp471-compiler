@@ -20,41 +20,29 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Compiler.cpp" />
-    <ClCompile Include="src\Intermediate.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Lexical.cpp" />
     <ClCompile Include="src\LogFileBuffer.cpp" />
     <ClCompile Include="src\ReservedWords.cpp" />
-    <ClCompile Include="src\Semantic.cpp" />
     <ClCompile Include="src\SymbolTable.cpp" />
     <ClCompile Include="src\FileBuffer.cpp" />
     <ClCompile Include="src\SymbolTableFileBuffer.cpp" />
-    <ClCompile Include="src\SymbolTableManager.cpp" />
-    <ClCompile Include="src\Syntax.cpp" />
-    <ClCompile Include="src\SyntaxNode.cpp" />
     <ClCompile Include="src\SyntaxTree.cpp" />
     <ClCompile Include="src\TokenFileBuffer.cpp" />
     <ClCompile Include="src\TokenList.cpp" />
-    <ClCompile Include="src\TypeCheck.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Compiler.h" />
     <ClInclude Include="src\globals.h" />
-    <ClInclude Include="src\Intermediate.h" />
     <ClInclude Include="src\Lexical.h" />
     <ClInclude Include="src\LogFileBuffer.h" />
     <ClInclude Include="src\ReservedWords.h" />
-    <ClInclude Include="src\Semantic.h" />
     <ClInclude Include="src\SymbolTable.h" />
     <ClInclude Include="src\FileBuffer.h" />
     <ClInclude Include="src\SymbolTableFileBuffer.h" />
-    <ClInclude Include="src\SymbolTableManager.h" />
-    <ClInclude Include="src\Syntax.h" />
-    <ClInclude Include="src\SyntaxNode.h" />
     <ClInclude Include="src\SyntaxTree.h" />
     <ClInclude Include="src\TokenFileBuffer.h" />
     <ClInclude Include="src\TokenList.h" />
-    <ClInclude Include="src\TypeCheck.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\e1.cp" />

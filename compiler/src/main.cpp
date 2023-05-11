@@ -8,7 +8,6 @@
 #include "Compiler.h"
 
 #include "Lexical.h"
-#include "Syntax.h"
 
 #include "ReservedWords.h"
 #include "SymbolTable.h"
@@ -17,7 +16,7 @@
 
 int main(int argc, char* argv[]) 
 {
-    std::string filename = "Test1";
+    std::string filename = "Test12";
     std::string outpath = "output/";
     std::string respath = "res/";
 
