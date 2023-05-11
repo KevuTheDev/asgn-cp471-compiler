@@ -17,7 +17,7 @@ public:
 	void enterScope(std::string scope);
 	void exitScope();
 	
-	void appendRow(std::shared_ptr<SymbolTable::SymbolTableRow>); // TODO: params, and add nodes 
+	void appendRow(std::shared_ptr<SymbolTable::SymbolTableRow>);
 
 	bool isIdentifierInCurrentScope(std::string id);
 	std::string getIdentifierType(std::string id);

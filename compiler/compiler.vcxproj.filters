@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Storage">
       <UniqueIdentifier>{97fec973-813e-41a6-a60b-619949943089}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Node">
+      <UniqueIdentifier>{66f996a9-106e-4613-8a73-2b8ed7ff20c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Node">
+      <UniqueIdentifier>{dfc012f4-2927-40d6-982a-948f0202b6f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -75,17 +81,17 @@
     <ClCompile Include="src\SyntaxTree.cpp">
       <Filter>Source Files\Storage</Filter>
     </ClCompile>
-    <ClCompile Include="src\SyntaxNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SymbolTableManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Node.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Node</Filter>
     </ClCompile>
     <ClCompile Include="src\TokenNode.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SyntaxNode.cpp">
+      <Filter>Source Files\Node</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,17 +137,17 @@
     <ClInclude Include="src\SyntaxTree.h">
       <Filter>Header Files\Storage</Filter>
     </ClInclude>
-    <ClInclude Include="src\SyntaxNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\SymbolTableManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Node.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SyntaxNode.h">
+      <Filter>Header Files\Node</Filter>
     </ClInclude>
     <ClInclude Include="src\TokenNode.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Node</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

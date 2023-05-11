@@ -13,7 +13,6 @@ Compiler::Compiler(const std::string& filename, const std::string& outpath, cons
 
 
 	this->_logFileBuffer = std::make_shared<LogFileBuffer>(outpath + filename + compiler::COMPILER_FILE_EXTENSION_LOG);
-
 	this->_tokenFileBuffer = std::make_shared<TokenFileBuffer>(outpath + filename + compiler::COMPILER_FILE_EXTENSION_TOKEN);
 	this->_symbolTableFileBuffer = std::make_shared<SymbolTableFileBuffer>(outpath + filename + compiler::COMPILER_FILE_EXTENSION_SYMBOL);
 
@@ -88,9 +87,9 @@ void Compiler::run()
 	}
 
 	compiler::printConsoleInfo(compiler::SEMANTIC, "Semantic analysis completed!");
-	//compiler::printConsoleInfo(compiler::COMPILER, "Printing symbol table...");
+	compiler::printConsoleInfo(compiler::COMPILER, "Printing symbol table...");
 
-	//this->_symbolTable->print();
+	this->_symbolTable->print();
 
 	/////////////////////////////////////////////////////////
 	//compiler::printConsoleInfo(compiler::COMPILER, "");

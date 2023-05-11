@@ -28,6 +28,12 @@ public:
 
 	std::string getCategory();
 
+	compiler::TOKEN getTokenToken();
+	
+	std::string getTokenLexeme();
+	uint32_t getTokenCharPos();
+	uint32_t getTokenLineNum();
+
 
 private:
 

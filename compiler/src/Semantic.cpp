@@ -84,9 +84,14 @@ void Semantic::start()
 
 void Semantic::start_aux(std::shared_ptr<SyntaxNode> node)
 {
+	std::string scope = node->getCategory();
 	if (!node->isTerminalNode()) {
-		std::string scope = node->getCategory();
-		pushCategoryStack(scope);
+
+		if (scope == "FDEC" || scope == "PARAMS" || scope == "DECL" || scope == "STATEMENT"
+			|| scope == "STATEMENT_EXT" || scope == "FACTOR") {
+			pushCategoryStack(scope);
+		}
+
 		
 		if (scope == "FDEC") {
 			this->_myRow = std::make_shared<SymbolTable::SymbolTableRow>();
@@ -94,7 +99,35 @@ void Semantic::start_aux(std::shared_ptr<SyntaxNode> node)
 	}
 	else {
 		if (getTopCategory() == "FDEC") {
+			if (node->getTokenToken() == compiler::KW_DEF) {
+				this->_myRow->category = this->_categoryStack.top();
+				this->_myRow->scope = this->_scopeStack.top();
+			}
+			else if (node->getTokenToken() == compiler::KW_INT) {
+				this->_myRow->token = compiler::KW_INT;
+				this->_myRow->type = "int";
+			}
+			else if (node->getTokenToken() == compiler::KW_DOUBLE) {
+				this->_myRow->token = compiler::KW_DOUBLE;
+				this->_myRow->type = "double";
+			}
+			else if (node->getTokenToken() == compiler::ID) {
+				std::string id = node->getTokenLexeme();
+				if (!this->_symbolTableManager->isIdentifierInCurrentScope(id)) {
+					this->_myRow->lexeme = node->getTokenLexeme();
+					this->_myRow->lineNum = node->getTokenLineNum();
+					this->_myRow->charPos = node->getTokenCharPos();
 
+					this->_symbolTableManager->appendRow(this->_myRow);
+					pushScopeStack(this->_myRow->lexeme);
+				}
+				else {
+					compiler::printConsoleError(compiler::SEMANTIC, "Function " + id + " was already defined...");
+					this->_error = true;
+					pushScopeStack(id);
+				}
+				this->_myRow = nullptr;
+			}
 		}
 	}
 
@@ -105,7 +138,10 @@ void Semantic::start_aux(std::shared_ptr<SyntaxNode> node)
 
 
 	if (!node->isTerminalNode()) {
-		popCategoryStack();
+		if (scope == "FDEC" || scope == "PARAMS" || scope == "DECL" || scope == "STATEMENT"
+			|| scope == "STATEMENT_EXT" || scope == "FACTOR") {
+			popCategoryStack();
+		}
 	}
 }
 

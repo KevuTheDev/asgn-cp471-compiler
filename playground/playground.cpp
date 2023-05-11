@@ -2,26 +2,23 @@
 #include <unordered_map>
 #include <string>
 
+#include <typeinfo>
+
+#include <vector>
+
+#include "B.h"
+
 int main()
 {
-	auto mapp = std::unordered_map<std::string, int>();
 
-	mapp["hello"] = 123;
-	mapp["world"] = 456;
-	mapp["ice"] = 1234;
-	mapp["hello3"] = 123;
-	mapp["worl4d"] = 456;
-	mapp["ic2e"] = 1234;
+	std::vector<A*> v;
 
-	mapp["hel3lo"] = 123;
-	mapp["wor2ld"] = 456;
-	mapp["ic2e"] = 1234;
-	mapp["he5llo3"] = 123;
-	mapp["wor2l4d"] = 456;
-	mapp["ic42e"] = 1234;
+	v.push_back(new A());
+	v.push_back(new B());
 
-	int* mappping = &(mapp["hello"]);
-	auto nn = mapp.find("hello");
+	std::cout << std::boolalpha << std::is_same_v<decltype(v[1]), decltype(v[0])> << std::endl;
+
+
 
 	return 0;
 

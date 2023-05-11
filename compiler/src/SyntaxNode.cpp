@@ -53,3 +53,23 @@ std::string SyntaxNode::getCategory()
 {
 	return this->_category;
 }
+
+compiler::TOKEN SyntaxNode::getTokenToken()
+{
+	return this->_tokenNode->getToken();
+}
+
+std::string SyntaxNode::getTokenLexeme()
+{
+	return this->_tokenNode->getLexeme();
+}
+
+uint32_t SyntaxNode::getTokenCharPos()
+{
+	return this->_tokenNode->getCharPos();
+}
+
+uint32_t SyntaxNode::getTokenLineNum()
+{
+	return this->_tokenNode->getLineNum();
+}
