@@ -28,7 +28,8 @@ private:
 	// Error Handling
 	void reportError(const std::string& errorchar);
 
-	void appendToTokenList(compiler::TOKEN token, std::string lexeme);
+	// Token List
+	void appendToTokenList(std::string lexeme, compiler::TOKEN token);
 
 	// Lexical Analysis
 	void resetPeek();

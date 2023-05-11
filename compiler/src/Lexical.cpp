@@ -30,11 +30,12 @@ Lexical::Lexical(const std::string& filename)
 
 	memset(this->_buffer1, 0, compiler::COMPILER_BUFFER_SIZE);
 	memset(this->_buffer2, 0, compiler::COMPILER_BUFFER_SIZE);
-
 }
 
 Lexical::~Lexical()
 {
+	delete this->_buffer1;
+	delete this->_buffer2;
 }
 
 void Lexical::linkLogFileBuffer(std::shared_ptr<LogFileBuffer> buffer)
@@ -105,9 +106,9 @@ void Lexical::reportError(const std::string& errorchar)
 	this->_logFileBuffer->logLexicalError(this->_lineNumber, this->_prevCharPosition, errorchar, this->_currentLine);
 }
 
-void Lexical::appendToTokenList(compiler::TOKEN token, std::string lexeme)
+void Lexical::appendToTokenList(std::string lexeme, compiler::TOKEN token)
 {
-	this->_tokenList->append(this->_lineNumber, this->_prevCharPosition, token, lexeme);
+	this->_tokenList->append(this->_lineNumber, this->_prevCharPosition, lexeme, token);
 }
 
 void Lexical::resetPeek()
@@ -146,106 +147,106 @@ bool Lexical::getNextToken()
 	switch (this->_peek) {
 	case ';':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::SEMICOLON, ";");
+		appendToTokenList(";", compiler::SEMICOLON);
 		this->resetPeek();
 		return true;
 	case '(':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::LEFT_PAREN, "(");
+		appendToTokenList("(", compiler::LEFT_PAREN);
 		this->resetPeek();
 		return true;
 	case ')':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::RIGHT_PAREN, ")");
+		appendToTokenList(")", compiler::RIGHT_PAREN);
 		this->resetPeek();
 		return true;
 	case '=':
 		if (readNextChar('=')) {
 			this->_prevCharPosition = this->_charPosition;
-			appendToTokenList(compiler::COMP_EQUAL, "==");
+			appendToTokenList("==", compiler::COMP_EQUAL);
 			this->resetPeek();
 			return true;
 		}
 		else {
 			this->_prevCharPosition = this->_charPosition;
-			appendToTokenList(compiler::EQUAL, "=");
+			appendToTokenList("=", compiler::EQUAL);
 			this->resetPeek();
 			return true;
 		}
 	case '<':
 		if (readNextChar('=')) {
 			this->_prevCharPosition = this->_charPosition;
-			appendToTokenList(compiler::COMP_LEQUAL, "<=");
+			appendToTokenList("<=", compiler::COMP_LEQUAL);
 			this->resetPeek();
 			return true;
 		}
 		else if (readNextChar('>')) {
 			this->_prevCharPosition = this->_charPosition;
-			appendToTokenList(compiler::COMP_NOT, "<>");
+			appendToTokenList("<>", compiler::COMP_NOT);
 			this->resetPeek();
 			return true;
 		}
 		else {
 			this->_prevCharPosition = this->_charPosition;
-			appendToTokenList(compiler::COMP_LTHAN, "<");
+			appendToTokenList("<", compiler::COMP_LTHAN);
 			this->resetPeek();
 			return true;
 		}
 	case '>':
 		this->_prevCharPosition = this->_charPosition;
 		if (readNextChar('=')) {
-			appendToTokenList(compiler::COMP_GEQUAL, ">=");
+			appendToTokenList(">=", compiler::COMP_GEQUAL);
 			this->resetPeek();
 			return true;
 		}
 		else {
-			appendToTokenList(compiler::COMP_GTHAN, ">");
+			appendToTokenList(">", compiler::COMP_GTHAN);
 			this->resetPeek();
 			return true;
 		}
 	case ',':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::COMMA, ",");
+		appendToTokenList(",", compiler::COMMA);
 		this->resetPeek();
 		return true;
 	case '+':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::PLUS, "+");
+		appendToTokenList("+", compiler::PLUS);
 		this->resetPeek();
 		return true;
 	case '*':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::MULTIPLY, "*");
+		appendToTokenList("*", compiler::MULTIPLY);
 		this->resetPeek();
 		return true;
 	case '-':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::MINUS, "-");
+		appendToTokenList("-", compiler::MINUS);
 		this->resetPeek();
 		return true;
 	case '%':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::MODULUS, "%");
+		appendToTokenList("%", compiler::MODULUS);
 		this->resetPeek();
 		return true;
 	case '/':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::DIVIDE, "/");
+		appendToTokenList("/", compiler::DIVIDE);
 		this->resetPeek();
 		return true;
 	case '[':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::LEFT_BRACK, "[");
+		appendToTokenList("[", compiler::LEFT_BRACK);
 		this->resetPeek();
 		return true;
 	case ']':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::RIGHT_BRACK, "]");
+		appendToTokenList("]", compiler::RIGHT_BRACK);
 		this->resetPeek();
 		return true;
 	case '.':
 		this->_prevCharPosition = this->_charPosition;
-		appendToTokenList(compiler::DOT, ".");
+		appendToTokenList(".", compiler::DOT);
 		this->resetPeek();
 		return true;
 	}
@@ -260,7 +261,7 @@ bool Lexical::getNextToken()
 		} while (std::isdigit(this->_peek));
 
 		if (this->_peek != '.') {
-			appendToTokenList(compiler::VALUE_INTEGER, v);
+			appendToTokenList(v, compiler::VALUE_INTEGER);
 			return true;
 		}
 
@@ -293,7 +294,7 @@ bool Lexical::getNextToken()
 			v += this->_peek;
 		}
 
-		appendToTokenList(compiler::VALUE_DOUBLE, v);
+		appendToTokenList(v, compiler::VALUE_DOUBLE);
 		return true;
 	}
 
@@ -307,10 +308,10 @@ bool Lexical::getNextToken()
 		} while (std::isalnum(this->_peek));
 
 		if (this->_reservedWords->findReservedWord(b)) {
-			appendToTokenList(static_cast<compiler::TOKEN>(this->_reservedWords->findReservedWordIndex(b)), b);
+			appendToTokenList(b, static_cast<compiler::TOKEN>(this->_reservedWords->findReservedWordIndex(b)));
 		}
 		else {
-			appendToTokenList(compiler::ID, b);
+			appendToTokenList(b, compiler::ID);
 		}
 
 		//std::cout << b << std::endl;

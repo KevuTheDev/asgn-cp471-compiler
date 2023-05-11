@@ -84,6 +84,7 @@ namespace compiler
     };
 
     enum TOKEN {
+        NONE,
         KW_DEF,
         KW_FED,
         KW_INT,

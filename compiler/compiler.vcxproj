@@ -23,26 +23,32 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Lexical.cpp" />
     <ClCompile Include="src\LogFileBuffer.cpp" />
+    <ClCompile Include="src\Node.cpp" />
     <ClCompile Include="src\ReservedWords.cpp" />
+    <ClCompile Include="src\StringTable.cpp" />
     <ClCompile Include="src\SymbolTable.cpp" />
     <ClCompile Include="src\FileBuffer.cpp" />
     <ClCompile Include="src\SymbolTableFileBuffer.cpp" />
     <ClCompile Include="src\SyntaxTree.cpp" />
     <ClCompile Include="src\TokenFileBuffer.cpp" />
     <ClCompile Include="src\TokenList.cpp" />
+    <ClCompile Include="src\TokenNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Compiler.h" />
     <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\Lexical.h" />
     <ClInclude Include="src\LogFileBuffer.h" />
+    <ClInclude Include="src\Node.h" />
     <ClInclude Include="src\ReservedWords.h" />
+    <ClInclude Include="src\StringTable.h" />
     <ClInclude Include="src\SymbolTable.h" />
     <ClInclude Include="src\FileBuffer.h" />
     <ClInclude Include="src\SymbolTableFileBuffer.h" />
     <ClInclude Include="src\SyntaxTree.h" />
     <ClInclude Include="src\TokenFileBuffer.h" />
     <ClInclude Include="src\TokenList.h" />
+    <ClInclude Include="src\TokenNode.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\e1.cp" />

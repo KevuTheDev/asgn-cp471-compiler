@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Storage">
       <UniqueIdentifier>{97fec973-813e-41a6-a60b-619949943089}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Node">
+      <UniqueIdentifier>{ef250f72-a346-4d7f-ab25-ff6706e41d6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Node">
+      <UniqueIdentifier>{9debe0eb-1bb7-409c-8cad-92e9ef2ee96c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -66,6 +72,15 @@
     <ClCompile Include="src\SyntaxTree.cpp">
       <Filter>Source Files\Storage</Filter>
     </ClCompile>
+    <ClCompile Include="src\StringTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TokenNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\globals.h">
@@ -100,6 +115,15 @@
     </ClInclude>
     <ClInclude Include="src\SyntaxTree.h">
       <Filter>Header Files\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StringTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Node.h">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TokenNode.h">
+      <Filter>Header Files\Node</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
