@@ -37,6 +37,18 @@
     <Filter Include="Header Files\Node">
       <UniqueIdentifier>{9debe0eb-1bb7-409c-8cad-92e9ef2ee96c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Node\2. Syntax">
+      <UniqueIdentifier>{427b22a3-654c-47b7-82db-a2afdfa3577a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Node\1. Lexical">
+      <UniqueIdentifier>{ed260672-eb92-427f-9457-c9031588fd88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Node\1. Lexical">
+      <UniqueIdentifier>{f5a75d16-c277-4310-a129-e7386110ca7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Node\2. Syntax">
+      <UniqueIdentifier>{de2a5c73-81b0-438a-b7fb-c1006aab7fc4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -75,11 +87,14 @@
     <ClCompile Include="src\StringTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TokenNode.cpp">
-      <Filter>Source Files\Node</Filter>
+    <ClCompile Include="src\Syntax.cpp">
+      <Filter>Source Files\Stages</Filter>
     </ClCompile>
     <ClCompile Include="src\Node.cpp">
-      <Filter>Source Files\Node</Filter>
+      <Filter>Source Files\Node\1. Lexical</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TokenNode.cpp">
+      <Filter>Source Files\Node\1. Lexical</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,11 +134,14 @@
     <ClInclude Include="src\StringTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Syntax.h">
+      <Filter>Header Files\Stages</Filter>
+    </ClInclude>
     <ClInclude Include="src\Node.h">
-      <Filter>Header Files\Node</Filter>
+      <Filter>Header Files\Node\1. Lexical</Filter>
     </ClInclude>
     <ClInclude Include="src\TokenNode.h">
-      <Filter>Header Files\Node</Filter>
+      <Filter>Header Files\Node\1. Lexical</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

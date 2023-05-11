@@ -18,6 +18,7 @@ public:
 	void run();
 
 	bool getError();
+
 private:
 	compiler::TOKEN getPeek();
 	void getNextToken();

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SyntaxNode.h"
 
 class SyntaxTree
 {
@@ -8,14 +7,14 @@ public:
 	SyntaxTree();
 	~SyntaxTree();
 
-	void connectNodeToHead(std::shared_ptr<SyntaxNode> node);
+public:
+	struct SyntaxTreeNode {
+		// this can be either a terminal or non-terminal
+		// must first distinquish between the two
 
-	void print();
+	};
 
 private:
-
-private:
-	std::shared_ptr<SyntaxNode> _head;
 
 };
 

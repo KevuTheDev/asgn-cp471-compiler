@@ -78,8 +78,6 @@ void Syntax::reportError(const std::string& errorchar)
 
 void Syntax::start()
 {
-	std::shared_ptr<SyntaxNode> node = std::make_shared<SyntaxNode>(false, "PROGRAM");
-	this->_syntaxTree->connectNodeToHead(node);
 
 	bool hmm = PROGRAM();
 
